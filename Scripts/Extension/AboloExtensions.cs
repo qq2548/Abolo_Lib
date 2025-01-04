@@ -151,6 +151,23 @@ namespace AboloLib
             float totalDuration = duration + interval * (transform.childCount - 1);
             return ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(totalDuration, callback));
         }
+
+        public static bool TryPlayAnimation(this Transform transform , string animationName)
+        {
+            if (transform.TryGetComponent(out UnityEngine.Animation animation))
+            {
+                if (animation.isPlaying) animation.Stop();
+                animation.Play(animationName);
+                return true;
+            }
+            else
+            {
+#if _ARTEST_PRESENTATION
+                Debug.LogWarning($"{transform.gameObject.name}------没有Animation组件，无法播放！");
+#endif
+                return false;
+            }
+        }
     }
 
     public static class GraphicExtension
