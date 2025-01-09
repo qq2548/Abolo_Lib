@@ -16,7 +16,7 @@ namespace AboloLib
         [Header("如果不需要控制子节点Animation逐个激活则勾选此项")]
         public bool _IgnoreSubAnim = false;
         [Header("子节点Animation逐个激活间隔时间")]
-        [SerializeField] float interval = 0.1f;
+        [SerializeField] float interval = 0.05f;
         public float AnimInterval
         {
             get => interval;
