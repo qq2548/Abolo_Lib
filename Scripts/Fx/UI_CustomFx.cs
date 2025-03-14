@@ -15,6 +15,8 @@ namespace AboloLib
         [SerializeField] bool _disableBlurBg = false;
         [Header("如果不需要控制子节点Animation逐个激活则勾选此项")]
         public bool _IgnoreSubAnim = false;
+        [Header("子动画播放是否要兼容item动态删减")]
+        public bool _isDynamicSubAnimItems = false;
         [Header("子节点Animation逐个激活间隔时间")]
         [SerializeField] float interval = 0.05f;
         public float AnimInterval
@@ -43,14 +45,26 @@ namespace AboloLib
             _animators.Clear();
         }
 
+        public void Setup()
+        {
+
+        }
+
         /// <summary>
         /// 只会保留命名里带有pop的Animation clip，制作动画时需要命名约束
         /// </summary>
         public void GetSubAnimations()
         {
-            if (_subAnimations == null || _subAnimations.Count == 0)
+            if (!_isDynamicSubAnimItems)
             {
-                GetAnimationsInChildren(transform , out _subAnimations);
+                if (_subAnimations == null || _subAnimations.Count == 0)
+                {
+                    GetAnimationsInChildren(transform, out _subAnimations);
+                }
+            }
+            else
+            {
+                GetAnimationsInChildren(transform, out _subAnimations);
             }
         }
 

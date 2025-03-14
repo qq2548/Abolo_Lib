@@ -1,0 +1,30 @@
+配置相关
+git config --global user.name “Your Name”：设置全局用户名。
+git config --global user.email “youremail@example.com”：设置全局用户邮箱。
+git config --list：查看当前的 Git 配置。
+git config --global color.ui auto：设置 Git 输出自动带有颜色，高亮显示。
+基本操作
+git init：初始化一个新的 Git 仓库。
+git clone ：克隆一个远程仓库到本地。
+git status：查看当前仓库的状态，包括已更改但未提交的文件。
+git add ：将文件添加到暂存区（可用 git add . 添加所有改动的文件）。
+git commit -m “commit message”：提交暂存区中的文件到仓库，同时添加提交说明。
+git push：将本地的提交推送到远程仓库。
+git pull：从远程仓库拉取最新的改动并合并到本地。
+分支操作
+git branch：列出所有本地分支。
+git branch ：创建一个新的分支。
+git checkout ：切换到指定的分支。
+git checkout -b ：创建并切换到一个新的分支。
+git merge ：将指定分支合并到当前分支。
+git branch -d ：删除指定的本地分支。
+查看日志
+git log：查看提交历史日志。
+git log --oneline：以简洁的单行格式查看提交日志。
+git log --graph --all --decorate：以图形方式展示所有分支的提交历史。
+撤销与回退
+git reset HEAD ：将暂存区的文件移出，回到未暂存的状态。
+git checkout – ：撤销对某个文件的改动，将其恢复到上一次提交的状态。
+git revert ：撤销指定的提交，但保留历史记录（适合已推送到远程仓库的提交）。
+git reset --soft ：回退到某个提交，并保留修改内容。
+git reset --hard ：彻底回退到某个提交，并丢弃所有改动（谨慎使用）。

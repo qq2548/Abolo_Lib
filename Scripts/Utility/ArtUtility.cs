@@ -405,6 +405,30 @@ namespace AboloLib
             Gizmos.DrawLine(vertices[0], vertices[vertices.Length - 1]);
         }
 
+        /// 这里有一个关键点：世界相机的 orthographicSize 等于 Screen.height * 0.005f 时，两个矩阵下的物体尺寸是相同的，否则会出现偏差
+        /// 需要使用下列方法进行修复对齐
+        /// 
+        /// <summary>
+        /// UI 空间物体 scale 缩放对齐同尺寸的 世界空间物体
+        /// </summary>
+        /// <param name="wordCamera">世界空间的渲染相机</param>
+        /// <param name="canvasRoot">Canvas根节点</param>
+        /// <returns></returns>
+        public static Vector3 UIObjectScaleMatchToWorld(Camera wordCamera, Canvas canvasRoot)
+        {
+            return Vector3.one / (wordCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor);
+        }
+        /// <summary>
+        /// 世界空间物体 scale 缩放对齐同尺寸的 UI 空间物体
+        /// </summary>
+        /// <param name="wordCamera"></param>
+        /// <param name="canvasRoot"></param>
+        /// <returns></returns>
+        public static Vector3 WorldObjectScaleMatchToUI(Camera wordCamera, Canvas canvasRoot)
+        {
+            return Vector3.one * (wordCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor);
+        }
+
         #region Animation Functions
         /// <summary>
         /// 浮点数曲线采样方法
