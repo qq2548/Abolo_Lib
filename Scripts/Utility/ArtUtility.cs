@@ -416,7 +416,14 @@ namespace AboloLib
         /// <returns></returns>
         public static Vector3 UIObjectScaleMatchToWorld(Camera wordCamera, Canvas canvasRoot)
         {
-            return Vector3.one / (wordCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor);
+            if (wordCamera != null && canvasRoot != null)
+            {
+                return Vector3.one / (wordCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor);
+            }
+            else
+            {
+                return Vector3.one;
+            }
         }
         /// <summary>
         /// 世界空间物体 scale 缩放对齐同尺寸的 UI 空间物体
@@ -426,7 +433,14 @@ namespace AboloLib
         /// <returns></returns>
         public static Vector3 WorldObjectScaleMatchToUI(Camera wordCamera, Canvas canvasRoot)
         {
-            return Vector3.one * (wordCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor);
+            if (wordCamera != null && canvasRoot != null)
+            {
+                return Vector3.one * (wordCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor);
+            }
+            else
+            {
+                return Vector3.one;
+            }
         }
 
         #region Animation Functions
