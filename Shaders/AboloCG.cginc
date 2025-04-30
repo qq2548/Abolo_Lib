@@ -4,7 +4,7 @@
 	float ABL_FixTime(float UnityTime)
 	{
 		float c;
-		c =  frac(UnityTime*0.001)*1000.0;
+		c =  frac(UnityTime*0.001)*1000.0 * step(1000 , UnityTime) +UnityTime * step(UnityTime , 1000) ;
 		return c;
 	}
 
@@ -30,7 +30,7 @@
         }
 
         //随机算法
-            float random(float2 _uv)
+        float random(float2 _uv)
         {
             return frac(sin(dot(_uv , float2(12.9898 , 78.233))) * 43758.5758321);
         }

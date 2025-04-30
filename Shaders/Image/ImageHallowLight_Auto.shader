@@ -10,7 +10,7 @@
 		
 		_SubTex("SubTexture",2D) = "white"{} //副贴图，用于特效动画的之类的
 		_Color ("TintColor", Color) = (1.0,1.0,1.0,1.0)
-
+		_MinMaskAlpha("MinMaskAlpha" , Range(0.0 , 1.0)) = 0.95
 
 	    _Speed("Speed" , Range(0.0 , 2.0)) = 0.5
 	    _Duration("Duration" , Range(1.0 , 5.0)) = 1.0
@@ -83,7 +83,7 @@
 			#include "UnityCG.cginc" 
 			#include "UnityUI.cginc" 
 
-			#pragma multi_compile_instancing 
+			#pragma multi_compile_instancing
 
 
 			struct appdata
@@ -135,7 +135,7 @@
 		  float _Speed;
 		  float _Duration;
 		  float _LightScalor;
-
+		  float _MinMaskAlpha;
 
 			UNITY_INSTANCING_BUFFER_START(Props)
 			// put more per-instance properties here
@@ -190,7 +190,7 @@
 
 				fixed gray = 0.29 * color.r + 0.59 * color.g + 0.12 * color.b;
 
-				color.a *= clamp(1.0 - subMask , 0.95 , 1.0);
+				color.a *= clamp(1.0 - subMask , _MinMaskAlpha , 1.0);
 				fixed maskColor = color.a *gray;
 				color *= IN.Color;
                     //color.rgb += saturate(UNITY_ACCESS_INSTANCED_PROP(Props, _Color).rgb * subColor * color.g * 2.5 * maskColor);

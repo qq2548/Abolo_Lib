@@ -71,7 +71,7 @@
 			//#pragma target 3.0
 
 			#include "UnityCG.cginc" 
-			#include "UnityUI.cginc"  
+			#include "UnityUI.cginc" 
 
 			//#pragma multi_compile_instancing
 

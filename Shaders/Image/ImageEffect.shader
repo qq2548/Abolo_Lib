@@ -5,7 +5,7 @@
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
 
-        _Speed("Speed" , Range(0.0 , 10.0)) = 1.0
+        _Speed("Speed" , Range(-10.0 , 10.0)) = 1.0
 
         [Header(StencilBuffer)]//模板缓冲
 		_StencilComp ("Stencil Comparison", Float) = 8.0
@@ -15,7 +15,7 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255.0
         _ColorMask ("Color Mask", Float) = 15.0
 
-        [KeywordEnum(Default , BSC , Blur , EdgeDetect , Outline, Innerline)]_Pattern("Effect" , Float) = 0.0
+        [KeywordEnum(Default , BSC , Blur , EdgeDetect , Outline, Innerline , SelfFlow)]_Pattern("Effect" , Float) = 0.0
 
         [HideInInspector]
         _UVRect("UVRect" , Vector) = (0,0,1,1)
@@ -75,10 +75,10 @@
             #pragma target 3.0
 
             #include "UnityCG.cginc"
-            #include "UnityUI.cginc" 
+            #include "UnityUI.cginc"
 
             #pragma multi_compile_instancing
-            #pragma multi_compile _PATTERN_DEFAULT _PATTERN_BSC _PATTERN_BLUR _PATTERN_EDGEDETECT _PATTERN_OUTLINE _PATTERN_INNERLINE
+            #pragma multi_compile _PATTERN_DEFAULT _PATTERN_BSC _PATTERN_BLUR _PATTERN_EDGEDETECT _PATTERN_OUTLINE _PATTERN_INNERLINE _PATTERN_SELFFLOW
 
             struct appdata_t
             {
@@ -285,6 +285,10 @@
                     float fac = saturate(outline) - color.a;
                     color.rgb = lerp(color.rgb , _OutlineColor.rgb , fac);
                     color.a = lerp(color.a , saturate(outline)*_OutlineColor.a , fac);
+               #endif
+
+               #ifdef _PATTERN_SELFFLOW
+                    color = tex2D(_MainTex , IN.texcoord + t);
                #endif
                color *= IN.color;
                 return color;

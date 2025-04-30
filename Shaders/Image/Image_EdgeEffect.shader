@@ -67,7 +67,7 @@ Shader "2d/Image_EdgeEffect"
 			#pragma fragment frag
 			#include "UnityCG.cginc"  
 			#include "UnityUI.cginc" 
-			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
+            #include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
 			
 
 			#pragma multi_compile  _TYPE_OUTTER _TYPE_INNER

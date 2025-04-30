@@ -27,7 +27,7 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
-
+		[Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
 	}
 	SubShader 
 	{
@@ -76,17 +76,18 @@
 			#pragma target 2.0
 
 			#include "UnityCG.cginc" 
-			 
+
 			#include "UnityUI.cginc" 
 			#pragma multi_compile __ _PATTERN_DEFAULT _PATTERN_XDIR _PATTERN_YDIR
-
-
+			#pragma multi_compile __ UNITY_UI_CLIP_RECT
+            #pragma multi_compile __ UNITY_UI_ALPHACLIP
+			#pragma multi_compile_instancing
 			struct appdata
 			{
 				float4 vertex : POSITION ;
 				float2 uv : TEXCOORD0;
 				fixed4 Color:COLOR;
-
+				UNITY_VERTEX_INPUT_INSTANCE_ID //gpu instancing 默认的shader带了两个函数接口
 			};
 
 			struct v2f
@@ -97,7 +98,7 @@
 				float4 worldPosition : TEXCOORD1;
 
 				fixed4 Color:COLOR;
-
+				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 
 			sampler2D _MainTex;
@@ -108,13 +109,13 @@
 			v2f vert(appdata i)
 			{
 				v2f o;
-
+				UNITY_SETUP_INSTANCE_ID(i);
 				o.worldPosition = i.vertex;
 				o.vertex = UnityObjectToClipPos(i.vertex);
 				o.uv.xy = TRANSFORM_TEX(i.uv, _MainTex);
 
 				o.Color = i.Color;
-
+				UNITY_TRANSFER_INSTANCE_ID(i,o);
 				return o;
 			}
 
@@ -125,13 +126,14 @@
 
 
 			//float _DisolveThreshold;
-
+			float4 _ClipRect;   //位于顶点空间的Rect，(x,y)为左下角位置，(z,w)为右上角位置
 			float _TileScalor_X;
 			float _TileScalor_Y;
 			float _Mirror;
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
+				UNITY_SETUP_INSTANCE_ID(IN);
 				float2 oriUV = IN.uv;
 
 
@@ -169,7 +171,7 @@
 				//fixed fac2 = 1.0 - subColor.g;
 				#ifdef _PATTERN_DEFAULT
 					float4 subColor = tex2D(_SubTex , fixedUV);
-					fac1 = 1.0 - subColor.r;
+					fac1 = max(0 , 1.0 * _Mirror) - subColor.r * _Mirror;
 					color.a *= smoothstep(saturate(fac1 - _SmoothRange*.5) , 
 														  saturate(fac1 + _SmoothRange*.5), 
 														   (saturate(IN.Color.a  - _StartPercentage)) / (1.0 - _StartPercentage));
@@ -195,6 +197,13 @@
 					//color *= smoothstep(saturate(fac2 - 0.2) , fac2 , 1.0 - (saturate(v.uv.z - _StartPercentage)) / (1.0 - _StartPercentage)) * v.Color.a;
 				#endif
 
+				#ifdef UNITY_UI_CLIP_RECT
+                color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
+                #endif
+ 
+                #ifdef UNITY_UI_ALPHACLIP
+                clip (color.a - 0.001);
+                #endif
 				return   color;
 			}
 

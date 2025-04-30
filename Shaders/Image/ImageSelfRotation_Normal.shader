@@ -65,7 +65,7 @@
             #pragma multi_compile_instancing
             #pragma multi_compile __ _TURN_OFF_HSB_ON
 
-            #define TWO_PI 6.28318530718 
+            #define TWO_PI 6.28318530718
             float mix(float a, float b , float t)
             {
                 return b*t + a*(1.0 - t);

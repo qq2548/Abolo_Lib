@@ -4,7 +4,7 @@
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
-
+        _SubTex("SubTex" , 2D) = "white"{}
 
         [Header(StencilBuffer)]//模板缓冲
 		_StencilComp ("Stencil Comparison", Float) = 8.0
@@ -63,7 +63,7 @@
             #include "UnityUI.cginc"
 
             #pragma multi_compile_instancing
-            #pragma multi_compile __ _TURN_OFF_HSB_ON 
+            #pragma multi_compile __ _TURN_OFF_HSB_ON
 
             #define TWO_PI 6.28318530718
             float mix(float a, float b , float t)
@@ -102,6 +102,7 @@
             };
 
             sampler2D _MainTex;
+            sampler2D _SubTex;
             float4 _MainTex_ST;
             float _FacA;
 
@@ -167,8 +168,9 @@
                     col = 1.0;
                 #endif
                 //----------
-
+                fixed4 subColor = tex2D(_SubTex , uv);
                 fixed4 color = saturate(tex2D(_MainTex , st + (UVRect.xy + sprcenter))*IN.color * float4(col , 1.0));
+                color.a *= subColor.a;
                 //color.rgb = col;
                 return color;
                 //return subColor;
