@@ -218,6 +218,17 @@ namespace AboloLib
         }
     }
 
+    [CustomEditor(typeof(FxSlider))]
+    [CanEditMultipleObjects]
+    public class FxSliderEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+            FxSlider fxSlider = (FxSlider)target;
+        }
+    }
+
     //[CustomEditor(typeof(GenerateGrid))]
     //public class GenerateGridEditor : Editor
     //{

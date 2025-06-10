@@ -443,6 +443,29 @@ namespace AboloLib
             }
         }
 
+        /// <summary>
+        /// UI 空间物体 scale 缩放对齐同尺寸的 世界空间物体
+        /// </summary>
+        /// <param name="canvasRoot">Canvas根节点</param>
+        /// <returns></returns>
+        public static float UISpaceWorldPositionScalor(Canvas canvasRoot)
+        {
+            if (canvasRoot != null)
+            {
+                var targetCamera = canvasRoot.worldCamera;
+#if _ARTEST_PRESENTATION
+                Debug.Log($"targetCameraSize is {targetCamera.orthographicSize}--------scaleFac is {canvasRoot.scaleFactor}");
+#endif
+                return targetCamera.orthographicSize / (Screen.height * 0.005f) * canvasRoot.scaleFactor;
+            }
+            else
+            {
+                string msg = "______" + canvasRoot == null ? "Canvas ref is null." : string.Empty;
+                Debug.LogWarning(msg);
+                return 1.0f;
+            }
+        }
+
         #region Animation Functions
         /// <summary>
         /// 浮点数曲线采样方法

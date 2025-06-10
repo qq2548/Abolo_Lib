@@ -124,7 +124,7 @@
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
-				fixed4 color = tex2D(_MainTex , IN.texcoord)* IN.Color;
+				fixed4 color = tex2D(_MainTex , IN.texcoord);
 				#ifdef _TEXTMODE_ON
 					color.rgb =  IN.Color.rgb;
 				#endif
@@ -140,7 +140,7 @@
 					//根据Contrast在对比度最低的图像和原图之间差值
 					color.rgb = lerp(avgColor, color.rgb, _Contrast);
 					color.rg = saturate(color.rg + fixed2(0.05,0.02));
-				color *= _Color ;
+				color *= _Color * IN.Color;
 				//color = tex2D(_MainTex , IN.texcoord)* IN.Color;
 
 
