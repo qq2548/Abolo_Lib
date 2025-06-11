@@ -164,20 +164,60 @@ namespace AboloLib
 
     }
 
+    [CustomEditor(typeof(FlyFxItemCtrl))]
+    public class FlyFxItemCtrlEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
 
-    //[CustomEditor(typeof(FlyFxItemCtrl))]
-    //public class FlyFxItemCtrlEditor : Editor
-    //{
-    //    public override void OnInspectorGUI()
-    //    {
-    //        base.OnInspectorGUI();
-    //        FlyFxItemCtrl fly_ctrl = (FlyFxItemCtrl)target;
-    //        if (GUILayout.Button("发射飞行道具")) 
-    //        {
-    //            ArtWorkSpaceEditor.FunctionEditorOnly(() => fly_ctrl.ShootFlyItem());
-    //        }
-    //    }
-    //}
+            base.OnInspectorGUI();
+            FlyFxItemCtrl fly_ctrl = (FlyFxItemCtrl)target;
+            if (GUILayout.Button("发射飞行道具"))
+            {
+                ArtWorkSpaceEditor.FunctionEditorOnly(() => fly_ctrl.ShootFlyItem());
+            }
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(PrefabSelectAttribute))]
+    public class PrefabSelectAttributeEditor : PropertyDrawer
+    {
+        string[] GetNames(PrefabSelectAttribute attribute)
+        {
+            var itemfactory = AssetDatabase.LoadAssetAtPath<MyObjectFactory>(attribute.AssetPath);
+            int index = itemfactory.prefabs.Length;
+            string[] names = new string[index];
+            for (int i = 0; i < index; i++)
+            {
+                names[i] = i.ToString() + "|" + itemfactory.prefabs[i].name;
+            }
+            return names;
+        }
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            PrefabSelectAttribute prefabSelect = attribute as PrefabSelectAttribute;
+            string[] static_names = GetNames(prefabSelect);
+            string cntString = property.stringValue;
+            int selected = 0;
+
+            for (int i = 1; i < static_names.Length; ++i)
+            {
+                if (static_names[i].Equals(cntString))
+                {
+                    selected = i;
+                    break;
+                }
+            }
+            selected = EditorGUI.Popup(position, label.text, selected, static_names);
+
+            if (GUI.changed)
+            {
+                var name = static_names[selected];
+                property.stringValue = name;
+                EditorUtility.SetDirty(property.serializedObject.targetObject);
+            }
+        }
+    }
 
 
 
@@ -220,11 +260,20 @@ namespace AboloLib
 
     [CustomEditor(typeof(FxSlider))]
     [CanEditMultipleObjects]
-    public class FxSliderEditor : Editor
+    public class FxSliderEditor : UnityEditor.UI.SliderEditor
     {
+        SerializedProperty parentSlider;
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            parentSlider = serializedObject.FindProperty("parentSlider");
+        }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            serializedObject.Update();
+            EditorGUILayout.PropertyField(parentSlider);
+            serializedObject.ApplyModifiedProperties();
             FxSlider fxSlider = (FxSlider)target;
         }
     }
