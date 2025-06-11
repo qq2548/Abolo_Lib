@@ -32,7 +32,7 @@ namespace AboloLib
                 dragTarget = null;
             }
 
-            uiCamera = ArtGameManager.instance.UICamera;
+            uiCamera = UICanvasAdapter.CurrentCanvas.worldCamera;//ArtGameManager.instance.UICamera;
 
             RefreshCountText();
 
@@ -133,7 +133,7 @@ namespace AboloLib
         {
             if (dragTarget != null)
             {
-                Vector3 pos = ArtGameManager.instance.UICamera.ScreenToWorldPoint(Input.mousePosition);
+                Vector3 pos = uiCamera.ScreenToWorldPoint(Input.mousePosition);
                 dragTarget.position = new Vector3(pos.x, pos.y, 0.0f);
             }
         }
