@@ -28,6 +28,8 @@ namespace AboloLib
             FloatingPosition,
             DecorationPop,
             Shake,
+            Spring,
+            FlyAccelerate,
         }
         public List<AnimationCurvePreset> animationCurvePresets;
         /// <summary>

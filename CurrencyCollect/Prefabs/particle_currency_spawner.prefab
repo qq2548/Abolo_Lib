@@ -48,7 +48,7 @@ MonoBehaviour:
   timeToBoom: 0.5
   timeToStop: 0
   timeToCollect: 0.5
-  delay: 0.075
+  delay: 0.2
   shadowObj: {fileID: 957112655866756988, guid: c09fcb8d33904274cacbfd80e05c7a90, type: 3}
   maxSortingLayer: 8000
   _blastCurve:
@@ -88,8 +88,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.53849965
     - serializedVersion: 3
-      time: 0.5416283
-      value: 0.57179797
+      time: 0.67883533
+      value: 0.46761096
       inSlope: 1.5431336
       outSlope: 1.5431336
       tangentMode: 0
@@ -99,11 +99,11 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: -0.0039667008
-      outSlope: -0.0039667008
+      inSlope: 1.7704076
+      outSlope: 1.7704076
       tangentMode: 0
       weightedMode: 3
-      inWeight: 0.3600711
+      inWeight: 0.23415789
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2

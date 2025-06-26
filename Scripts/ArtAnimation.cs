@@ -237,6 +237,15 @@ namespace AboloLib
             }
             callback?.Invoke();
         }
+
+        public static IEnumerator DoSequenceActions(List<IEnumerator> enums , Action callback = null)
+        {
+            foreach (var item in enums)
+            {
+                yield return ScheduleAdapter.Schedual.StartCoroutine(item);
+            }
+            callback?.Invoke();
+        }
     }
 
 }

@@ -58,10 +58,10 @@ namespace AboloLib
 #if _ARTEST_PRESENTATION
                 if (!isActive)
                 {
-                    var p = transform.parent;
-                    string s;
-                    s = p ? p.name : "No Parent";
-                    Debug.Log(s + "Stopped" + "特效名字：" + name);
+                    //var p = transform.parent;
+                    //string s;
+                    //s = p ? p.name : "No Parent";
+                    //Debug.Log(s + "Stopped" + "特效名字：" + name);
                 }
 #endif
             }

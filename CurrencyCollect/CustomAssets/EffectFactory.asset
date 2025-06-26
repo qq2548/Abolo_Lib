@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c03f9ebc37863b4bad2f0127d210f65, type: 3}
-  m_Name: CurrencyFactory
+  m_Script: {fileID: 11500000, guid: e051073c4737159478bae049754af261, type: 3}
+  m_Name: EffectFactory
   m_EditorClassIdentifier: 
-  prefabs:
-  - {fileID: 307457501532733428, guid: 4ba524417b3cf4047b485fdda447b7c6, type: 3}
-  - {fileID: -7906651838324744493, guid: 395c437a2487cab478da55b61c14a473, type: 3}
-  recycle: 0
+  MyPrefabs:
+  - name: TextPop
+    discription: null
+    prefab: {fileID: 7392088582556041365, guid: cafe92a8dbed0db47a693e7c58a19283, type: 3}
