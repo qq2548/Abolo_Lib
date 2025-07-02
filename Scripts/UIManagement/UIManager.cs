@@ -15,7 +15,8 @@ namespace AboloLib
 
         public static Transform UI_Root;
         public static Camera UI_Camera;
-        public static UIFactory UI_Factory;
+
+        public static PrefabFactory UI_Prefabs;
         private bool _initialized;
         public static bool Initialized
         {
@@ -29,23 +30,26 @@ namespace AboloLib
             base.Init();
             UI_Root = UICanvasAdapter.CurrentCanvas.transform.parent;
             UI_Camera = UICanvasAdapter.CurrentCanvas.worldCamera;
-            if (UI_Factory != null)
+            if (UI_Prefabs != null)
             {
-                if (UI_Factory.UI_Bases != null)
+                if (UI_Prefabs.MyPrefabs != null)
                 {
                     GameUIDic = new Dictionary<Type, UI_Base>();
-                    foreach (var item in UI_Factory.UI_Bases)
+
+                    foreach (var item in UI_Prefabs.MyPrefabs)
                     {
-                        var ui = Instantiate(item , GetCanvas(0));
+                        string winName = $"{CustomDataRegister.CustomNamespace}.{item.name}";
+                        var win_obj = Instantiate(item.prefab, GetCanvas(0));
+                        var ui_base = win_obj.gameObject.AddComponent(Type.GetType(winName)) as UI_Base;
                         //隐藏所有界面
-                        ui.gameObject.SetActive(false);
+                        win_obj.gameObject.SetActive(false);
                         //测试特性反射start  貌似成功
-                        UI_Base.SetUIElementsBinding(ui , ui.transform);
+                        UI_Base.SetUIElementsBinding(ui_base, win_obj.transform);
                         //测试特性反射end
-                        ui.Setup();
-                        ui.transform.localScale = Vector3.one;
-                        ui.transform.localPosition = Vector3.zero;
-                        GameUIDic.Add(ui.GetType() , ui);
+                        ui_base.Setup();
+                        win_obj.transform.localScale = Vector3.one;
+                        win_obj.transform.localPosition = Vector3.zero;
+                        GameUIDic.Add(ui_base.GetType(), ui_base);
                     }
 
                     Initialized = true;
