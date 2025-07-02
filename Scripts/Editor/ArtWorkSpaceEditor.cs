@@ -262,16 +262,19 @@ namespace AboloLib
     [CanEditMultipleObjects]
     public class FxSliderEditor : UnityEditor.UI.SliderEditor
     {
+        SerializedProperty hideFillOnLowValue;
         SerializedProperty parentSlider;
         protected override void OnEnable()
         {
             base.OnEnable();
+            hideFillOnLowValue = serializedObject.FindProperty("hideFillOnLowValue");
             parentSlider = serializedObject.FindProperty("parentSlider");
         }
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             serializedObject.Update();
+            EditorGUILayout.PropertyField(hideFillOnLowValue);
             EditorGUILayout.PropertyField(parentSlider);
             serializedObject.ApplyModifiedProperties();
             FxSlider fxSlider = (FxSlider)target;

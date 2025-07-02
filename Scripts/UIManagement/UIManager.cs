@@ -57,7 +57,7 @@ namespace AboloLib
                 else
                 {
 #if _ARTEST_PRESENTATION
-                    Debug.LogError("UIFactory.UI_Base 赋值为空");
+                    Debug.LogError("UI_Prefabs.MyPrefabs 赋值为空");
 #endif
                 }
 
@@ -65,7 +65,7 @@ namespace AboloLib
             else
             {
 #if _ARTEST_PRESENTATION
-                Debug.LogError("UIFactory 赋值为空");
+                Debug.LogError("UI_Prefabs 赋值为空");
 #endif
             }
         }

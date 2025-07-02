@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _changeOutlineColor: 1
-  _outlineColor: {r: 0.5, g: 0.23764631, b: 0, a: 1}
+  _outlineColor: {r: 0.122641504, g: 0.05927673, b: 0, a: 1}
   _changeOverLayColor: 1
-  _overlayColor: {r: 0.5019608, g: 0.23921569, b: 0, a: 1}
+  _overlayColor: {r: 0.12156863, g: 0.05882353, b: 0, a: 1}
   _tmpText: {fileID: 0}
