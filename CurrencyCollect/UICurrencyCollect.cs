@@ -59,13 +59,13 @@ namespace AboloLib
         //返回从爆发到第一个金币飞到目标点的总时间
         public float GetDelayFromStartToHit(int count)
         {
-            return count * (delay * timeToBoom) + timeToBoom + timeToCollect;
+            return count * delay + timeToBoom + timeToCollect;
         }
 
         //返回撞击目标的时间间隔
         public float GetHitingInterval()
         {
-            return delay * timeToCollect;
+            return delay;
         }
 
         public void ParticlesLifeConfiguration(List<Currency> currencyObj)
