@@ -15,27 +15,31 @@ namespace AboloLib
             parentSlider = transform.parent.GetComponent<Slider>();
             parentSlider.onValueChanged.AddListener((f) =>
             {
-                StopAllCoroutines();
-
-                //某些特殊效果需要再低值阶段，暂定低于5%隐藏填充条
-                if (hideFillOnLowValue)
+                if (parentSlider.gameObject.activeInHierarchy)
                 {
-                    var fill = transform.Find("Fill Area/Fill").gameObject;
-                    if (f <= 0.05f)
+                    StopAllCoroutines();
+
+                    //某些特殊效果需要再低值阶段，暂定低于5%隐藏填充条
+                    if (hideFillOnLowValue)
                     {
-                        fill.SetActive(false);
+                        float threshold = f / (float)parentSlider.maxValue;
+                        var fill = transform.Find("Fill Area/Fill").gameObject;
+                        if (threshold <= 0.05f)
+                        {
+                            fill.SetActive(false);
+                        }
+                        else
+                        {
+                            if (!fill.activeInHierarchy) fill.SetActive(true);
+                        }
                     }
-                    else
+
+                    float from = value;
+                    StartCoroutine(ArtAnimation.DoAnimation(0.5f, (t) =>
                     {
-                        if (!fill.activeSelf) fill.SetActive(true);
-                    }
+                        this.value = Mathf.Lerp(from, f, t * t);
+                    }, () => this.transform.Find("Fill Area/Fill").gameObject.SetActive(this.value != 0)));
                 }
-
-                float from = value;
-                StartCoroutine(ArtAnimation.DoAnimation(0.5f , (t) =>
-                {
-                    this.value = Mathf.Lerp(from , f , t * t);
-                },() => this.transform.Find("Fill Area/Fill").gameObject.SetActive(this.value != 0)));
             });
         }
     }
