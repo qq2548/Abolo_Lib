@@ -193,9 +193,9 @@ namespace AboloLib
             float timer = 0.0f;
             while (timer <= 1.0f)
             {
-                timer += Time.deltaTime / duration;
                 deltaAnimation?.Invoke(timer);
                 yield return null;
+                timer += Time.deltaTime / duration;
             }
             callback?.Invoke();
         }
@@ -213,9 +213,9 @@ namespace AboloLib
             float timer = 0.0f;
             while (timer <= 1.0f + count * interval)
             {
-                timer += Time.deltaTime / duration;
                 deltaAnimation?.Invoke(timer);
                 yield return null;
+                timer += Time.deltaTime / duration;
             }
             callback?.Invoke();
         }

@@ -12,6 +12,7 @@ namespace AboloLib
         protected override void Awake()
         {
             base.Awake();
+
             parentSlider = transform.parent.GetComponent<Slider>();
             parentSlider.onValueChanged.AddListener((f) =>
             {
@@ -24,23 +25,29 @@ namespace AboloLib
                     {
                         float threshold = f / (float)parentSlider.maxValue;
                         var fill = transform.Find("Fill Area/Fill").gameObject;
-                        if (threshold <= 0.05f)
-                        {
-                            fill.SetActive(false);
-                        }
-                        else
-                        {
-                            if (!fill.activeInHierarchy) fill.SetActive(true);
-                        }
+                        //if (threshold <= 0.05f)
+                        //{
+                        //    fill.SetActive(false);
+                        //}
+                        //else
+                        //{
+                        //    if (!fill.activeInHierarchy) fill.SetActive(true);
+                        //}
                     }
-
+                    if (hideFillOnLowValue) this.transform.Find("Fill Area/Fill").gameObject.SetActive(this.value >= 0.05f);
                     float from = value;
                     StartCoroutine(ArtAnimation.DoAnimation(0.5f, (t) =>
                     {
                         this.value = Mathf.Lerp(from, f, t * t);
-                    }, () => this.transform.Find("Fill Area/Fill").gameObject.SetActive(this.value != 0)));
+                    }, () => { if (hideFillOnLowValue) this.transform.Find("Fill Area/Fill").gameObject.SetActive(this.value >= 0.05f); }));
                 }
             });
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            value = parentSlider.value;
         }
     }
 }

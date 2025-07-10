@@ -92,11 +92,17 @@ namespace AboloLib
         /// <param name="ShootPos"></param>
         /// <param name="to"></param>
         /// <param name="action"></param>
-        public void BoombToCollectCurrency(int id, int count, Vector3 from, Vector3 ShootPos ,Vector3 to , bool castShadow = false ,Action action = null)
+        public List<Currency> BoombToCollectCurrency(int id, int count, Vector3 from, Vector3 ShootPos ,Vector3 to , bool castShadow = false ,Action action = null)
         {
-            currencyIndex = id;
-            currencies.Clear();
-            ani = StartCoroutine(_BoombToCollectCurrency(count, from, ShootPos, to, castShadow, action));
+            List<Currency> cs = new List<Currency>();
+            cs.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                var cur = CreateCurrencyObj(id);
+                cs.Add(cur);
+            }
+            ani = StartCoroutine(_BoombToCollectCurrency(cs, from, ShootPos, to, castShadow, action));
+            return cs;
         }
         /// <summary>
         /// 默认范围，随机方向发射，飞行道具
@@ -108,9 +114,14 @@ namespace AboloLib
         /// <param name="action"></param>
         public void BoombToCollectCurrency(int id , int count , Transform from ,Vector3 to , Action action= null)
         {
-            currencyIndex = id;
-            currencies.Clear();
-            ani = StartCoroutine(_BoombToCollectCurrency(count, from , to, action));
+            List<Currency> cs = new List<Currency>();
+            cs.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                var cur = CreateCurrencyObj(id);
+                cs.Add(cur);
+            }
+            ani = StartCoroutine(_BoombToCollectCurrency(cs, from , to, action));
         }
         /// <summary>
         /// 自定义范围，随机方向发射，飞行道具
@@ -124,21 +135,21 @@ namespace AboloLib
         public void BoombToCollectCurrency(int id, int count, Transform from, Vector3 to, float boomRange , Action action = null)
         {
             range = boomRange;
-            currencyIndex = id;
-            currencies.Clear();
-            ani = StartCoroutine(_BoombToCollectCurrency(count , from , to , action));
+            List<Currency> cs = new List<Currency>();
+            cs.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                var cur = CreateCurrencyObj(id);
+                cs.Add(cur);
+            }
+            ani = StartCoroutine(_BoombToCollectCurrency(cs , from , to , action));
         }
 
 
         //----------- boomb ani -----------------
 
-        IEnumerator _BoombToCollectCurrency(int count, Transform from ,Vector3 to , Action action = null)
+        IEnumerator _BoombToCollectCurrency(List<Currency> cs, Transform from ,Vector3 to , Action action = null)
         {
-            ///new 个Currency数组看看,成员字段不要存这个数组了
-            ///
-            List<Currency> cs = new List<Currency>();
-            cs.Clear();
-
             //-----shadow_test
 
             List<GameObject> shadows = new List<GameObject>();
@@ -148,9 +159,8 @@ namespace AboloLib
 
 
             //delay = timeToBoom / count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < cs.Count; i++)
             {
-                cs.Add(CreateCurrencyObj());
                 //ArtUtility.ConfigurePaticleSystem(currencies[i].transform.GetComponent<ParticleSystem>() , 0 , 1.0f , 100);
 
                 //-----shadow_test
@@ -172,13 +182,8 @@ namespace AboloLib
             ani = null;
         }
 
-        IEnumerator _BoombToCollectCurrency(int count, Vector3 from, Vector3 shootPos ,Vector3 to, bool castShadow = false , Action action = null)
+        IEnumerator _BoombToCollectCurrency(List<Currency> cs, Vector3 from, Vector3 shootPos ,Vector3 to, bool castShadow = false , Action action = null)
         {
-            ///new 个Currency数组看看,成员字段不要存这个数组了
-            ///
-            List<Currency> cs = new List<Currency>();
-            cs.Clear();
-
             //-----shadow_test
 
             List<GameObject> shadows = new List<GameObject>();
@@ -188,19 +193,14 @@ namespace AboloLib
 
 
             //delay = timeToBoom / count;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < cs.Count; i++)
             {
-                var cur = CreateCurrencyObj();
-                cs.Add(cur);
-                //ArtUtility.ConfigurePaticleSystem(currencies[i].transform.GetComponent<ParticleSystem>() , 0 , 1.0f , 100);
-                currencies.Add(cur);
                 //-----shadow_test
                 if(castShadow)
                  shadows.Add(Instantiate(shadowObj));
                 //-----shadow_test
             }
             yield return StartCoroutine(TargetPositionShootOut(cs, from, shootPos , shadows));
-            //canSet = false;
             yield return new WaitForSeconds(timeToStop);
             yield return StartCoroutine(FlyToPos(cs, to, shadows));
             action?.Invoke();
@@ -358,9 +358,9 @@ namespace AboloLib
             }
         }
 
-        Currency CreateCurrencyObj()
+        Currency CreateCurrencyObj(int id)
         {
-            Currency currency = (Currency)CurrencyCollectManager.instance.currencyFactory.Get(currencyIndex);
+            Currency currency = (Currency)CurrencyCollectManager.instance.currencyFactory.Get(id);
            currency.gameObject.SetActive(false);
             currency.transform.position = startPos;
             currency.transform.localScale = Vector3.one;

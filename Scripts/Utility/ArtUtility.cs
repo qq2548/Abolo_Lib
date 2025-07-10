@@ -466,6 +466,18 @@ namespace AboloLib
             }
         }
 
+        public static void ClearChildGameObjects(Transform root)
+        {
+            if (root.childCount > 0)
+            {
+                int index = root.childCount;
+                for (int i = 0; i < index ; i++)
+                {
+                    GameObject.DestroyImmediate(root.GetChild(0).gameObject);
+                }
+            }
+        }
+
         #region Animation Functions
         /// <summary>
         /// 浮点数曲线采样方法
