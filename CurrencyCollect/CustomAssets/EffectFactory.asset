@@ -16,3 +16,18 @@ MonoBehaviour:
   - name: TextPop
     discription: null
     prefab: {fileID: 7392088582556041365, guid: cafe92a8dbed0db47a693e7c58a19283, type: 3}
+  - name: DragTrail
+    discription: null
+    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+  - name: SpawnerCharged
+    discription: null
+    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+  - name: SpawnerActivated
+    discription: null
+    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+  - name: SpawnerBreak
+    discription: null
+    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+  - name: SpawnerClock
+    discription: null
+    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}

@@ -31,7 +31,7 @@ namespace AboloLib
 
         void ResetLookAtPos(Transform lookAtPos)
         {
-            Scene ArtScene = SceneManager.GetSceneByName("Art");
+            Scene ArtScene = SceneManager.GetSceneAt(0);
             GameObject CameraRoot = ArtScene.GetRootGameObjects().FirstOrDefault(s => s.name == "CameraRoot");
             lookAtPos.position = CameraRoot.transform.GetComponentInChildren<Camera>().transform.position;
         }

@@ -173,9 +173,7 @@ namespace AboloLib
             transform.LookAt(target);
         }
 
-        public static Vector2Int GetGridCoord
-            
-            (Vector3 originalPos , Vector3 mouseWorldPos ,Vector2 cellSize)
+        public static Vector2Int GetGridCoord(Vector3 originalPos , Vector3 mouseWorldPos ,Vector2 cellSize)
         {
             Vector2Int coord = new Vector2Int();
             Vector3 localMousePos = mouseWorldPos - originalPos;
@@ -183,6 +181,15 @@ namespace AboloLib
             coord.y = Mathf.FloorToInt(localMousePos.y/ cellSize.y);
             return coord;
         }
+        public static Vector2Int GetGridCoordXZ(Vector3 originalPos, Vector3 mouseWorldPos, Vector3 cellSize)
+        {
+            Vector2Int coord = new Vector2Int();
+            Vector3 localMousePos = mouseWorldPos - originalPos;
+            coord.x = Mathf.FloorToInt(localMousePos.x / cellSize.x);
+            coord.y = Mathf.FloorToInt(localMousePos.z / cellSize.z);
+            return coord;
+        }
+
 
         public static T[] ArrayRemoveObject<T>(T item , T[] array )
         {
@@ -346,7 +353,7 @@ namespace AboloLib
         /// </summary>
         /// <param name="resPath">资源路径</param>
         /// <returns></returns>
-        public static Sprite InstantiateSpriteFromResource(string resPath)
+        public static Sprite InstantiateSpriteFromResource(string resPath , Vector2 pivot = default)
         {
             Texture2D tex = Resources.Load<Texture2D>(resPath);
             if (tex == null)
@@ -354,7 +361,7 @@ namespace AboloLib
                 Debug.LogError($"{resPath} 此路径资源不存在，无法加载");
                 return null;
             }
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.zero);
+            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivot);
         }
 
         /// <summary>
@@ -476,6 +483,22 @@ namespace AboloLib
                     GameObject.DestroyImmediate(root.GetChild(0).gameObject);
                 }
             }
+        }
+
+        /// <summary>
+        /// 字符串转格式拓展方法
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static T ToEnum<T>(this string value , T defaultValue) where T : struct
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return defaultValue;
+            }
+            return Enum.TryParse(value, out T result) ? result : defaultValue;
         }
 
         #region Animation Functions
