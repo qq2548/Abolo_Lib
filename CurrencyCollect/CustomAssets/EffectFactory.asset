@@ -31,3 +31,12 @@ MonoBehaviour:
   - name: SpawnerClock
     discription: null
     prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+  - name: CanMerge
+    discription: null
+    prefab: {fileID: 6601456388794531048, guid: a110036985651704b9c69ff80e6d5f15, type: 3}
+  - name: MergedLvMax
+    discription: null
+    prefab: {fileID: 5264095693472183687, guid: dd902af4b0f695f48ac4c3309fb27e34, type: 3}
+  - name: ItemOnboard
+    discription: null
+    prefab: {fileID: 1695624278188215325, guid: 3ba7cfdde9412bc41b751dd71d69f7c2, type: 3}

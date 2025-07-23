@@ -46,6 +46,16 @@ namespace AboloLib
         {
             get => currencies;
         }
+
+        public static void SetCurrenciesSprite(List<Currency> currencies ,int id)
+        {
+            Sprite sprite = ArtUtility.InstantiateSpriteFromResource($"Sprites/MergeItems/Icon_{id.ToString("D3")}", Vector2.one * 0.5f);
+            foreach (var item in currencies)
+            {
+                item.transform.Find("particle_boom").GetComponent<ParticleSystem>().textureSheetAnimation.SetSprite(0, sprite);
+                item.transform.Find("particle_boom/particle_fly").GetComponent<ParticleSystem>().textureSheetAnimation.SetSprite(0, sprite);
+            }
+        }
         public override void Start()
         {
             //startPos = this.transform.position;
@@ -59,13 +69,13 @@ namespace AboloLib
         //返回从爆发到第一个金币飞到目标点的总时间
         public float GetDelayFromStartToHit(int count)
         {
-            return count * delay + timeToBoom + timeToCollect;
+            return count * (delay * timeToBoom) + timeToBoom + timeToCollect;
         }
 
         //返回撞击目标的时间间隔
         public float GetHitingInterval()
         {
-            return delay;
+            return delay * timeToCollect;
         }
 
         public void ParticlesLifeConfiguration(List<Currency> currencyObj)
@@ -112,7 +122,7 @@ namespace AboloLib
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="action"></param>
-        public void BoombToCollectCurrency(int id , int count , Transform from ,Vector3 to , Action action= null)
+        public List<Currency> BoombToCollectCurrency(int id , int count , Transform from ,Vector3 to , Action action= null)
         {
             List<Currency> cs = new List<Currency>();
             cs.Clear();
@@ -122,6 +132,7 @@ namespace AboloLib
                 cs.Add(cur);
             }
             ani = StartCoroutine(_BoombToCollectCurrency(cs, from , to, action));
+            return cs;
         }
         /// <summary>
         /// 自定义范围，随机方向发射，飞行道具
@@ -132,7 +143,7 @@ namespace AboloLib
         /// <param name="to"></param>
         /// <param name="boomRange"></param>
         /// <param name="action"></param>
-        public void BoombToCollectCurrency(int id, int count, Transform from, Vector3 to, float boomRange , Action action = null)
+        public List<Currency> BoombToCollectCurrency(int id, int count, Transform from, Vector3 to, float boomRange , Action action = null)
         {
             range = boomRange;
             List<Currency> cs = new List<Currency>();
@@ -143,6 +154,7 @@ namespace AboloLib
                 cs.Add(cur);
             }
             ani = StartCoroutine(_BoombToCollectCurrency(cs , from , to , action));
+            return cs;
         }
 
 

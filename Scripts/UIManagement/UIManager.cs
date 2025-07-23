@@ -109,5 +109,27 @@ namespace AboloLib
             }
         }
 
+        public static T GetInstanceUI<T>(Transform parent = null) where T : UI_Base
+        {
+            if (Initialized)
+            {
+                T ui = GameObject.Instantiate(GameUIDic[typeof(T)] , parent) as T;
+
+                if (ui != null)
+                {
+                    return ui;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                _instance.Init();
+                return GetInstanceUI<T>();
+            }
+        }
+
     }
 }

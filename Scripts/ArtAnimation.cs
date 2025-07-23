@@ -188,6 +188,25 @@ namespace AboloLib
         }
 
 
+        public static IEnumerator MatchedHint(Transform item1, Transform item2, AnimationCurve curve = null, float duration = 1.0f, Action callback = null)
+        {
+            float timer = 0.0f;
+            Vector3 targetPos1 = ((item2.position - item1.position) * 0.5f).normalized + item1.position;
+            Vector3 targetPos2 = ((item1.position - item2.position) * 0.5f).normalized + item2.position;
+            Vector3 startPos1 = item1.position;
+            Vector3 startPos2 = item2.position;
+            while (timer < 1.0f)
+            {
+                timer += Time.deltaTime / duration;
+                item1.position = Vector3.Lerp(startPos1, targetPos1, curve.Evaluate(timer));
+                item1.localScale = Vector3.one + Vector3.one * curve.Evaluate(timer);
+                item2.position = Vector3.Lerp(startPos2, targetPos2, curve.Evaluate(timer));
+                item2.localScale = Vector3.one + Vector3.one * curve.Evaluate(timer);
+                yield return null;
+            }
+        }
+
+
         public static IEnumerator DoAnimation(float duration , Action<float> deltaAnimation , Action callback = null)
         {
             float timer = 0.0f;

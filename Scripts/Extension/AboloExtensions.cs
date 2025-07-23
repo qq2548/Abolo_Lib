@@ -1,10 +1,22 @@
+#define USE_SPINE
+#define USE_TMPRO
+
+//根据项目情况注释
+//#undef USE_SPINE
+//#undef USE_TMPRO
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if USE_SPINE
 using Spine;
 using Spine.Unity;
+#endif
+#if USE_TMPRO
+using TMPro;
+#endif
 
 namespace AboloLib
 {
@@ -216,9 +228,11 @@ namespace AboloLib
                 spriteRenderer.color = Color.Lerp(from, to, curve.Evaluate(value));
             };
             return ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(duration, _deltaAnim, callback));
+            
         }
     }
 
+#if USE_SPINE
     public static class SkeletonAnimationExtension
     {
         /// <summary>
@@ -310,6 +324,22 @@ namespace AboloLib
             }
         }
     }
+#endif
+
+#if USE_TMPRO
+    public static class TextMeshProUGUIExtension
+    {
+        public static void DoTextAnimation(this TextMeshProUGUI tmp , int from , int to , float duration = 0.5f)
+        {
+            Action<float> _delta = (value) =>
+            {
+                int result =Mathf.RoundToInt(Mathf.Lerp(from, to, value));
+                tmp.text = result.ToString();
+            };
+            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(duration , _delta));
+        }
+    }
+#endif
 }
 
 

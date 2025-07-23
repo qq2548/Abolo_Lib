@@ -12,11 +12,11 @@ namespace AboloLib
         public MyObject[] prefabs;
 
         [SerializeField]
-        private bool recycle;
+        protected bool recycle;
 
-        private Scene poolScene;
+        protected Scene poolScene;
 
-        private List<MyObject>[] pools;
+        protected List<MyObject>[] pools;
 
         public int TotalCountInPool
         {
@@ -30,7 +30,7 @@ namespace AboloLib
                 return count;
             }
         }
-        public MyObject Get(int objectId = 0)
+        public virtual MyObject Get(int objectId = 0)
         {
             MyObject instance;
             if (recycle)
@@ -64,6 +64,7 @@ namespace AboloLib
             return instance;
         }
 
+
         public MyObject GetRandom()
         {
             return Get
@@ -72,7 +73,7 @@ namespace AboloLib
                 );
         }
 
-        private void CreatePools()
+        protected void CreatePools()
         {
             pools = new List<MyObject>[prefabs.Length];
             for (int i = 0; i < pools.Length; i++)

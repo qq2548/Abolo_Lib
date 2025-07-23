@@ -53,6 +53,7 @@ namespace AboloLib
         public virtual void Show(int canvasIndex = 3)
         {
             gameObject.transform.SetParent(UIManager.GetCanvas(canvasIndex));
+            gameObject.transform.localScale = Vector3.one;
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
             if (animCoroutine != null)
@@ -69,6 +70,7 @@ namespace AboloLib
                     RayCastBlock._instance.SetRayCastBlock(false);
                 }));
             }
+            RefreshUI();
         }
 
         public virtual void Hide()
@@ -138,7 +140,7 @@ namespace AboloLib
             Type mType = target.GetType();
 
             Dictionary<string , FieldInfo> filedInfoList = new Dictionary<string, FieldInfo>();
-            GetAllFieldInfo(mType, filedInfoList);
+            ArtUtility.GetAllFieldInfo(mType, filedInfoList);
             foreach (var item in filedInfoList)
             {
                 if (item.Value.IsDefined(typeof(UIBindAttribute), true))
@@ -185,26 +187,6 @@ namespace AboloLib
                 return null;
             }
 
-        }
-        public static void GetAllFieldInfo(Type type , Dictionary<string , FieldInfo> infoList)
-        {
-            if (infoList == null)
-            {
-                infoList = new Dictionary<string, FieldInfo>();
-            }
-            var infos = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (var item in infos)
-            {
-                if (!infoList.ContainsKey(item.Name))
-                {
-                    infoList.Add(item.Name, item);
-                }
-            }
-
-            if (type.BaseType != null)
-            {
-                GetAllFieldInfo(type.BaseType, infoList);
-            }
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -484,6 +485,56 @@ namespace AboloLib
                 }
             }
         }
+        /// <summary>
+        /// 获取类型的全部非静态变量
+        /// </summary>
+        /// <param name="type">目标类型</param>
+        /// <param name="infoList">用于存储结果的字典</param>
+        public static void GetAllFieldInfo(Type type, Dictionary<string, PropertyInfo> infoList)
+        {
+            if (infoList == null)
+            {
+                infoList = new Dictionary<string, PropertyInfo>();
+            }
+            var infos = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var item in infos)
+            {
+                if (!infoList.ContainsKey(item.Name))
+                {
+                    infoList.Add(item.Name, item);
+                }
+            }
+
+            if (type.BaseType != null)
+            {
+                GetAllFieldInfo(type.BaseType, infoList);
+            }
+        }
+        /// <summary>
+        /// 获取类型的全部非静态属性
+        /// </summary>
+        /// <param name="type">目标类型</param>
+        /// <param name="infoList">用于存储结果的字典</param>
+        public static void GetAllFieldInfo(Type type, Dictionary<string, FieldInfo> infoList)
+        {
+            if (infoList == null)
+            {
+                infoList = new Dictionary<string, FieldInfo>();
+            }
+            var infos = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var item in infos)
+            {
+                if (!infoList.ContainsKey(item.Name))
+                {
+                    infoList.Add(item.Name, item);
+                }
+            }
+
+            if (type.BaseType != null)
+            {
+                GetAllFieldInfo(type.BaseType, infoList);
+            }
+        }
 
         /// <summary>
         /// 字符串转格式拓展方法
@@ -584,6 +635,18 @@ namespace AboloLib
         {
             if (curve == null) curve = DecreaseLinearCurve;
             return Vector3.one * curve.Evaluate(timer);
+        }
+
+        public static Vector3 GetHintAnimPosition(Vector3 from , Vector3 to)
+        {
+            Vector3 pos = ((to - from) * 0.5f).normalized + from;
+            return pos;
+        }
+        public static Vector3 MatchedHint(Vector3 from , Vector3 to , float timer , out Vector3 scale)
+        {
+            var pos = Vector3.Lerp(from , to, CurveAdapter.AnimCurveDic[CurveFactory.CurveType.MatchScale].Evaluate(timer));
+            scale = Vector3.one + Vector3.one * CurveAdapter.AnimCurveDic[CurveFactory.CurveType.MatchScale].Evaluate(timer);
+            return pos;
         }
         #endregion
     }
