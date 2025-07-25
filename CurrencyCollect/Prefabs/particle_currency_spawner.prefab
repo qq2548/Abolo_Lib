@@ -48,7 +48,7 @@ MonoBehaviour:
   timeToBoom: 0.3
   timeToStop: 0
   timeToCollect: 0.5
-  delay: 0.1
+  delay: 0.2
   shadowObj: {fileID: 957112655866756988, guid: c09fcb8d33904274cacbfd80e05c7a90, type: 3}
   maxSortingLayer: 8000
   _blastCurve:

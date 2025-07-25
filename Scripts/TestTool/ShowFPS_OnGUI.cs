@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace AboloLib
 {
@@ -14,6 +15,7 @@ namespace AboloLib
 
         //显示FPS的数字
         public Text text;
+        public TextMeshProUGUI textMeshUGUI;
 
         private void Start()
         {
@@ -32,7 +34,8 @@ namespace AboloLib
 
                 timePassed = 0.0f;
                 m_FrameCount = 0;
-                text.text = Mathf.FloorToInt(m_FPS).ToString();
+                if (text != null) text.text = Mathf.FloorToInt(m_FPS).ToString();
+                if (textMeshUGUI != null) textMeshUGUI.text = Mathf.FloorToInt(m_FPS).ToString();
             }
         }
 

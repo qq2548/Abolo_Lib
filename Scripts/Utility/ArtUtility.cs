@@ -362,7 +362,7 @@ namespace AboloLib
                 Debug.LogError($"{resPath} 此路径资源不存在，无法加载");
                 return null;
             }
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivot);
+            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), pivot , 100.0f , 0 , SpriteMeshType.FullRect);
         }
 
         /// <summary>
