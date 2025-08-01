@@ -35,7 +35,7 @@ namespace AboloLib
                 timePassed = 0.0f;
                 m_FrameCount = 0;
                 if (text != null) text.text = Mathf.FloorToInt(m_FPS).ToString();
-                if (textMeshUGUI != null) textMeshUGUI.text = Mathf.FloorToInt(m_FPS).ToString();
+                if (textMeshUGUI != null) textMeshUGUI.text = $"FPS:{Mathf.FloorToInt(m_FPS)}";
             }
         }
 

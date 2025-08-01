@@ -94,7 +94,7 @@ namespace AboloLib
 
         //--------------- function ------------
         /// <summary>
-        /// 自定义喷发发射位置，飞行道具
+        /// 自定义喷发发射位置，飞行道具 ，回调执行的时机不是飞行完精准碰撞的那一刻（会延迟一点），需要精确时机用 GetDelayFromStartToHit 获取延迟
         /// </summary>
         /// <param name="id"></param>
         /// <param name="count"></param>
@@ -115,7 +115,7 @@ namespace AboloLib
             return cs;
         }
         /// <summary>
-        /// 默认范围，随机方向发射，飞行道具
+        /// 默认范围，随机方向发射，飞行道具，回调执行的时机不是飞行完精准碰撞的那一刻（会延迟一点），需要精确时机用 GetDelayFromStartToHit 获取延迟
         /// </summary>
         /// <param name="id"></param>
         /// <param name="count"></param>
@@ -135,7 +135,7 @@ namespace AboloLib
             return cs;
         }
         /// <summary>
-        /// 自定义范围，随机方向发射，飞行道具
+        /// 自定义范围，随机方向发射，飞行道具，回调执行的时机不是飞行完精准碰撞的那一刻（会延迟一点），需要精确时机用 GetDelayFromStartToHit 获取延迟
         /// </summary>
         /// <param name="id"></param>
         /// <param name="count"></param>
@@ -368,6 +368,8 @@ namespace AboloLib
                 }
                 
             }
+
+            Debug.Log("Fly Done!!!!!!!!!!!!!!!!!!!!");
         }
 
         Currency CreateCurrencyObj(int id)

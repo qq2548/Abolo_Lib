@@ -216,6 +216,7 @@ namespace AboloLib
                 yield return null;
                 timer += Time.deltaTime / duration;
             }
+            deltaAnimation?.Invoke(1.0f);
             callback?.Invoke();
         }
 
