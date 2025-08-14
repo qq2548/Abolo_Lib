@@ -40,3 +40,9 @@ MonoBehaviour:
   - name: ItemOnboard
     discription: null
     prefab: {fileID: 1695624278188215325, guid: 3ba7cfdde9412bc41b751dd71d69f7c2, type: 3}
+  - name: ItemMerged_Normal
+    discription: null
+    prefab: {fileID: 1695624278188215325, guid: 31a25da0ee8a3704c88704f208b0c1a8, type: 3}
+  - name: ItemMerged_MaxLv
+    discription: null
+    prefab: {fileID: 5262322686414614011, guid: 8a320a0bf79cd22438fbe974fd421016, type: 3}
