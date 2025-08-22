@@ -156,7 +156,7 @@
 				fixed maskColor = color.a * color.b * (1.0 - subMask + subColor);
 				
                     color.rgb = saturate(color.rgb + UNITY_ACCESS_INSTANCED_PROP(Props, _Color).rgb 
-					                    * subColor * gray * 2.5 * maskColor);
+					                    * subColor * gray );
 
                 //#endif
 				color *= IN.Color;

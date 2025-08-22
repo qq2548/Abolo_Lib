@@ -14519,7 +14519,7 @@ GameObject:
   - component: {fileID: 1695624278188215322}
   - component: {fileID: 8684701403274050233}
   m_Layer: 0
-  m_Name: particle_item_lv2
+  m_Name: particle_item_lv
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

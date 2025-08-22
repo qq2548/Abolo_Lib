@@ -21,16 +21,16 @@ MonoBehaviour:
     prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
   - name: SpawnerCharged
     discription: null
-    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+    prefab: {fileID: 5264095693472183687, guid: f891cccb64ccd934699eb805e24c17c1, type: 3}
   - name: SpawnerActivated
     discription: null
-    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+    prefab: {fileID: 1561256450622410756, guid: 2e3c94ff45f304b4fba534a0f065cb2a, type: 3}
   - name: SpawnerBreak
     discription: null
     prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
   - name: SpawnerClock
     discription: null
-    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+    prefab: {fileID: 8228497593623483270, guid: 68e53980719232346a1897f4e7a5e149, type: 3}
   - name: CanMerge
     discription: null
     prefab: {fileID: 6601456388794531048, guid: a110036985651704b9c69ff80e6d5f15, type: 3}
@@ -46,3 +46,6 @@ MonoBehaviour:
   - name: ItemMerged_MaxLv
     discription: null
     prefab: {fileID: 5262322686414614011, guid: 8a320a0bf79cd22438fbe974fd421016, type: 3}
+  - name: ItemEnergyMark
+    discription: null
+    prefab: {fileID: 5264095693472183687, guid: f891cccb64ccd934699eb805e24c17c1, type: 3}

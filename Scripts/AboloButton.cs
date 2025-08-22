@@ -22,6 +22,13 @@ namespace AboloLib
             get => onPointerExit;
             set => onPointerExit = value;
         }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            transform.TryGetComponent(out _animation);
+        }
+
         public override void OnPointerEnter(PointerEventData eventData)
         {
             base.OnPointerEnter(eventData);

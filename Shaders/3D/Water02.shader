@@ -26,6 +26,8 @@ Shader "sample3d/CustomWater02"
 		_DepthScalor("DepthScalor",Range(0,1.0)) = 1.0
 
 		_DepthOffset("DepthOffset",Range(0,1.0)) = 1.0
+
+		_testFac("TestFactor",Range(0.0 , 100.0)) = 0.0
 		
 	}
 	SubShader 
@@ -116,13 +118,15 @@ Shader "sample3d/CustomWater02"
 			float _DepthScalor;
 			float _DepthOffset;
 
+			float _testFac;
+
 			sampler2D _ReflectionTex;
 
 			half4 frag(v2f IN) : SV_Target
 			{
 				UNITY_SETUP_INSTANCE_ID(IN);
 				//时间变量
-				half TimeFac = ABL_FixTime(_Time.y);
+				half TimeFac = ABL_FixTime(_Time.y) * 0.5;
 				
 				//波纹计算
 				half2 uv = ABL_WaveMotion(_MainTex_ST , IN.uv , _WaveFrequency , _WaveSpeed , _WaveHeight , TimeFac);

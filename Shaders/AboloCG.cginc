@@ -102,12 +102,12 @@
 	float ABL_DouddleChannelCross(sampler2D _Tex , float2 uv , float TimeFactor , float3 channelWeight)
 	{
 		float2 suv1 = uv + TimeFactor * 0.01;
-		float2 suv2 = uv  - TimeFactor * 0.01 - 0.5; 
+		float2 suv2 = uv  - TimeFactor * 0.01 - 0.1; 
 		float3 c1 = tex2D(_Tex, suv1).rgb;
 		float3 c2 = tex2D(_Tex, suv2).rgb;
 		float sparkle1 = dot(c1 , channelWeight);
 		float sparkle2 = dot(c2 , channelWeight);
-		float sparcle = clamp((pow(sparkle1 * sparkle2 , 2))*2.0 , 0.0 , 2.0);
+		float sparcle = clamp((pow(sparkle1 * sparkle2 , 2))*2.0 , 0.0 , 1.0);
 		return sparcle;
 	}
 

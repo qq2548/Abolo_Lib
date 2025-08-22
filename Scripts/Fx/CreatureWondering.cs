@@ -30,7 +30,7 @@ namespace AboloLib
         public void Awake()
         {
             animator = GetComponentInChildren<Animator>(true);
-            _myClips = animator.runtimeAnimatorController.animationClips;
+            if (animator != null) _myClips = animator.runtimeAnimatorController.animationClips;
             root = transform.Find("main_root");
             //Debug.Log(this.name +  root.position);
         }
