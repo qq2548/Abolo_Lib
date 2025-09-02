@@ -17,6 +17,14 @@ namespace AboloLib
             hotspot_Clean_Leaves_Twice,
             hotspot_BrandNew,
             Newitem_Generate_Star,
+            Merge_Normal,
+            Merge_MaxLv,
+            Merge_Pop,
+            Merge_Drop,
+            Merge_Open,
+            Merge_Close,
+            Merge_BGM_1,
+            Battle_BGM_1,
 #if _ARTEST_PRESENTATION
             BGM,
 #endif
@@ -28,7 +36,7 @@ namespace AboloLib
     [System.Serializable]
     public class AudioPreset
     {
-        public AudioFactory.AudioName _mName;
+        public string _mName;
         public AudioClip  mAudioClip;
         public float  delay = 0.5f;
     }

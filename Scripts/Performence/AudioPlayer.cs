@@ -48,5 +48,11 @@ namespace AboloLib
             }
 #endif
         }
+
+        public void PlayBgm(string bgmName)
+        {
+            var clip = AudioDic[bgmName];
+            Audio_Source.clip = clip;
+        }
     }
 }

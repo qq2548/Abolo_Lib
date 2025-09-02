@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c13aa0c1ee353f47a4be43adf67e2d1, type: 3}
+  m_Name: AudioFactory
+  m_EditorClassIdentifier: 
+  AudioPresets:
+  - _mName: Merge_Normal
+    mAudioClip: {fileID: 8300000, guid: 9a87d9ca198bdae41b6f1de851e25346, type: 3}
+    delay: 0
+  - _mName: Merge_MaxLv
+    mAudioClip: {fileID: 8300000, guid: 947cb569cdada854fa7f597324c947ac, type: 3}
+    delay: 0
+  - _mName: Merge_Pop
+    mAudioClip: {fileID: 8300000, guid: 3380c70ac3b62864ea0519b466f5d229, type: 3}
+    delay: 0
+  - _mName: Merge_Drop
+    mAudioClip: {fileID: 8300000, guid: 3b46bb8fcab6ed441b0c1940adb5749a, type: 3}
+    delay: 0
+  - _mName: Merge_Open
+    mAudioClip: {fileID: 8300000, guid: c27992686c714c445a62f64ad2a8de26, type: 3}
+    delay: 0
+  - _mName: Merge_Close
+    mAudioClip: {fileID: 8300000, guid: a72ecea60ff670a47a054fc40f781ac2, type: 3}
+    delay: 0
+  - _mName: Merge_BGM_1
+    mAudioClip: {fileID: 8300000, guid: 235d694943baad6419fe7b206162f4de, type: 3}
+    delay: 0
+  - _mName: Battle_BGM_1
+    mAudioClip: {fileID: 8300000, guid: 4f3ca3309c9d6074a95740ff185822b1, type: 3}
+    delay: 0

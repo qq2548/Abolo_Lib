@@ -27,7 +27,7 @@ MonoBehaviour:
     prefab: {fileID: 1561256450622410756, guid: 2e3c94ff45f304b4fba534a0f065cb2a, type: 3}
   - name: SpawnerBreak
     discription: null
-    prefab: {fileID: 5616788248202056722, guid: 692af0716ae17d846962d5b613c4285b, type: 3}
+    prefab: {fileID: 4039130554609991936, guid: a486bc2c6b6d6444c9ce51a37f038c16, type: 3}
   - name: SpawnerClock
     discription: null
     prefab: {fileID: 8228497593623483270, guid: 68e53980719232346a1897f4e7a5e149, type: 3}

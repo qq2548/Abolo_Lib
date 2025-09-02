@@ -76,7 +76,7 @@ namespace AboloLib
 #endif
             }
             //音效转接器初始化
-            AudioPlayerAdapter.Init(AudioPlayer._instance, () => AudioDic); ;
+            AudioPlayerAdapter.Init(() => AudioDic , () =>GetComponent<AudioSource>() , () => GetComponent<AudioSource>());
         }
 
     }

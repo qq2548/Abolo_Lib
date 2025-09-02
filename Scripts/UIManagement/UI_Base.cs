@@ -29,6 +29,13 @@ namespace AboloLib
         protected Button CloseBtn = null;
         private UI_CustomFx customFx = null;
         private Coroutine animCoroutine = null;
+
+        Action onOpenAnimationDone;
+        public Action OnOpenAniamtionDone
+        {
+            get => onOpenAnimationDone;
+            set => onOpenAnimationDone = value;
+        }
         private bool isReuse = false;
         public bool IsReuse
         {
@@ -50,7 +57,7 @@ namespace AboloLib
 
         }
 
-        public virtual void Show(int canvasIndex = 3)
+        public virtual void Show(int canvasIndex = 3 , bool mute = false)
         {
             gameObject.transform.SetParent(UIManager.GetCanvas(canvasIndex));
             gameObject.transform.localScale = Vector3.one;
@@ -59,6 +66,7 @@ namespace AboloLib
             if (animCoroutine != null)
             {
                 ScheduleAdapter.Schedual.StopCoroutine(animCoroutine);
+                OnOpenAniamtionDone?.Invoke();
             }
             //播放动画时，屏蔽交互操作 
             if (transform.TryPlayAnimation(PageOpenAnimName))
@@ -68,9 +76,15 @@ namespace AboloLib
                 animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay , () =>
                 {
                     RayCastBlock._instance.SetRayCastBlock(false);
+                    OnOpenAniamtionDone?.Invoke();
                 }));
             }
             RefreshUI();
+
+            if (!mute)
+             AudioPlayerAdapter.PlayAudio("Merge_Open");
+
+            Debug.Log($"Show Window {this.name}");
         }
 
         public virtual void Hide()
@@ -95,6 +109,8 @@ namespace AboloLib
             {
                 if (gameObject.activeSelf) gameObject.SetActive(false);
             }
+
+            //AudioPlayerAdapter.PlayAudio("Merge_Close");
         }
 
         public virtual void Setup()
