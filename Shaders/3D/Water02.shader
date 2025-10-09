@@ -171,7 +171,8 @@ Shader "sample3d/CustomWater02"
 				foamLine = foamLine * subCol.b + saturate(pow(foamLine11 , 2) * 4.0) ;
 				half3 shadow = shadowFac * _ShadowColor.rgb;
 				waveColor.rgb *= shadow;
-				half4 color =  saturate(waveColor) + foamLine * _EdgeColor + simLight *_HighLightColor* ABL_DouddleChannelCross(_SubTex , IN.stretchUV , TimeFac , half3(0.0 , 1.0 , 0.0));
+				half4 color =  saturate(waveColor) + foamLine * _EdgeColor + simLight *_HighLightColor * 
+					ABL_DouddleChannelCross(_SubTex , IN.stretchUV , fmod(TimeFac , 44) , half3(0.0 , 1.0 , 0.0));
 
 				half4 tesColor = half4(1,1,1,1);
 				tesColor.rgb =  1 - dd +  step(-1 , dd);
@@ -182,6 +183,8 @@ Shader "sample3d/CustomWater02"
 
 			ENDCG
 		}
+
+
 
 
 		

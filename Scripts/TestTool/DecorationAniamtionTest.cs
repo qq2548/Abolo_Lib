@@ -324,6 +324,18 @@ namespace AboloLib
             //获取场景数据
             Init();
             //解锁房顶节点
+            UnlockCovers();
+            _nodes_cover.Clear();
+            _nodes.Clear();
+        }
+
+        public void UnlockCovers()
+        {
+            if (_nodes_cover == null || _nodes_cover.Count == 0)
+            {
+                return;
+            }
+            //解锁房顶节点
             for (int c = 0; c < _nodes_cover.Count; c++)
             {
                 Animator[] animators = _nodes_cover[c].GetComponentsInChildren<Animator>(true);
@@ -332,8 +344,6 @@ namespace AboloLib
                     item.gameObject.SetActive(false);
                 }
             }
-            _nodes_cover.Clear();
-            _nodes.Clear();
         }
 
         /// <summary>

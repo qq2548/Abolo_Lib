@@ -32,7 +32,7 @@ namespace AboloLib
         public override void Init()
         {
             base.Init();
-            AudioDic = AudioPlayerAdapter.AudiosDic;
+            AudioDic = CustomAssetManager.AudioDic;
         }
 
         public void PlayAudio(string audioName)

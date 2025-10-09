@@ -7,28 +7,28 @@ namespace AboloLib
     public class CustomAssetManager : AboloSingleton<CustomAssetManager>
     {
         [SerializeField]
-        protected CurveFactory curveFactory;
-        public CurveFactory CurveFactory
+        protected static CurveFactory curveFactory;
+        public static CurveFactory CurveFactory
         {
             get => curveFactory;
             set => curveFactory = value;
         }
-        protected Dictionary<CurveFactory.CurveType, AnimationCurve> animCurveDic;
+        protected static Dictionary<CurveFactory.CurveType, AnimationCurve> animCurveDic;
         /// <summary>
         /// 曲线字典
         /// </summary>
-        public Dictionary<CurveFactory.CurveType, AnimationCurve> AnimCurveDic
+        public static Dictionary<CurveFactory.CurveType, AnimationCurve> AnimCurveDic
         {
             get => animCurveDic;
             set => animCurveDic = value;
         }
         [SerializeField]
-        protected AudioFactory audioFactory;
-        protected Dictionary<string, AudioClip> audioDic;
+        protected static AudioFactory audioFactory;
+        protected static Dictionary<string, AudioClip> audioDic;
         /// <summary>
         /// 音效字典
         /// </summary>
-        public Dictionary<string, AudioClip> AudioDic
+        public static Dictionary<string, AudioClip> AudioDic
         {
             get => audioDic;
             set => audioDic = value;
@@ -57,7 +57,7 @@ namespace AboloLib
             }
             //曲线转接器初始化
             CurveAdapter.Init(() => { return AnimCurveDic; } , () => { return CurveFactory; });
-            //加载音效预设资源
+            //加载音效预设资源，一次性加载所有音效音乐到内存，后期需要优化，走配置表，动态加载和卸载音效资源
             if (audioFactory == null)
             {
                 audioFactory = Resources.Load<AudioFactory>("CustomAssets/AudioPresets");
@@ -75,8 +75,6 @@ namespace AboloLib
                 Debug.Log("---------------AudioFactory 字典赋值完毕");
 #endif
             }
-            //音效转接器初始化
-            AudioPlayerAdapter.Init(() => AudioDic , () =>GetComponent<AudioSource>() , () => GetComponent<AudioSource>());
         }
 
     }

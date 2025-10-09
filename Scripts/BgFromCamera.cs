@@ -64,7 +64,7 @@ namespace AboloLib
             grabCamera.targetTexture = renderTexture;
             grabCamera.Render();
             mDrawMat.SetTexture("_MainTex" , renderTexture);
-            mDrawMat.SetFloat("_Range" , 4.1f);
+            //mDrawMat.SetFloat("_Range" , 4.1f);
             renderTexture2 = RenderTexture.GetTemporary(renderTexture.width, renderTexture.height);
             Graphics.Blit(renderTexture, renderTexture2, mDrawMat);
             grabCamera.targetTexture = null;

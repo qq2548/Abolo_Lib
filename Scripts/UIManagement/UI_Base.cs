@@ -81,7 +81,7 @@ namespace AboloLib
             }
             RefreshUI();
 
-            if (!mute && AudioPlayerAdapter.AudiosDic.ContainsKey("UI_PageOpen_Common")) AudioPlayerAdapter.PlayAudio("UI_PageOpen_Common");
+            if (!mute) AudioPlayerAdapter.PlayAudio("UI_PageOpen_Common");
 
             Debug.Log($"Show Window {this.name}");
         }

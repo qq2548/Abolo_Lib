@@ -14,76 +14,29 @@ public interface IAudioAdapter
 /// </summary>
 public static class AudioPlayerAdapter
 {
-    //private static IAudioAdapter mAdapter;
-    public static Func<Dictionary<string, AudioClip>> GetAudioDic;
-    public static Func<AudioSource> GetSoundAudioSource;
-    public static Func<AudioSource> GetBgmAudioSource;
-
-    private static float mainVolume = 1.0f;
-    public static float MainAudionVolume
+    public static Func<IAudioAdapter> GetAudioAdapter;
+    public static void Init(Func<IAudioAdapter> func)
     {
-        get => mainVolume;
-        set
-        {
-            mainVolume = value;
-            SoundAudioSource.volume = SoundAudionVolume * value;
-            BgmAudioSource.volume = BgmAudionVolume * value;
-        }
-    }
-    private static float soundVolume = 0.5f;
-    public static float SoundAudionVolume
-    {
-        get => soundVolume;
-        set
-        {
-            soundVolume = value;
-            SoundAudioSource.volume = soundVolume * MainAudionVolume;
-        }
-    }
-    private static float bgmVolume = 0.5f;
-    public static float BgmAudionVolume
-    {
-        get => bgmVolume;
-        set
-        {
-            bgmVolume = value;
-            BgmAudioSource.volume = bgmVolume * MainAudionVolume;
-        }
+        GetAudioAdapter = func;
     }
 
-    public static void Init( Func<Dictionary<string, AudioClip>> func , Func<AudioSource> func1 , Func<AudioSource> func2)
+    public static IAudioAdapter Adapter
     {
-        GetAudioDic = func;
-        GetSoundAudioSource = func1;
-        GetBgmAudioSource = func2;
+        get => GetAudioAdapter?.Invoke();
     }
 
-    public static Dictionary<string , AudioClip> AudiosDic
-    {
-        get => GetAudioDic?.Invoke();
-    }
-
-    public static AudioSource SoundAudioSource
-    {
-        get => GetSoundAudioSource?.Invoke();
-    }
-
-    public static AudioSource BgmAudioSource
-    {
-        get => GetBgmAudioSource?.Invoke();
-    }
 
     public static void  PlayAudio(string audioName)
     {
-        if (SoundAudioSource != null) SoundAudioSource.PlayOneShot(AudiosDic[audioName]);
+        if (Adapter != null) Adapter.PlayAudio(audioName);
     }
+
 
     public static void PlayBGM(string audioName)
     {
-        if (BgmAudioSource != null)
+        if (Adapter != null)
         {
-            BgmAudioSource.clip = AudiosDic[audioName];
-            BgmAudioSource.Play();
+            Adapter.PlayBgm(audioName);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace AboloLib
     public class AboloButton : Button
     {
         [SerializeField] Animation _animation;
+        [SerializeField] Animator _animator;
         UnityEvent onPointerEnter = new UnityEvent();
         public UnityEvent OnEnter
         {
@@ -27,6 +28,7 @@ namespace AboloLib
         {
             base.Awake();
             transform.TryGetComponent(out _animation);
+            transform.TryGetComponent(out _animator);
         }
 
         public override void OnPointerEnter(PointerEventData eventData)
@@ -34,11 +36,21 @@ namespace AboloLib
             base.OnPointerEnter(eventData);
             var sgo = transform.Find("root/selected");
             if (sgo != null) sgo.gameObject.SetActive(true);
+
+            var sgo_bg = transform.Find("root/selected_bg");
+            if (sgo_bg != null) sgo_bg.gameObject.SetActive(true);
+
             if (_animation != null)
             {
                 if (_animation.isPlaying) _animation.Stop();
                 _animation.Play("ani_selectable_enter");
             }
+
+            if (_animator != null && !_animator.GetBool("enter"))
+            {
+                _animator.SetBool("enter" , true);
+            }
+
             OnEnter?.Invoke();
         }
 
@@ -47,12 +59,22 @@ namespace AboloLib
             base.OnPointerExit(eventData);
             var sgo = transform.Find("root/selected");
             if (sgo != null) sgo.gameObject.SetActive(false);
+
+            var sgo_bg = transform.Find("root/selected_bg");
+            if (sgo_bg != null) sgo_bg.gameObject.SetActive(false);
+
             if (_animation != null)
             {
                 if (_animation.isPlaying) _animation.Stop();
                 _animation.Play("ani_selectable_exit");
                 _animation.PlayQueued("ani_selectable_idle");
             }
+
+            if (_animator != null && _animator.GetBool("enter"))
+            {
+                _animator.SetBool("enter", false);
+            }
+
             OnExit?.Invoke();
         }
     }
