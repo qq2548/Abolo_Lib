@@ -169,9 +169,22 @@ namespace AboloLib
         }
 
         //图片 transform 朝向目标 transform
-        public static void LookAtTarget(Transform transform , Transform target)
+        public static void LookAtTarget(Transform transform, Transform target)
         {
             transform.LookAt(target);
+        }
+        /// <summary>
+        /// 修复渲染器朝向
+        /// </summary>
+        /// <param name="root">需要修复的根节点</param>
+        /// <param name="target">看向的目标</param>
+        public static void FixRendererFoward(Transform root , Transform target)
+        {
+            var renderers = root.GetComponentsInChildren<Renderer>();
+            foreach (var renser in renderers)
+            {
+                LookAtTarget(renser.transform, target);
+            }
         }
 
         public static Vector2Int GetGridCoord(Vector3 originalPos , Vector3 mouseWorldPos ,Vector2 cellSize)

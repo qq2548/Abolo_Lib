@@ -14,6 +14,7 @@ Shader "sample3d/CustomWater02"
 		_WaveFrequency("Wave Frequency",Range(1,100)) = 50
 		_WaveSpeed("Wave Speed",Range(0,10)) = 1
 
+		_VertexAnimFac("VertexAnimFactor",Range(0,1)) = 0.5
 
 		_MainColor("Main Color", Color) = (1,1,1,1)
 		_HighLightColor("HighLightColor", Color) = (1,1,1,1)
@@ -81,13 +82,13 @@ Shader "sample3d/CustomWater02"
 				half4 Color:COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
-
+			half _VertexAnimFac;
 			v2f vert(appdata i)
 			{
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(i);
 				o.vertex = UnityObjectToClipPos(i.vertex);
-				o.vertex .y += _CosTime.z * 0.5;
+				o.vertex .y += _CosTime.z * _VertexAnimFac;
 				o.uv =TRANSFORM_TEX(i.uv , _MainTex);
 				o.stretchUV = TRANSFORM_TEX(i.uv , _SubTex);
 				o.screenPos =  ComputeScreenPos(o.vertex); 
