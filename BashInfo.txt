@@ -12,6 +12,10 @@ git submodule add <子模块仓库地址> <子模块本地路径>
 git submodule init
 //子模块更新
 git submodule update
+//删除子模块缓存
+git rm --cached <子模块本地路径>
+//删除子模块本地文件
+rm -rf <子模块本地路径>
 
 配置相关
 git config --global user.name “Your Name”：设置全局用户名。
