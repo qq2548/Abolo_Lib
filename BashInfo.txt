@@ -1,4 +1,17 @@
 git使用流程：
+//生成公钥
+ssh-keygen -t rsa -b 4096 -C "账号" -f 文件名
+//用公钥在github设置里生成私钥
+//bash验证公钥
+ssh -T git@github.com
+//克隆仓库到本地
+git clone <仓库地址>
+//添加子模块
+git submodule add <子模块仓库地址> <子模块本地路径>
+//子模块初始化
+git submodule init
+//子模块更新
+git submodule update
 
 配置相关
 git config --global user.name “Your Name”：设置全局用户名。
