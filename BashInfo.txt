@@ -1,3 +1,5 @@
+git使用流程：
+
 配置相关
 git config --global user.name “Your Name”：设置全局用户名。
 git config --global user.email “youremail@example.com”：设置全局用户邮箱。
@@ -28,3 +30,6 @@ git checkout – ：撤销对某个文件的改动，将其恢复到上一次提
 git revert ：撤销指定的提交，但保留历史记录（适合已推送到远程仓库的提交）。
 git reset --soft ：回退到某个提交，并保留修改内容。
 git reset --hard ：彻底回退到某个提交，并丢弃所有改动（谨慎使用）。
+
+
+
