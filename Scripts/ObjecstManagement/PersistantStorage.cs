@@ -7,7 +7,7 @@ namespace AboloLib
 {
     public class PersistantStorage : AboloSingleton<PersistantStorage>
     {
-        [SerializeField] string _mSaveName = "Abolo";
+        [SerializeField]public string _mSaveName = "Abolo";
 
         private  string savePath;
 

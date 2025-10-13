@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: a20c1285f53b4164ea128518101fe413, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - WORLDBENDING_ON
   m_InvalidKeywords:
   - _FLOWLIGHT_ON
   - _UVFLOW_ON
@@ -47,7 +48,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 42afbf5db706516418d719f0f2e9292f, type: 3}
-        m_Scale: {x: 20, y: 20}
+        m_Scale: {x: 30, y: 30}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -67,7 +68,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SubTex:
         m_Texture: {fileID: 2800000, guid: 53f244d772d241c49852c9b801552f7b, type: 3}
-        m_Scale: {x: 3, y: 3}
+        m_Scale: {x: 4, y: 4}
         m_Offset: {x: 0, y: 0}
     - _Tex2D:
         m_Texture: {fileID: 2800000, guid: f49fbabb1ae8a98468e98f4d0c70c79d, type: 3}
@@ -83,6 +84,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - WorldBending: 1
     - _BumpScale: 1
     - _Cull: 0
     - _Cutoff: 0.5
@@ -120,6 +122,8 @@ Material:
     - _UVFlow: 1
     - _UVFlowSpeed: 0
     - _UVSec: 0
+    - _VertexAnimFac: 0.5
+    - _VertexCurveViewFac: 0
     - _VerticalSpeed: 0.01
     - _WaveFrequency: 20.2
     - _WaveHeight: 0.1

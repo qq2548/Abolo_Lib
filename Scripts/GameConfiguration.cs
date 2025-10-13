@@ -35,5 +35,9 @@ namespace AboloLib
         /// 游戏道具预制体资源路径配置
         /// </summary>
         public string GameItemFactoryPath;        
+        /// <summary>
+        /// 游戏存档名称配置
+        /// </summary>
+        public string GameSaveDataName;       
     }
 }

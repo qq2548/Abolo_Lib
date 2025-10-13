@@ -15,6 +15,7 @@ Material:
   m_InvalidKeywords:
   - _FLOWLIGHT_ON
   - _UVFLOW_ON
+  - _WORLDBENDING_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -83,6 +84,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - WorldBending: 0
     - _BumpScale: 1
     - _Cull: 0
     - _Cutoff: 0.5
@@ -121,10 +123,12 @@ Material:
     - _UVFlowSpeed: 0
     - _UVSec: 0
     - _VertexAnimFac: 0
+    - _VertexCurveViewFac: 0.0198
     - _VerticalSpeed: 0.01
     - _WaveFrequency: 20.2
     - _WaveHeight: 0.1
     - _WaveSpeed: 1
+    - _WorldBending: 1
     - _XFlowSpeed: 0.14
     - _YFlowSpeed: 0.14
     - _ZWrite: 1
