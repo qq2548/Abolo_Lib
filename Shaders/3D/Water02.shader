@@ -103,7 +103,7 @@ Shader "sample3d/CustomWater02"
 				//test end
 				o.vertex = UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
 			#endif
-				//o.vertex .y += _CosTime.z * _VertexAnimFac;
+				o.vertex .y += _CosTime.z * _VertexAnimFac;
 				o.uv =TRANSFORM_TEX(i.uv , _MainTex);
 				o.stretchUV = TRANSFORM_TEX(i.uv , _SubTex);
 				o.screenPos =  ComputeScreenPos(o.vertex); 
