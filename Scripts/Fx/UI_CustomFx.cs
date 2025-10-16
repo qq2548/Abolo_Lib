@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Spine.Unity;
+using System.Threading;
 
 namespace AboloLib
 {
@@ -126,26 +127,6 @@ namespace AboloLib
                 //修复Animator冲突，临时禁用掉，动画结束的回调会重新激活
                 DisableConflictAnimators();
                 _onAnimationDone += EnableConflictAnimators;
-
-#if _ARTEST_PRESENTATION
-                if (this.gameObject.name == "UI_LimitPack")
-                {
-                    try
-                    {
-                        Animation unlocktarget = transform.Find("root/obj_rewardRoot").GetChild(2).
-                        GetComponent<Animation>();
-                        _onAnimationDone += () =>
-                        {
-                            if (unlocktarget != null)
-                                unlocktarget.Play("ani_img_unlock");
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Log(e.Message + "限时礼包奖励解锁动画演示用临时代码");
-                    }
-                }
-#endif
             }
         }
         /// <summary>
@@ -347,8 +328,13 @@ namespace AboloLib
             {
                 if (item != null && item.gameObject.activeInHierarchy)
                 {
-                    item.Play();
-                    yield return new WaitForSeconds(timeOffset);
+                    var canPlay = ArtUtility.CheckElementInsideScreen(UICanvasAdapter.CurrentCanvas.worldCamera, item.gameObject);
+                    Debug.LogWarning(canPlay);
+                    if(canPlay)
+                    {
+                        item.Play();
+                        yield return new WaitForSeconds(timeOffset);
+                    }
                 }
             }
 #if _ARTEST_PRESENTATION

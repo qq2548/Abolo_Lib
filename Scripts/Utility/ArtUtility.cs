@@ -173,6 +173,14 @@ namespace AboloLib
         {
             transform.LookAt(target);
         }
+
+        public static bool CheckElementInsideScreen(Camera camera , GameObject go)
+        {
+            var screenPos = camera.WorldToScreenPoint(go.transform.position);
+            Debug.LogWarning(screenPos);
+            return screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
+        }
+
         /// <summary>
         /// 修复渲染器朝向
         /// </summary>
