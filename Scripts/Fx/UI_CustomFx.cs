@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Spine.Unity;
 using System.Threading;
+using Unity.VisualScripting;
 
 namespace AboloLib
 {
@@ -180,6 +181,14 @@ namespace AboloLib
             }
         }
 
+        public void PlayQueuedActiveWithLayout()
+        {
+            if (_subAnimations.Count > 0)
+            {
+                StartCoroutine(QueuedActiveAnimWithLayoutFix());
+            }
+        }
+
         public void PlayQueuedAnimations(List<Animation> animations , float timeOffset)
         {
             if (animations.Count > 0)
@@ -329,11 +338,15 @@ namespace AboloLib
                 if (item != null && item.gameObject.activeInHierarchy)
                 {
                     var canPlay = ArtUtility.CheckElementInsideScreen(UICanvasAdapter.CurrentCanvas.worldCamera, item.gameObject);
-                    Debug.LogWarning(canPlay);
+
                     if(canPlay)
                     {
                         item.Play();
                         yield return new WaitForSeconds(timeOffset);
+                    }
+                    else
+                    {
+                        SetSubAnimationObjects(animations, true);
                     }
                 }
             }
@@ -385,6 +398,37 @@ namespace AboloLib
                 item.GetComponent<RectTransform>().anchoredPosition += new Vector2(-5000f, 0f);
             }
             
+        }
+
+        public IEnumerator QueuedActiveAnimWithLayoutFix()
+        {
+            if (_subAnimations.Count > 0)
+            {
+                List<LayoutGroup> layouts = new List<LayoutGroup>();
+                for (int i = 0; i < _subAnimations.Count; i++)
+                {
+                    if (_subAnimations[i].transform.parent.TryGetComponent(out LayoutGroup layout))
+                    {
+                        if (!layouts.Contains(layout) && layout.enabled)
+                        {
+                            layouts.Add(layout);
+                        }
+                    }
+                }
+
+                if (layouts.Count > 0)
+                {
+                    yield return StartCoroutine(LayoutFix(layouts));
+                }
+            }
+            else
+            {
+                yield break;
+            }
+            yield return new WaitForSeconds(0.39f);
+
+
+            yield return StartCoroutine(QueuedPlayAnimation(_subAnimations, interval, _onAnimationDone));
         }
     }
 
