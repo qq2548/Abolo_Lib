@@ -1,3 +1,32 @@
+git使用流程：
+//生成公钥
+ssh-keygen -t rsa -b 4096 -C "账号" -f 文件名
+//用公钥在github设置里生成私钥
+//bash验证公钥
+ssh -T git@github.com
+//克隆仓库到本地
+git clone <仓库地址>
+//提交流程----------------------------
+//跟踪新增的文件
+git add .
+//提交跟踪的修改
+git commit -a -m "<log信息>"
+//拉取最新版本远端
+git pull
+//将本地仓库推到远端
+git push
+//-----------------------------------
+//添加子模块
+git submodule add <子模块仓库地址> <子模块本地路径>
+//子模块初始化
+git submodule init
+//子模块更新
+git submodule update
+//删除子模块缓存
+git rm --cached <子模块本地路径>
+//删除子模块本地文件
+rm -rf <子模块本地路径>
+
 配置相关
 git config --global user.name “Your Name”：设置全局用户名。
 git config --global user.email “youremail@example.com”：设置全局用户邮箱。
@@ -28,3 +57,6 @@ git checkout – ：撤销对某个文件的改动，将其恢复到上一次提
 git revert ：撤销指定的提交，但保留历史记录（适合已推送到远程仓库的提交）。
 git reset --soft ：回退到某个提交，并保留修改内容。
 git reset --hard ：彻底回退到某个提交，并丢弃所有改动（谨慎使用）。
+ssh -T git@github.com 向Git验证SSH
+
+

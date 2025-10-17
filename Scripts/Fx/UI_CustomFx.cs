@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Spine.Unity;
+using System.Threading;
+using Unity.VisualScripting;
 
 namespace AboloLib
 {
@@ -126,26 +128,6 @@ namespace AboloLib
                 //修复Animator冲突，临时禁用掉，动画结束的回调会重新激活
                 DisableConflictAnimators();
                 _onAnimationDone += EnableConflictAnimators;
-
-#if _ARTEST_PRESENTATION
-                if (this.gameObject.name == "UI_LimitPack")
-                {
-                    try
-                    {
-                        Animation unlocktarget = transform.Find("root/obj_rewardRoot").GetChild(2).
-                        GetComponent<Animation>();
-                        _onAnimationDone += () =>
-                        {
-                            if (unlocktarget != null)
-                                unlocktarget.Play("ani_img_unlock");
-                        };
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Log(e.Message + "限时礼包奖励解锁动画演示用临时代码");
-                    }
-                }
-#endif
             }
         }
         /// <summary>
@@ -196,6 +178,14 @@ namespace AboloLib
             if (_subAnimations.Count > 0)
             {
                 StartCoroutine(QueuedPlayAnimation(_subAnimations , interval , _onAnimationDone));
+            }
+        }
+
+        public void PlayQueuedActiveWithLayout()
+        {
+            if (_subAnimations.Count > 0)
+            {
+                StartCoroutine(QueuedActiveAnimWithLayoutFix());
             }
         }
 
@@ -347,8 +337,17 @@ namespace AboloLib
             {
                 if (item != null && item.gameObject.activeInHierarchy)
                 {
-                    item.Play();
-                    yield return new WaitForSeconds(timeOffset);
+                    var canPlay = ArtUtility.CheckElementInsideScreen(UICanvasAdapter.CurrentCanvas.worldCamera, item.gameObject);
+
+                    if(canPlay)
+                    {
+                        item.Play();
+                        yield return new WaitForSeconds(timeOffset);
+                    }
+                    else
+                    {
+                        SetSubAnimationObjects(animations, true);
+                    }
                 }
             }
 #if _ARTEST_PRESENTATION
@@ -399,6 +398,37 @@ namespace AboloLib
                 item.GetComponent<RectTransform>().anchoredPosition += new Vector2(-5000f, 0f);
             }
             
+        }
+
+        public IEnumerator QueuedActiveAnimWithLayoutFix()
+        {
+            if (_subAnimations.Count > 0)
+            {
+                List<LayoutGroup> layouts = new List<LayoutGroup>();
+                for (int i = 0; i < _subAnimations.Count; i++)
+                {
+                    if (_subAnimations[i].transform.parent.TryGetComponent(out LayoutGroup layout))
+                    {
+                        if (!layouts.Contains(layout) && layout.enabled)
+                        {
+                            layouts.Add(layout);
+                        }
+                    }
+                }
+
+                if (layouts.Count > 0)
+                {
+                    yield return StartCoroutine(LayoutFix(layouts));
+                }
+            }
+            else
+            {
+                yield break;
+            }
+            yield return new WaitForSeconds(0.39f);
+
+
+            yield return StartCoroutine(QueuedPlayAnimation(_subAnimations, interval, _onAnimationDone));
         }
     }
 

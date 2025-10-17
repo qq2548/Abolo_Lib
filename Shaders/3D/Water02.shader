@@ -14,6 +14,8 @@ Shader "sample3d/CustomWater02"
 		_WaveFrequency("Wave Frequency",Range(1,100)) = 50
 		_WaveSpeed("Wave Speed",Range(0,10)) = 1
 
+		_VertexAnimFac("VertexAnimFactor",Range(0,1)) = 0.5
+		_VertexCurveViewFac("VertexCurveViewFac",Range(0.0 , 0.1)) = 0.005
 
 		_MainColor("Main Color", Color) = (1,1,1,1)
 		_HighLightColor("HighLightColor", Color) = (1,1,1,1)
@@ -29,6 +31,7 @@ Shader "sample3d/CustomWater02"
 
 		_testFac("TestFactor",Range(0.0 , 100.0)) = 0.0
 		
+		[Toggle] WorldBending("WorldBending", Float) = 1.0  //开关
 	}
 	SubShader 
 	{
@@ -53,6 +56,7 @@ Shader "sample3d/CustomWater02"
 			//方法名带 ABL 的都在下面这个库里面
 			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
 			#pragma multi_compile_instancing
+			#pragma multi_compile _ WORLDBENDING_ON
 
 			sampler2D _MainTex;
 			sampler2D _SubTex;
@@ -81,13 +85,25 @@ Shader "sample3d/CustomWater02"
 				half4 Color:COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
-
+			half _VertexAnimFac;
+			half _VertexCurveViewFac;
 			v2f vert(appdata i)
 			{
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(i);
+				//sphere_view test
 				o.vertex = UnityObjectToClipPos(i.vertex);
-				o.vertex .y += _CosTime.z * 0.5;
+			#ifdef WORLDBENDING_ON
+				half4 vertexInfo = mul(unity_ObjectToWorld , i.vertex);
+				half3 camDir = _WorldSpaceCameraPos.xyz - vertexInfo.xyz;
+				half amount = -_VertexCurveViewFac;
+				half fac_x = pow(camDir.x , 2) * amount;
+				half fac_y = pow(camDir.z , 2) * amount;
+				vertexInfo += half4(0, fac_y + fac_x , 0 , 0);
+				//test end
+				o.vertex = UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
+			#endif
+				o.vertex .y += _CosTime.z * _VertexAnimFac;
 				o.uv =TRANSFORM_TEX(i.uv , _MainTex);
 				o.stretchUV = TRANSFORM_TEX(i.uv , _SubTex);
 				o.screenPos =  ComputeScreenPos(o.vertex); 
