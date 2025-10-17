@@ -101,6 +101,7 @@ Material:
     - _Pattern: 0
     - _PatternStrength: 1
     - _Rotation: 0.866
+    - _Scalor: 1.15
     - _ShadowOffsetX: 0
     - _ShadowOffsetY: 0
     - _SmoothnessTextureChannel: 0

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Spine.Unity;
 using System.Threading;
 using Unity.VisualScripting;
+using System.Linq;
 
 namespace AboloLib
 {
@@ -389,6 +390,7 @@ namespace AboloLib
                 SetSubAnimationObjects(aniList, true);
             }
             yield return new WaitForEndOfFrame();
+
             foreach (var item in layouts)
             {
                 GetAnimationsInChildren(item, out aniList);
@@ -404,6 +406,7 @@ namespace AboloLib
         {
             if (_subAnimations.Count > 0)
             {
+                List<ScrollRect> scrollRects = transform.GetComponentsInChildren<ScrollRect>().ToList();
                 List<LayoutGroup> layouts = new List<LayoutGroup>();
                 for (int i = 0; i < _subAnimations.Count; i++)
                 {
@@ -416,18 +419,33 @@ namespace AboloLib
                     }
                 }
 
+                if (scrollRects.Count > 0)
+                {
+                    foreach (var scroll in scrollRects)
+                    {
+                        scroll.enabled = false;
+                    }
+                }
+
                 if (layouts.Count > 0)
                 {
                     yield return StartCoroutine(LayoutFix(layouts));
+                }
+
+                if (scrollRects.Count > 0)
+                {
+                    foreach (var scroll in scrollRects)
+                    {
+                        scroll.enabled = true;
+                    }
                 }
             }
             else
             {
                 yield break;
             }
-            yield return new WaitForSeconds(0.39f);
-
-
+            
+            yield return null;
             yield return StartCoroutine(QueuedPlayAnimation(_subAnimations, interval, _onAnimationDone));
         }
     }

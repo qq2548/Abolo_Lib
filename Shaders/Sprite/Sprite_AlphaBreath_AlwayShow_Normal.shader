@@ -6,6 +6,7 @@ Shader "2d/Sprite_AlphaBreath_AlwayShow_Normal"
         _TimeOffset("TimeOffset" , Float) = 0.0
         _BreathMinAlpha("BreathMinAlpha" , Float) = 0.0
         _Speed("Speed" , Float) = 1.0
+        _Scalor("Scalor" , Float) = 1.0
     }
     SubShader
     {
@@ -33,14 +34,15 @@ Shader "2d/Sprite_AlphaBreath_AlwayShow_Normal"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                 float4 color : COLOR;
+                float4 color : COLOR;
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-             float _TimeOffset;
-             fixed _BreathMinAlpha;
-             float _Speed;
+            float _TimeOffset;
+            fixed _BreathMinAlpha;
+            float _Speed;
+            half _Scalor;
             v2f vert (appdata v)
             {
                 v2f o;
@@ -57,7 +59,10 @@ Shader "2d/Sprite_AlphaBreath_AlwayShow_Normal"
                 //fixed fac = saturate(sin(t + _TimeOffset)*0.5 + 0.5 + _BreathMinAlpha);
                 fixed fac = saturate(sin(t + _TimeOffset) * (0.5 -_BreathMinAlpha*0.5) + 0.5 + (_BreathMinAlpha * 0.5));
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv) * i.color;
+                float2 centerUV = i.uv - float2(0.5 , 0.5);
+                centerUV /= (lerp(1.0 , _Scalor , sin(t + _TimeOffset) * 0.5 + 0.5));
+                centerUV += float2(0.5 , 0.5);
+                fixed4 col = tex2D(_MainTex, centerUV) * i.color;
                  col.a *= fac;
                 //col.rgb *= col.a;
                
