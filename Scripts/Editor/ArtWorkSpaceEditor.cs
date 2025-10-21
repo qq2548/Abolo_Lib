@@ -281,27 +281,24 @@ namespace AboloLib
         }
     }
 
-    //[CustomEditor(typeof(GenerateGrid))]
-    //public class GenerateGridEditor : Editor
-    //{
-    //    public override void OnInspectorGUI()
-    //    {
-    //        base.OnInspectorGUI();
-    //        GenerateGrid drawGrid = (GenerateGrid)target;
-    //        if (GUILayout.Button("生成自定义网格"))
-    //        {
-    //            drawGrid.CellsGeneration();
-    //        }
-    //        if (GUILayout.Button("生成MergeCell网格"))
-    //        {
-    //            drawGrid.DrawCells();
-    //        }
-    //        if (GUILayout.Button("清除当前网格"))
-    //        {
-    //            drawGrid.ClearCurrentCells();
-    //        }
-    //    }
-    //}
+    [CustomEditor(typeof(MyCellsManager))]
+    public class MyCellsManagerEditor : Editor
+    {
+       public override void OnInspectorGUI()
+       {
+           base.OnInspectorGUI();
+           MyCellsManager drawGrid = (MyCellsManager)target;
+
+           if (GUILayout.Button("生成MergeCell网格"))
+           {
+               drawGrid.DrawCellsForWork();
+           }
+           if (GUILayout.Button("清除当前网格"))
+           {
+               ArtUtility.ClearChildGameObjects(drawGrid.transform.Find("root/cells"));
+           }
+       }
+    }
 
 
 

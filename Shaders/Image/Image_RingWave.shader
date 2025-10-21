@@ -3,8 +3,9 @@
 {
 	Properties
 	{
-		
+
         _MainTex("Base (RGB)",2D) = "white" {}  //贴图
+        _SubTex("SubTex",2D) = "white" {}  //贴图
 		_RingCount("RingCount" , int) = 3
         //_TexWidth("Sheet Width",float) = 0.0    //贴图宽度像素值
 		_Color ("Tint", Color) = (1,1,1,1)
@@ -70,7 +71,7 @@
 			#pragma target 2.0
 
 			#include "UnityCG.cginc" 
-			#include "UnityUI.cginc"   
+			#include "UnityUI.cginc" 
 
 
 
@@ -132,6 +133,7 @@
 				
 				float4 vertex : SV_POSITION;
 				float2 uv : TEXCOORD0;
+				float2 sub_uv : TEXCOORD1;
 				fixed4 Color:COLOR;
 
 			};
@@ -140,12 +142,16 @@
 			sampler2D _MainTex;            //主贴图
 			float4 _MainTex_ST;
 
+			sampler2D _SubTex;            //副贴图
+			float4 _SubTex_ST;
+
 			v2f vert(appdata i)
 			{
 				v2f o;
 
 				o.vertex = UnityObjectToClipPos(i.vertex);
 				o.uv = TRANSFORM_TEX(i.uv , _MainTex);
+				o.sub_uv = TRANSFORM_TEX(i.uv , _SubTex);
 				o.Color = i.Color;
 
 				return o;
@@ -179,6 +185,8 @@
 				}
 
 				fixed4 color = tex2D(_MainTex,v.uv  )  * v.Color;
+				fixed4 sub_color = tex2D(_SubTex,v.sub_uv  ) ;
+				col *= sub_color.r;
 				fixed4 gradienColor = lerp(_InnerColor ,_OuterColor ,length(st) * 0.2);
 				color = fixed4(col,col,col,1.0) * tint * v.Color; 
 				color.rgb += gradienColor.rgb;
