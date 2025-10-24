@@ -18,6 +18,11 @@ namespace AboloLib
         [Header("敌人配置数据文件路径")]
         public string GameEnemyDataPath;
         /// <summary>
+        /// 游戏道具配方配置数据路径
+        /// </summary>
+        [Header("道具合成物配方配置数据文件路径")]
+        public string GameRecipeDataPath;
+        /// <summary>
         /// 游戏道具Icon资源路径配置
         /// </summary>
         [Header("道具合成物Icon资源路径")]
