@@ -25,6 +25,7 @@ namespace AboloLib
             base.Play();
             GetAnimator();
             mAnimator?.SetBool(_boolname, true);
+            PlayParticles();
         }
 
         public override void Stop(Action callback)
@@ -32,6 +33,7 @@ namespace AboloLib
             base.Stop(callback);
             GetAnimator();
             mAnimator?.SetBool(_boolname, false);
+            StopParticles();
         }
 
     }

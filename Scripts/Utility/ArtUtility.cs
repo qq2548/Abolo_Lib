@@ -116,6 +116,7 @@ namespace AboloLib
 
         public static void PlayParticles(ParticleSystem[] particles)
         {
+            if(particles == null || particles.Length == 0) return;
             foreach (var ps in particles)
             {
                 if (!ps.gameObject.activeInHierarchy)
@@ -130,6 +131,7 @@ namespace AboloLib
 
         public static void StopParticles(ParticleSystem[] particles)
         {
+            if(particles == null || particles.Length == 0) return;
             foreach (var ps in particles)
             {
                 //var em = ps.emission;
@@ -140,6 +142,7 @@ namespace AboloLib
 
         public static void DisableObjects<T>(T[] objects) where T: Component
         {
+            if(objects == null || objects.Length == 0) return;
             foreach (var item in objects)
             {
                 item.gameObject.SetActive(false);
@@ -148,6 +151,7 @@ namespace AboloLib
 
         public static void EnableObjects<T>(T[] objects) where T : Component
         {
+            if(objects == null || objects.Length == 0) return;
             foreach (var item in objects)
             {
                 item.gameObject.SetActive(true);

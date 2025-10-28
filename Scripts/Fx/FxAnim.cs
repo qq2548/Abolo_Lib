@@ -44,9 +44,19 @@ namespace AboloLib
 
         }
 
-        public virtual  void Play()
+        public virtual void Play()
         {
             SetRootActive(true);
+        }
+
+        public void PlayParticles()
+        {
+            ArtUtility.PlayParticles(this.transform.GetComponentsInChildren<ParticleSystem>());
+        }
+        
+        public void StopParticles()
+        {
+            ArtUtility.StopParticles(this.transform.GetComponentsInChildren<ParticleSystem>());
         }
 
 

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: mat_particle_ring16
-  m_Shader: {fileID: 4800000, guid: f8a452652b50e2a40bb317030bf38c6a, type: 3}
+  m_Name: mat_sprite_ring_01
+  m_Shader: {fileID: 4800000, guid: 264f946ac0353914d8573703e967bf4f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -85,7 +85,7 @@ Material:
     - _DstBlend: 0
     - _Duration: 1.5
     - _Egde: 0.5
-    - _EgdeHardness: 0.256
+    - _EgdeHardness: 0.03
     - _Fill: 1
     - _FlipX: 0
     - _FlipY: 0
@@ -96,16 +96,16 @@ Material:
     - _LightScalor: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NoiseWeight: 0.333
+    - _NoiseWeight: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Pattern: 0
-    - _RingCount: 1
+    - _RingCount: 2
     - _Saturation: 1
     - _Slice: 16
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: -1
+    - _Speed: -0.5
     - _SrcBlend: 1
     - _Stencil: 0
     - _StencilComp: 8
@@ -113,7 +113,7 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _TextMode: 0
-    - _Thickness: 2.67
+    - _Thickness: 0.9
     - _UVSec: 0
     - _UseAlpha: 1
     - _UseUIAlphaClip: 0
@@ -124,8 +124,8 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _InnerColor: {r: 0, g: 0.18627466, b: 0.8962264, a: 1}
-    - _OuterColor: {r: 0.3999258, g: 0, b: 0.8867924, a: 1}
+    - _InnerColor: {r: 0, g: 0.1666668, b: 0.8018868, a: 1}
+    - _OuterColor: {r: 0.8207547, g: 0, b: 0.61154276, a: 1}
     - _UVRect: {r: 0.26419377, g: 0.32487297, b: 0.7869773, a: 0.72858113}
     - _UVScale: {r: 0.5227835, g: 0.4037081, b: 0, a: 0}
   m_BuildTextureStacks: []
