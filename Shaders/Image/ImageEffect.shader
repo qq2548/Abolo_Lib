@@ -177,7 +177,7 @@
                                                     sin(t) , cos(t));
                     
                     float2 scalor = float2(0.75 , 1.0 + IN.texcoord.y*2.0);
-                    OriUV = mul((OriUV  - float2(0.5 , 0.5 ))*scalor , rot);
+                    OriUV = mul((OriUV  - float2(0.5 , 0.5 ))*scalor , rot) * 1.3f;
                     OriUV +=  float2(0.5 , 0.5 );
 
 
