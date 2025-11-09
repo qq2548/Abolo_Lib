@@ -23,6 +23,11 @@ namespace AboloLib
         [Header("道具合成物配方配置数据文件路径")]
         public string GameRecipeDataPath;
         /// <summary>
+        /// 订单配置数据文件路径
+        /// </summary>
+        [Header("订单配置数据文件路径")]
+        public string GameOrderDataPath;
+        /// <summary>
         /// 游戏道具Icon资源路径配置
         /// </summary>
         [Header("道具合成物Icon资源路径")]
@@ -46,7 +51,7 @@ namespace AboloLib
         /// 游戏道具预制体资源路径配置
         /// </summary>
         [Header("合成物预制体资源路径")]
-        public string GameItemFactoryPath;        
+        public string GameItemFactoryPath;
         /// <summary>
         /// 游戏存档名称配置
         /// </summary>
