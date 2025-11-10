@@ -24,7 +24,7 @@ namespace AboloLib
         Transform dragTarget = null;
         [PrefabSelect("Assets/ArtWorkSpace/CustomAssets/currency_factory.asset")] 
         [SerializeField] string itemName;
-        int itemIndex = 0;
+        //int itemIndex = 0;
         private void Start()
         {
             if (dragTarget != null)
