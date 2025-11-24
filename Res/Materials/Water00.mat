@@ -148,7 +148,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HColor: {r: 1, g: 1, b: 1, a: 1}
     - _HighLightColor: {r: 0.31706116, g: 0.48256707, b: 0.5377357, a: 1}
-    - _MainColor: {r: 0.3137255, g: 0.5568628, b: 0.5647059, a: 1}
+    - _MainColor: {r: 0.36725703, g: 0.58724326, b: 0.5943396, a: 1}
     - _RimColor: {r: 0, g: 0, b: 0, a: 0.3137255}
     - _SColor: {r: 0.5874866, g: 0.6054961, b: 0.7735849, a: 0.5411765}
     - _ShadowColor: {r: 1, g: 1, b: 1, a: 1}

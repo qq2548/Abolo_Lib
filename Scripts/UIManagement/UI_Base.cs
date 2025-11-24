@@ -36,6 +36,13 @@ namespace AboloLib
             get => onOpenAnimationDone;
             set => onOpenAnimationDone = value;
         }
+
+        Action onCloseAnimationDone;
+        public Action OnCloseAniamtionDone
+        {
+            get => onCloseAnimationDone;
+            set => onCloseAnimationDone = value;
+        }
         private bool isReuse = false;
         public bool IsReuse
         {
@@ -66,7 +73,7 @@ namespace AboloLib
             if (animCoroutine != null)
             {
                 ScheduleAdapter.Schedual.StopCoroutine(animCoroutine);
-                OnOpenAniamtionDone?.Invoke();
+                //OnOpenAniamtionDone?.Invoke();
             }
             //播放动画时，屏蔽交互操作 
             if (transform.TryPlayAnimation(PageOpenAnimName))
@@ -77,6 +84,7 @@ namespace AboloLib
                 {
                     RayCastBlock._instance.SetRayCastBlock(false);
                     OnOpenAniamtionDone?.Invoke();
+                    OnOpenAniamtionDone = null;
                 }));
             }
             RefreshUI();
@@ -102,6 +110,8 @@ namespace AboloLib
                     gameObject.transform.SetParent(UIManager.GetCanvas(0));
                     if (gameObject.activeSelf) gameObject.SetActive(false);
                     RayCastBlock._instance.SetRayCastBlock(false);
+                    OnCloseAniamtionDone?.Invoke();
+                    OnCloseAniamtionDone = null;
                 }));
             }
             else
