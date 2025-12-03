@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 namespace AboloLib
@@ -672,6 +673,53 @@ namespace AboloLib
             scale = Vector3.one + Vector3.one * CurveAdapter.AnimCurveDic[CurveFactory.CurveType.MatchScale].Evaluate(timer);
             return pos;
         }
+
+        public static Coroutine PlayOnhitFlashFx(Color flashColor, Graphic[] uiElements, MonoBehaviour schedual, float duration = 0.33F)
+        {
+            if (uiElements != null && uiElements.Length > 0)
+            {
+                Material mat = new Material(uiElements[0].material);
+                foreach (var item in uiElements)
+                {
+                    mat.SetColor("_Color", flashColor);
+                    item.material = mat;
+                }
+            }
+            Action<float> _delta = (value) =>
+            {
+                if (uiElements != null && uiElements.Length > 0)
+                {
+                    foreach (var item in uiElements)
+                    {
+                        item.color = Color.Lerp(Color.red, Color.black, value);
+                    }
+                }
+            };
+            return schedual.StartCoroutine(ArtAnimation.DoAnimation(duration, _delta));
+        }
+
+        public static Coroutine PlayOnhitFlashFx(Color flashColor, Renderer[] meshRenderers, MonoBehaviour schedual, float duration = 0.33F)
+        {
+            var mpb = new MaterialPropertyBlock();
+
+            Action<float> _delta = (value) =>
+            {
+
+                if (meshRenderers != null && meshRenderers.Length > 0)
+                {
+                    foreach (var item in meshRenderers)
+                    {
+                        item.GetPropertyBlock(mpb);
+                        mpb.SetColor("_FlashColor", flashColor);
+                        mpb.SetFloat("_FlashFactor", 1.0f - 
+                            CurveAdapter.AnimCurveDic[CurveFactory.CurveType.SlowSteady].Evaluate(value));
+                        item.SetPropertyBlock(mpb);
+                    }
+                }
+            };
+            return schedual.StartCoroutine(ArtAnimation.DoAnimation(duration, _delta));
+        }
+
         #endregion
     }
 }

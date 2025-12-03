@@ -49,6 +49,36 @@ namespace AboloLib
             get => isReuse;
             set => isReuse = value;
         }
+
+        public float OpenAnimDuration
+        {
+            get
+            {
+                if (TryGetComponent(out Animation animation))
+                {
+                    return animation.GetClip(PageOpenAnimName).length;
+                }
+                else
+                {
+                    return 0f;
+                }
+            }
+        }
+
+        public float CloseAnimDuration
+        {
+            get
+            {
+                if (TryGetComponent(out Animation animation))
+                {
+                    return animation.GetClip(PageCloseAnimName).length;
+                }
+                else
+                {
+                    return 0f;
+                }
+            }
+        }
         protected virtual void Awake()
         {
 
@@ -79,7 +109,7 @@ namespace AboloLib
             if (transform.TryPlayAnimation(PageOpenAnimName))
             {
                 RayCastBlock._instance.SetRayCastBlock(true);
-                float delay = transform.GetComponent<Animation>().GetClip(PageOpenAnimName).length;
+                float delay = OpenAnimDuration;
                 animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay , () =>
                 {
                     RayCastBlock._instance.SetRayCastBlock(false);
@@ -104,7 +134,7 @@ namespace AboloLib
             if (transform.TryPlayAnimation(PageCloseAnimName))
             {
                 RayCastBlock._instance.SetRayCastBlock(true);
-                float delay = transform.GetComponent<Animation>().GetClip(PageCloseAnimName).length;
+                float delay = CloseAnimDuration;
                 animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, () =>
                 {
                     gameObject.transform.SetParent(UIManager.GetCanvas(0));
