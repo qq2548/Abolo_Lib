@@ -64,7 +64,7 @@ Shader "sample3d/CustomLighting"
         _Stencil ("Stencil ID", Float) = 0
         _StencilOp ("Stencil Operation", Float) = 0
 
-        _FlashFactor("FlashFacot" , Float) = 0.0
+        _FlashFactor("FlashFactor" , Float) = 0.0
         _FlashColor("FlashColor" , Color) = (1.0,1.0,1.0,1.0)
 
         [Toggle] SnowFx("SnowFx On", Float) = 1.0  //外描边开关
@@ -238,6 +238,7 @@ Shader "sample3d/CustomLighting"
 			// put more per-instance properties here
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _SideColor)
                 UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
+                UNITY_DEFINE_INSTANCED_PROP(fixed4, _FlashColor)
                 UNITY_DEFINE_INSTANCED_PROP(fixed, _DisolveThreshold)
                 UNITY_DEFINE_INSTANCED_PROP(fixed, _Intensity)
                 UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
@@ -278,7 +279,6 @@ Shader "sample3d/CustomLighting"
            fixed _AmbientThreshold;
            float4 _LightDir;
 
-           fixed4 _FlashColor;
 
            float _SnowIntens;
             half4 frag (v2f i) : SV_Target
@@ -383,7 +383,8 @@ Shader "sample3d/CustomLighting"
                // //积雪效果试做
 
                float factor = UNITY_ACCESS_INSTANCED_PROP(Props , _FlashFactor);
-               color.rgb = mix3(color.rgb , _FlashColor.rgb , factor);
+               fixed4 flashColor = UNITY_ACCESS_INSTANCED_PROP(Props , _FlashColor);
+               color.rgb = mix3(color.rgb , flashColor.rgb , factor);
                //if(color.a < 0.001)
                //{
                //     discard;
