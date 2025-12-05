@@ -54,7 +54,7 @@ namespace AboloLib
         }
 
 
-        public static int GetOffsetDirection(Vector3 position)
+        private static int GetOffsetDirection(Vector3 position)
         {
             Vector3 screen_pos = UICanvasAdapter.CurrentCanvas.worldCamera.WorldToScreenPoint(position);
             if (screen_pos.x > Screen.width * 0.8f)
@@ -71,7 +71,7 @@ namespace AboloLib
             }
         }
 
-        public static Vector3  FlyShootOut(FlyItem item  , Vector3 from , Vector3 to , Action callback = null)
+        private static Vector3  FlyShootOut(FlyItem item  , Vector3 from , Vector3 to , Action callback = null)
         {
             item.OnStartShootOut();
             Vector3 toscale = item.transform.localScale;
@@ -84,7 +84,7 @@ namespace AboloLib
             return to;
         }
 
-        public static void FlyToPosition(FlyItem item , Vector3 from , Vector3 to , Action callback = null)
+        private static void FlyToPosition(FlyItem item , Vector3 from , Vector3 to , Action callback = null)
         {
             int offset_dir = GetOffsetDirection(from);
             Vector3 fromscale = item.transform.localScale;

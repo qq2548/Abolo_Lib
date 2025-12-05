@@ -199,12 +199,12 @@ namespace AboloLib
             }
         }
 
-        public static Vector2Int GetGridCoord(Vector3 originalPos , Vector3 mouseWorldPos ,Vector2 cellSize)
+        public static Vector2Int GetGridCoord(Vector3 originalPos , Vector3 mouseWorldPos ,Vector3 cellSize)
         {
             Vector2Int coord = new Vector2Int();
             Vector3 localMousePos = mouseWorldPos - originalPos;
             coord.x = Mathf.FloorToInt(localMousePos.x / cellSize.x);
-            coord.y = Mathf.FloorToInt(localMousePos.y/ cellSize.y);
+            coord.y = Mathf.FloorToInt(localMousePos.y/ cellSize.z);
             return coord;
         }
         public static Vector2Int GetGridCoordXZ(Vector3 originalPos, Vector3 mouseWorldPos, Vector3 cellSize)
