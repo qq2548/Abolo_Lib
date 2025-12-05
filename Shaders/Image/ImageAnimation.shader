@@ -141,9 +141,7 @@
 				UNITY_SETUP_INSTANCE_ID(v);
 				fixed4 tint = UNITY_ACCESS_INSTANCED_PROP(Props , _Color);
 				//----------
-				float2 fireuv;
-				fireuv.x = v.uv.x +frac(_Time.x/10.0)*10.0 * _flowSpeedX * 15.0f * _reverseInt;
-				fireuv.y = v.uv.y +frac(_Time.x/10.0)*10.0 * _flowSpeedY * 15.0f * _reverseInt;
+				float2 fireuv = v.uv;
 				//float4 color = tex2D(_MainTex,fireuv) ;
 				
 				//----------
