@@ -80,7 +80,7 @@ namespace AboloLib
                 fly_item.MyFlyData = new FlyData();
                 fly_item.MyFlyData.DisableRandomShootPosition = data.DisableRandomShootPosition;
                 fly_item.MyFlyData.ShootDuraiotn = data.ShootDuraiotn;
-                fly_item.MyFlyData.FlyDlay = data.FlyDlay;
+                fly_item.MyFlyData.FlyDelay = data.FlyDelay;
                 fly_item.MyFlyData.FlyDuraiotn = data.FlyDuraiotn;
                 fly_item.MyFlyData.Range = data.Range;
                 fly_item.MyFlyData.ShootPosCurve = data.ShootPosCurve;

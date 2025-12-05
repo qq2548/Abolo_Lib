@@ -12,7 +12,7 @@ namespace AboloLib
         //发射阶段位移周期
         public float ShootDuraiotn = 0.5f;
         //发射完成到开始飞行延迟
-        public float FlyDlay = 0.0f;
+        public float FlyDelay = 0.0f;
         //飞行阶段位移周期
         public float FlyDuraiotn = 0.5f;
         public float Range = 0.5f;
@@ -88,13 +88,13 @@ namespace AboloLib
         {
             int offset_dir = GetOffsetDirection(from);
             Vector3 fromscale = item.transform.localScale;
-            Vector3 toscale = item.transform.localScale * 3.0f;
+            //Vector3 toscale = item.transform.localScale * 3.0f;
             Action<float> _delta = (value) =>
             {
                 Vector3 pos = Vector3.Lerp(from, to, item.MyFlyData.FlyPosCurve.Evaluate(value));
                 pos += Vector3.one * item.MyFlyData.FlyPosOffsetCurve.Evaluate(value) * offset_dir;
                 item.transform.position = pos;
-                item.transform.localScale = Vector3.Lerp(fromscale, toscale, item.MyFlyData.FlyScaleCurve.Evaluate(value));
+                item.transform.localScale = fromscale * item.MyFlyData.FlyScaleCurve.Evaluate(value);//Vector3.Lerp(fromscale, toscale, item.MyFlyData.FlyScaleCurve.Evaluate(value));
 
                 //shadow fly
                 if (item.Shadow != null)
@@ -120,7 +120,7 @@ namespace AboloLib
             };
 
             var enumerator = ArtAnimation.DoAnimation(item.MyFlyData.FlyDuraiotn, _delta, callback);
-            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(item.MyFlyData.FlyDlay , () =>
+            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(item.MyFlyData.FlyDelay , () =>
             {
                 ScheduleAdapter.Schedual.StartCoroutine(enumerator);
             }));
@@ -154,7 +154,7 @@ namespace AboloLib
             }
             ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoActionWithInterval(items.Count , shootInterval , (index) =>
             {
-                items[index].MyFlyData.FlyDlay = (shootInterval) * (items.Count - index) + items[index].MyFlyData.ShootDuraiotn * ((items.Count - index) /(float)items.Count);
+                items[index].MyFlyData.FlyDelay = (shootInterval) * (items.Count - index) + items[index].MyFlyData.ShootDuraiotn * ((items.Count - index) /(float)items.Count);
                 FlyProccedual(items[index] , from , to , () => GameObject.DestroyImmediate(items[index].gameObject));
             } , callback));
         }
