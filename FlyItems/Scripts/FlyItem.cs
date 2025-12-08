@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
 
 namespace AboloLib
@@ -14,6 +15,7 @@ namespace AboloLib
         static string IdleAnimationName = "ani_idle";
         static string CloseAnimationName = "ani_close";
         public FlyData MyFlyData;
+        public Graphic TargetGraphic;
         public Transform Shadow;
         public Action OnItemFlyDone = null;
 

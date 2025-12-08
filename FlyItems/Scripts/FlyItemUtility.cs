@@ -158,5 +158,30 @@ namespace AboloLib
                 FlyProccedual(items[index] , from , to , () => GameObject.DestroyImmediate(items[index].gameObject));
             } , callback));
         }
+
+                public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval ,Vector3 from , Vector3 to ,float timeoffset , Action callback = null)
+        {
+            float amount = 0.0f;
+            for(int i = 0; i < items.Count; i++) 
+            {
+                amount += timeoffset * i;
+                
+                var img = items[i].TargetGraphic;
+                if(img != null)
+                    img.color = new Color(amount, 1f, 1f, 1f); 
+            }
+            MultipleFlyProccedual(items , shootInterval , from , to , callback);
+        }
+
+        public static void MultipleFlyProccedual(List<FlyItem> items, float shootInterval, Vector3 from, Vector3 to, Vector2 randomRange, Action callback = null)
+        {
+            for(int i = 0; i < items.Count; i++) 
+            {
+                var img = items[i].TargetGraphic;
+                if(img != null)
+                    img.color = new Color(UnityEngine.Random.Range(randomRange.x , randomRange.y), 1f, 1f, 1f); 
+            }
+            MultipleFlyProccedual(items , shootInterval , from , to , callback);
+        }
     }
 }
