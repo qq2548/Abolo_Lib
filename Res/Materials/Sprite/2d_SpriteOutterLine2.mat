@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 2d_SpriteOutterLine
+  m_Name: 2d_SpriteOutterLine2
   m_Shader: {fileID: 4800000, guid: 9eb976c3f7aeb8e41b5c7a8258ae68ba, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -43,8 +43,8 @@ Material:
     - _FlipX: 0
     - _FlipY: 0
     - _Type: 0
-    - _WaveFrequency: 72.5
-    - _WaveHeight: 0.024
+    - _WaveFrequency: 45
+    - _WaveHeight: 0.0191
     - _WaveSpeed: 2
     - _distortionFactor: 1
     - _flowSpeedX: 8.94
@@ -52,7 +52,7 @@ Material:
     - _gap: 0
     - _offset: 0
     - _offsetX: 0
-    - _offsetY: 0.073
+    - _offsetY: 0
     - _reverseInt: 1
     - _undistortionFactor: 1
     m_Colors:

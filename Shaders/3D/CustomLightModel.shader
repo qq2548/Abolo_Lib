@@ -57,6 +57,8 @@ Shader "sample3d/CustomLighting"
 		//Avoid compile error if the properties are ending with a drawer
 		[HideInInspector] __dummy__ ("unused", Float) = 0
 
+        //_VertexCurveViewFac("VertexCurveViewFac",Range(0.0 , 0.1)) = 0.000
+        [Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
         _LightDir("LightDir",Vector) = (1.0,1.0,1.0,1.0)
 
 
@@ -160,7 +162,7 @@ Shader "sample3d/CustomLighting"
              
             //开启gpu批处理
 			#pragma multi_compile_instancing
-
+            #pragma multi_compile _ WORLDBENDING_ON
             
             //#pragma  multi_compile __ _USECOLORMASK_ON
 
@@ -246,11 +248,25 @@ Shader "sample3d/CustomLighting"
 
 		    UNITY_INSTANCING_BUFFER_END(Props)
 
+            uniform float _VertexCurveViewFac;
+
             v2f vert (appdata v)
             {
                 v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
                 o.pos = UnityObjectToClipPos(v.vertex);
+
+           #ifdef WORLDBENDING_ON
+				float4 vertexInfo = mul(unity_ObjectToWorld , v.vertex);
+				float3 camDir = _WorldSpaceCameraPos.xyz - vertexInfo.xyz;
+				float amount = -_VertexCurveViewFac;
+				float fac_x = pow(camDir.x , 2) * amount;
+				float fac_y = pow(camDir.z , 2) * amount;
+				vertexInfo += float4(0, fac_y + fac_x , 0 , 0);
+				//test end
+				o.pos = UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
+			#endif
+
                 o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
                 o.normal = v.normal;  //法线必须做一次世界坐标下的转换 不然明暗效果会有问题，不用视矩计算就是死的 不论怎么旋转调整都不会变化，                                                                                               
                 //o.normal = normal;                                                                                                          //用视矩计算就是根据摄像机的位移旋转实时发生变化都不符合常理

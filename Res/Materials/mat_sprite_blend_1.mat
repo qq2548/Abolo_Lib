@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: c5b3a1a5089fbaa48bb98faf7ae280c6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - WORLDBENDING_ON
   m_InvalidKeywords:
   - _PATTERN_DEFAULT
   - _USEALPHA_ON
@@ -31,6 +32,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - WorldBending: 1
     - _FlashFactor: 0
     m_Colors:
     - _FlashColor: {r: 1, g: 1, b: 1, a: 1}

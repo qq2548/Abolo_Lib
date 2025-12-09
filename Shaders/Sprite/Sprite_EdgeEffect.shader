@@ -15,7 +15,7 @@ Shader "2d/Sprite_EdgeEffect"
 		_WaveFrequency("Wave Frequency",Range(1,100)) = 50
 		_WaveSpeed("Wave Speed",Range(0,10)) = 1
 		 [KeywordEnum(Outter,Inner)]_Type("Type" , Float) = 0.0
-
+        [Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
 	}
 	SubShader 
 	{
@@ -40,7 +40,7 @@ Shader "2d/Sprite_EdgeEffect"
 			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
 			#pragma multi_compile_instancing
 			#pragma multi_compile  _TYPE_OUTTER _TYPE_INNER
-			
+            #pragma multi_compile _ WORLDBENDING_ON			
 
 
 
@@ -73,12 +73,22 @@ Shader "2d/Sprite_EdgeEffect"
 
 
 		    UNITY_INSTANCING_BUFFER_END(Props)
-
+			 uniform float _VertexCurveViewFac;
 			v2f vert(appdata i)
 			{
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(i);
 				o.vertex = UnityObjectToClipPos(i.vertex);
+			#ifdef WORLDBENDING_ON
+				float4 vertexInfo = mul(unity_ObjectToWorld , i.vertex);
+				float3 camDir = _WorldSpaceCameraPos.xyz - vertexInfo.xyz;
+				float amount = -_VertexCurveViewFac;
+				float fac_x = pow(camDir.x , 2) * amount;
+				float fac_y = pow(camDir.z , 2) * amount;
+				vertexInfo += float4(0, fac_y + fac_x , 0 , 0);
+				//test end
+				o.vertex = UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
+			#endif
 				o.uv = TRANSFORM_TEX(i.uv, _MainTex);
 				o.Color = i.Color;
 				UNITY_TRANSFER_INSTANCE_ID(i,o);

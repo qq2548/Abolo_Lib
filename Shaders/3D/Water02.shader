@@ -15,7 +15,7 @@ Shader "sample3d/CustomWater02"
 		_WaveSpeed("Wave Speed",Range(0,10)) = 1
 
 		_VertexAnimFac("VertexAnimFactor",Range(0,1)) = 0.5
-		_VertexCurveViewFac("VertexCurveViewFac",Range(0.0 , 0.1)) = 0.005
+		//_VertexCurveViewFac("VertexCurveViewFac",Range(0.0 , 0.1)) = 0.005
 
 		_MainColor("Main Color", Color) = (1,1,1,1)
 		_HighLightColor("HighLightColor", Color) = (1,1,1,1)
@@ -86,7 +86,7 @@ Shader "sample3d/CustomWater02"
 				UNITY_VERTEX_INPUT_INSTANCE_ID
 			};
 			half _VertexAnimFac;
-			half _VertexCurveViewFac;
+			uniform float _VertexCurveViewFac;
 			v2f vert(appdata i)
 			{
 				v2f o;
@@ -94,12 +94,13 @@ Shader "sample3d/CustomWater02"
 				//sphere_view test
 				o.vertex = UnityObjectToClipPos(i.vertex);
 			#ifdef WORLDBENDING_ON
-				half4 vertexInfo = mul(unity_ObjectToWorld , i.vertex);
-				half3 camDir = _WorldSpaceCameraPos.xyz - vertexInfo.xyz;
-				half amount = -_VertexCurveViewFac;
-				half fac_x = pow(camDir.x , 2) * amount;
-				half fac_y = pow(camDir.z , 2) * amount;
-				vertexInfo += half4(0, fac_y + fac_x , 0 , 0);
+				float4 vertexInfo = mul(unity_ObjectToWorld , i.vertex);
+				float3 camDir = _WorldSpaceCameraPos.xyz - vertexInfo.xyz;
+				float amount = -_VertexCurveViewFac;
+				float fac_x = pow(camDir.x , 2) * amount;
+				float fac_y = pow(camDir.z , 2) * amount;
+				float fac_z = pow(camDir.y , 2) * amount;
+				vertexInfo += float4(0, fac_y + fac_x , 0 , 0);
 				//test end
 				o.vertex = UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
 			#endif
