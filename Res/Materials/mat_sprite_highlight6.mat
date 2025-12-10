@@ -11,7 +11,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: d7492ca70237a3d4f99314392d51e3ba, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - WORLDBENDING_ON
   m_InvalidKeywords:
   - _PATTERN_DEFAULT
   - _TYPE_OUTTER
@@ -79,6 +80,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - WorldBending: 1
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5

@@ -1,13 +1,12 @@
-﻿Shader "2d/Sprite_ColorBlendNormal"
+﻿Shader "2d/Sprite_Custom_Additive"
 
 {
 	Properties
 	{
+
 		[PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
 
-		 _FlashFactor("FlashFactor" , Float) = 0.0
-         _FlashColor("FlashColor" , Color) = (1.0,1.0,1.0,1.0)
-		 [Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
+		[Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
 	}
 	SubShader 
 	{
@@ -27,29 +26,31 @@
 		Lighting Off
 		ZWrite Off
 
-		Blend One OneMinusSrcAlpha
+
+
+
+		Blend One One
+
+		
 
 		Pass 
 		{
-			Name "Sprite_ColorBlendNormal"
+			Name "Sprite_Custom_Additive"
 			CGPROGRAM
 
-			#pragma vertex vert 
+			
+
+			#pragma vertex vert
 			#pragma fragment frag
 			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
-			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc"  
-			#pragma multi_compile_instancing
-            #pragma multi_compile _ WORLDBENDING_ON					
+            #include "Assets/Abolo_Lib/Shaders/AboloCG.cginc"  
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ WORLDBENDING_ON	 
 
-			 UNITY_INSTANCING_BUFFER_START(Props)
-			// put more per-instance properties here
 
-                UNITY_DEFINE_INSTANCED_PROP(fixed4, _FlashColor)
-				UNITY_DEFINE_INSTANCED_PROP(float, _FlashFactor)
 
-		    UNITY_INSTANCING_BUFFER_END(Props)
 
 			struct appdata
 			{
@@ -57,31 +58,34 @@
 				float2 uv : TEXCOORD0;
 				fixed4 Color:COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID //gpu instancing 默认的shader带了两个函数接口
+				
+				
 			};
 
-			uniform float _VertexCurveViewFac;
 			struct v2f
 			{
+				
 				float4 vertex : SV_POSITION;
 				float2 texcoord : TEXCOORD0;
 				float4 worldPosition : TEXCOORD1;
 				fixed4 Color:COLOR;
 				UNITY_VERTEX_INPUT_INSTANCE_ID
+				
 			};
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
-
+		
+			uniform float _VertexCurveViewFac;
 			v2f vert(appdata i)
 			{
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(i);
 				o.worldPosition = i.vertex;
 				o.vertex = UnityObjectToClipPos(i.vertex);
-				//顶点球面变形计算
-			#ifdef WORLDBENDING_ON
+            #ifdef WORLDBENDING_ON
 				o.vertex = ABL_WorldBendTransform(i.vertex , _VertexCurveViewFac);
-			#endif
+			#endif  
 				o.texcoord = TRANSFORM_TEX(i.uv, _MainTex);
 				o.Color = i.Color;
 				UNITY_TRANSFER_INSTANCE_ID(i,o);
@@ -90,14 +94,18 @@
 			}
 
 
+			UNITY_INSTANCING_BUFFER_START(Props)
+			// put more per-instance properties here
+            UNITY_DEFINE_INSTANCED_PROP(float, _Exposure)
+
+		    UNITY_INSTANCING_BUFFER_END(Props)
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
 				UNITY_SETUP_INSTANCE_ID(IN);
-				fixed4 flashColor = UNITY_ACCESS_INSTANCED_PROP(Props , _FlashColor);
-				float flashFactor = UNITY_ACCESS_INSTANCED_PROP(Props , _FlashFactor);
-				fixed4 color = tex2D(_MainTex , IN.texcoord) * IN.Color;
-				color.rgb = mix3(color.rgb , flashColor.rgb , flashFactor);
+				fixed4 color = tex2D(_MainTex , IN.texcoord)* IN.Color;
+
+
 				color.rgb *= color.a;
 				return color;
 			}
@@ -105,6 +113,7 @@
 			ENDCG
 		}
 
+		
 	}
 	FallBack "Sprite/Default"
 

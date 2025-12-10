@@ -10,7 +10,7 @@
 
 
         _FacA("Speed" , Float) = 0.0
-
+		[Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
         //[HideInInspector]
         //_UVRect("UVRect" , Vector) = (0,0,1,1)
         //[HideInInspector]
@@ -48,9 +48,9 @@
             #pragma target 3.0
 
             #include "UnityCG.cginc"
-
+            #include "Assets/Abolo_Lib/Shaders/AboloCG.cginc"  
             #pragma multi_compile_instancing
-             
+            #pragma multi_compile _ WORLDBENDING_ON	             
             struct appdata_t
             {
                 float4 vertex   : POSITION;
@@ -83,13 +83,16 @@
 
 		    UNITY_INSTANCING_BUFFER_END(Props)
   
-
+            uniform float _VertexCurveViewFac;
             v2f vert(appdata_t v)
             {
                 v2f OUT;
                 UNITY_SETUP_INSTANCE_ID(v);
                 OUT.worldPosition = v.vertex;
                 OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
+            #ifdef WORLDBENDING_ON
+				OUT.vertex = ABL_WorldBendTransform(v.vertex , _VertexCurveViewFac);
+			#endif                
                 OUT.texcoord = TRANSFORM_TEX(v.texcoord , _MainTex );
                 OUT.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props , _Color);
                 UNITY_TRANSFER_INSTANCE_ID(v,OUT);

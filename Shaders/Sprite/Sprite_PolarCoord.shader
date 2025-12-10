@@ -21,7 +21,7 @@
         _StencilWriteMask ("Stencil Write Mask", Float) = 255
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
-
+		[Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
 	}
 	SubShader 
 	{
@@ -60,10 +60,9 @@
 			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
-			#include "UnityUI.cginc" 
-			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
-
-			#pragma multi_compile_instancing
+            #include "Assets/Abolo_Lib/Shaders/AboloCG.cginc"  
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ WORLDBENDING_ON	  
 
 
 			struct appdata
@@ -94,13 +93,16 @@
 			float4 _Subtex_ST;
 
 
-
+			uniform float _VertexCurveViewFac;
 			v2f vert(appdata i)
 			{
 				v2f o;
 				UNITY_SETUP_INSTANCE_ID(i);
 				o.worldPosition = i.vertex;
 				o.vertex = UnityObjectToClipPos(i.vertex);
+            #ifdef WORLDBENDING_ON
+				o.vertex = ABL_WorldBendTransform(i.vertex , _VertexCurveViewFac);
+			#endif  
 				o.uv = TRANSFORM_TEX(i.uv, _MainTex);
 				o.sub_uv = TRANSFORM_TEX(i.uv, _Subtex);
 				o.Color = i.Color;

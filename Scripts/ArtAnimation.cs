@@ -220,6 +220,19 @@ namespace AboloLib
             callback?.Invoke();
         }
 
+        public static IEnumerator DoAnimation(float duration , Action<float> deltaAnimation ,AnimationCurve curve ,Action callback = null)
+        {
+            float timer = 0.0f;
+            while (timer <= 1.0f)
+            {
+                deltaAnimation?.Invoke(curve.Evaluate(timer));
+                yield return null;
+                timer += Time.deltaTime / duration;
+            }
+            deltaAnimation?.Invoke(1.0f);
+            callback?.Invoke();
+        }
+
         /// <summary>
         /// 多物体带间隔的动画循环
         /// </summary>

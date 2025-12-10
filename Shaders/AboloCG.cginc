@@ -194,5 +194,18 @@
 		return rot;
 	}
 
+	//顶点球面弯曲变形函数
+	float4 ABL_WorldBendTransform(float4 vertex_input  , float factor_bend) 
+	{
+		float4 vertexInfo = mul(unity_ObjectToWorld , vertex_input);
+		float3 camDir = _WorldSpaceCameraPos.xyz - vertexInfo.xyz;
+		float amount = -factor_bend;
+		float fac_x = pow(camDir.x , 2) * amount;
+		float fac_y = pow(camDir.z , 2) * amount;
+		vertexInfo += float4(0, fac_y + fac_x , 0 , 0);
+		//test end
+		return UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
+	}
+
 	//
 #endif

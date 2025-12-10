@@ -7,6 +7,7 @@
         _FacA("Speed" , Float) = 0.0
 
         [Toggle]_Turn_Off_HSB("TURN_OFF_HSB" , Float) = 0.0
+		[Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
     }
 
     SubShader
@@ -44,29 +45,15 @@
 			#pragma target 3.0
 
             #include "UnityCG.cginc"
-            #include "UnityUI.cginc" 
+
+            #include "Assets/Abolo_Lib/Shaders/AboloCG.cginc"  
 
             #pragma multi_compile_instancing
             #pragma multi_compile __ _TURN_OFF_HSB_ON
+            #pragma multi_compile _ WORLDBENDING_ON		
 
             #define TWO_PI 6.28318530718
-            float mix(float a, float b , float t)
-            {
-                return b*t + a*(1.0 - t);
-            }
 
-            float3 mix3(float3 a , float3 b ,float t)
-            {
-                return float3(mix(a.x , b.x ,t) , mix(a.y , b.y ,t) , mix(a.z , b.z ,t));
-            }
-
-            float3 hsb2rgb(float3 c)
-            {
-                float3 rgb = saturate(abs(fmod(c.x * 6.0 + float3(0.0 , 4.0 , 2.0) , 6.0) -3.0) - 1.0);
-                
-                rgb = rgb * rgb * (3.0 - 2.0 * rgb);
-                return c.z * mix3(float3(1.0,1.0,1.0) , rgb , c.y);
-            }
 
             struct appdata_t
             {
@@ -97,13 +84,16 @@
 
 		    UNITY_INSTANCING_BUFFER_END(Props)
   
-
+            uniform float _VertexCurveViewFac;
             v2f vert(appdata_t v)
             {
                 v2f OUT;
                 UNITY_SETUP_INSTANCE_ID(v);
                 OUT.worldPosition = v.vertex;
                 OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
+            #ifdef WORLDBENDING_ON
+				OUT.vertex = ABL_WorldBendTransform(v.vertex , _VertexCurveViewFac);
+			#endif
                 OUT.texcoord = TRANSFORM_TEX(v.texcoord , _MainTex );
                 OUT.color = v.color * UNITY_ACCESS_INSTANCED_PROP(Props , _Color);
                 UNITY_TRANSFER_INSTANCE_ID(v,OUT);
