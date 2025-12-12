@@ -179,7 +179,7 @@ namespace AboloLib
         public static  void SetProductItem(GameObject itemObj , int productId , int number)
         {
             if (itemObj.activeInHierarchy) itemObj.SetActive(false);
-            string path = ResUtility.ProductSpriteResPath + productId.ToString();
+            string path = GlobalText.ItemSpritePath(productId);
             itemObj.transform.Find("icon").GetComponent<Image>().sprite = 
                 InstantiateSpriteFromResource(path);
             itemObj.transform.Find("num").GetComponent<TextMeshProUGUI>().text = 

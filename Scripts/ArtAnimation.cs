@@ -262,7 +262,7 @@ namespace AboloLib
 
         public static IEnumerator DoActionWithInterval(int count, float interval, Action<int> deltaAction, Action callback = null)
         {
-            yield return null;
+            //yield return null;
             for (int i = 0; i < count; i++)
             {
                 deltaAction?.Invoke(i);

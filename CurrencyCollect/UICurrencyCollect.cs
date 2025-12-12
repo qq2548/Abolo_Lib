@@ -50,7 +50,7 @@ namespace AboloLib
         public static void SetCurrenciesSprite(List<Currency> currencies ,int id)
         {
              Debug.Log($"id is ===========>{id}");
-            Sprite sprite = ArtUtility.InstantiateSpriteFromResource($"Sprites/MergeItems/Icon_{id.ToString("D3")}", Vector2.one * 0.5f);
+            Sprite sprite = ArtUtility.InstantiateSpriteFromResource(GlobalText.ItemSpritePath(id), Vector2.one * 0.5f);
             foreach (var item in currencies)
             {
                 item.transform.Find("particle_boom").GetComponent<ParticleSystem>().textureSheetAnimation.SetSprite(0, sprite);

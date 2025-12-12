@@ -118,8 +118,10 @@ namespace AboloLib
             {
                 CreatePools();
             }
-            pools[objectToRecycle.Id].Add(objectToRecycle);
+            
             objectToRecycle.gameObject.SetActive(false);
+            SceneManager.MoveGameObjectToScene(objectToRecycle.gameObject, poolScene);
+            pools[objectToRecycle.Id].Add(objectToRecycle);
         }
 
         private void ObjectToDestroy(MyObject objectToRecycle)

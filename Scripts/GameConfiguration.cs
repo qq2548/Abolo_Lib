@@ -43,6 +43,11 @@ namespace AboloLib
         [Header("特效预制体资源路径")]
         public string GameEffectFactoryPath;
         /// <summary>
+        /// 游戏特效预制体资源路径配置
+        /// </summary>
+        [Header("通用飞行物预制体资源路径")]
+        public string GameFlyItemFactoryPath;
+        /// <summary>
         /// 游戏音效资源路径配置
         /// </summary>
         [Header("音效资源预设路径")]

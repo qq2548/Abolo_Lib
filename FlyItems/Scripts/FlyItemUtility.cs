@@ -5,9 +5,20 @@ using UnityEngine;
 
 namespace AboloLib
 {
+    public enum FlyDirType
+    {
+        Skew,
+        Left,
+        Right,
+        Up,
+        Down,
+        Horizontal,
+        Vertical,
+    }
     [System.Serializable]
     public class FlyData
     {
+        public FlyDirType MyFlyDirType;
         public bool DisableRandomShootPosition = false;
         //发射阶段位移周期
         public float ShootDuraiotn = 0.5f;
@@ -41,6 +52,11 @@ namespace AboloLib
     public static class FlyItemUtility
     {
         /// <summary>
+        /// 多个 item 发射周期常量
+        /// </summary>
+        public const float MULTI_FLY_INTERVAL = 0.15f;
+        public const float MULTI_SHOOT_DURATION = 0.30f;
+        /// <summary>
         /// 顺时针旋转向量
         /// </summary>
         /// <param name="oriVec"></param>
@@ -54,21 +70,72 @@ namespace AboloLib
         }
 
 
-        private static int GetOffsetDirection(Vector3 position)
+        private static Vector3 GetOffsetScalor(Vector3 position , FlyDirType dirType)
         {
+            Vector3 result = Vector3.zero;
+            int scalor = 1;
             Vector3 screen_pos = UICanvasAdapter.CurrentCanvas.worldCamera.WorldToScreenPoint(position);
-            if (screen_pos.x > Screen.width * 0.8f)
+            switch (dirType)
             {
-                return -1;
+                case FlyDirType.Skew:
+                    result =  Vector3.one;
+
+                break;
+                case FlyDirType.Right:
+                    result =  Vector3.right;
+
+                break;
+                case FlyDirType.Left:
+                    result =  Vector3.left;
+
+                break;
+                case FlyDirType.Up:
+                    result =  Vector3.up;
+
+                break;
+                case FlyDirType.Down:
+                    result =  Vector3.down;
+
+                break;
+                case FlyDirType.Horizontal:
+                    result =  Vector3.right;
+
+                break;
+                case FlyDirType.Vertical:
+                    result =  Vector3.up;
+
+                break;
             }
-            else if (screen_pos.x < Screen.width * 0.2f)
+            if(dirType == FlyDirType.Skew || dirType == FlyDirType.Horizontal || dirType == FlyDirType.Vertical)
             {
-                return 1;
+                if (screen_pos.x > Screen.width * 0.8f)
+                {
+                    scalor = -1;
+                }
+                else if (screen_pos.x < Screen.width * 0.2f)
+                {
+                    scalor = 1;
+                }
+                else
+                {
+                    scalor = UnityEngine.Random.Range(-1, 2);
+                }
             }
-            else
-            {
-                return UnityEngine.Random.Range(-1, 2);
-            }
+            return result * scalor;
+        }
+
+        public static float GetDelayFromStartToHit(List<FlyItem> flyItems)
+        {
+            float result = 0.0f;
+            int count = flyItems.Count - 1;
+            result = MULTI_SHOOT_DURATION*count/(count + 1) + flyItems[0].MyFlyData.ShootDuraiotn + flyItems[0].MyFlyData.FlyDuraiotn;
+                //flyItems[0].MyFlyData.ShootDuraiotn + flyItems[0].MyFlyData.FlyDuraiotn + flyItems[0].MyFlyData.FlyDelay;
+            return result;
+        }
+
+        public static float GetHitingInterval(int count)
+        {
+            return MULTI_FLY_INTERVAL - MULTI_SHOOT_DURATION/(float)count;
         }
 
         private static Vector3  FlyShootOut(FlyItem item  , Vector3 from , Vector3 to , Action callback = null)
@@ -78,7 +145,7 @@ namespace AboloLib
             Action<float> _delta = (value) =>
             {
                 item.transform.position = Vector3.Lerp(from , to , item.MyFlyData.ShootPosCurve.Evaluate(value));
-                item.transform.localScale = Vector3.Lerp(Vector3.zero , toscale, item.MyFlyData.ShootScaleCurve.Evaluate(value));
+                item.transform.localScale = Vector3.one * item.MyFlyData.ShootScaleCurve.Evaluate(value);
             };
             ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(item.MyFlyData.ShootDuraiotn , _delta , callback));
             return to;
@@ -86,13 +153,13 @@ namespace AboloLib
 
         private static void FlyToPosition(FlyItem item , Vector3 from , Vector3 to , Action callback = null)
         {
-            int offset_dir = GetOffsetDirection(from);
+            Vector3 offset = GetOffsetScalor(from , item.MyFlyData.MyFlyDirType);
             Vector3 fromscale = item.transform.localScale;
             //Vector3 toscale = item.transform.localScale * 3.0f;
             Action<float> _delta = (value) =>
             {
                 Vector3 pos = Vector3.Lerp(from, to, item.MyFlyData.FlyPosCurve.Evaluate(value));
-                pos += Vector3.one * item.MyFlyData.FlyPosOffsetCurve.Evaluate(value) * offset_dir;
+                pos += offset * item.MyFlyData.FlyPosOffsetCurve.Evaluate(value);
                 item.transform.position = pos;
                 item.transform.localScale = fromscale * item.MyFlyData.FlyScaleCurve.Evaluate(value);//Vector3.Lerp(fromscale, toscale, item.MyFlyData.FlyScaleCurve.Evaluate(value));
 
@@ -143,26 +210,35 @@ namespace AboloLib
             });
         }
 
-        public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval ,Vector3 from , Vector3 to , Action callback = null)
-        {
-            foreach (var item in items)
+        public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval
+             ,Vector3 from , Vector3 to , List<Action> singleFlyDoneActions, Action callback = null)
+        {   
+            int count = items.Count - 1;
+            if(count > 0)
             {
-                if (item.gameObject.activeInHierarchy && item.gameObject.activeSelf)
+                
+                for(int i = 0; i <= count; i++) 
                 {
-                    item.gameObject.SetActive(false);
+                    if(items[i].gameObject.activeInHierarchy && items[i].gameObject.activeSelf)
+                    {
+                        items[i].gameObject.SetActive(false);
+                    }
+                    items[i].MyFlyData.FlyDelay =  
+                        MULTI_SHOOT_DURATION*((count - i)/(count + 1)) + MULTI_FLY_INTERVAL * (count - i) ;
                 }
             }
-            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoActionWithInterval(items.Count , shootInterval , (index) =>
+            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoActionWithInterval(items.Count , MULTI_SHOOT_DURATION/items.Count , (index) =>
             {
-                items[index].MyFlyData.FlyDelay = (shootInterval) * (items.Count - index) + items[index].MyFlyData.ShootDuraiotn * ((items.Count - index) /(float)items.Count);
-                FlyProccedual(items[index] , from , to , () => GameObject.DestroyImmediate(items[index].gameObject));
+                //items[index].MyFlyData.FlyDelay = (shootInterval) * (items.Count - index) + items[index].MyFlyData.ShootDuraiotn * ((items.Count - index) /(float)items.Count);
+                FlyProccedual(items[index] , from , to , singleFlyDoneActions[index]);
             } , callback));
         }
 
-                public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval ,Vector3 from , Vector3 to ,float timeoffset , Action callback = null)
+        public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval 
+            ,Vector3 from , Vector3 to , List<Action> singleFlyDoneActions ,float timeoffset , Action callback = null)
         {
             float amount = 0.0f;
-            for(int i = 0; i < items.Count; i++) 
+            for(int i = 0; i < items.Count; i++)  
             {
                 amount += timeoffset * i;
                 
@@ -170,10 +246,11 @@ namespace AboloLib
                 if(img != null)
                     img.color = new Color(amount, 1f, 1f, 1f); 
             }
-            MultipleFlyProccedual(items , shootInterval , from , to , callback);
+            MultipleFlyProccedual(items , shootInterval , from , to ,singleFlyDoneActions, callback);
         }
 
-        public static void MultipleFlyProccedual(List<FlyItem> items, float shootInterval, Vector3 from, Vector3 to, Vector2 randomRange, Action callback = null)
+        public static void MultipleFlyProccedual(List<FlyItem> items, float shootInterval
+            , Vector3 from, Vector3 to, List<Action> singleFlyDoneActions, Vector2 randomRange, Action callback = null)
         {
             for(int i = 0; i < items.Count; i++) 
             {
@@ -181,7 +258,7 @@ namespace AboloLib
                 if(img != null)
                     img.color = new Color(UnityEngine.Random.Range(randomRange.x , randomRange.y), 1f, 1f, 1f); 
             }
-            MultipleFlyProccedual(items , shootInterval , from , to , callback);
+            MultipleFlyProccedual(items , shootInterval , from , to , singleFlyDoneActions , callback);
         }
     }
 }

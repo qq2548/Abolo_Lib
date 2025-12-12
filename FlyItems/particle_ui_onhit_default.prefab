@@ -25,8 +25,8 @@ RectTransform:
   m_GameObject: {fileID: 4431525773033020849}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4431525774594263261}
   - {fileID: 6440595991445105734}
@@ -63,8 +63,8 @@ RectTransform:
   m_GameObject: {fileID: 4431525773205609819}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4431525773033020850}
   m_Father: {fileID: 0}
@@ -4907,7 +4907,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 8358f0511f98c3d4b9f1622c9a0ce82c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4980,7 +4980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7ce729f0683894991480c26b81495f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5e667dd41b4f7a84fb3396d16e56ece3, type: 2}
+  m_Material: {fileID: 2100000, guid: 8358f0511f98c3d4b9f1622c9a0ce82c, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -4988,7 +4988,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  particleTexture: {fileID: 2800000, guid: 5e12c21ef8bc85f47ab3af31065934f7, type: 3}
+  particleTexture: {fileID: 2800000, guid: 7bd0b0391ea461342bef11742a871d26, type: 3}
   particleSprite: {fileID: 0}
   isRandomStartFrame: 0
   StartFrameOverride: 0
@@ -9884,7 +9884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f7ce729f0683894991480c26b81495f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5e667dd41b4f7a84fb3396d16e56ece3, type: 2}
+  m_Material: {fileID: 2100000, guid: 8358f0511f98c3d4b9f1622c9a0ce82c, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}

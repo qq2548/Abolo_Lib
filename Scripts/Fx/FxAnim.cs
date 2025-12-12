@@ -47,6 +47,7 @@ namespace AboloLib
         public virtual void Play()
         {
             SetRootActive(true);
+            PlayParticles();
         }
 
         public void PlayParticles()

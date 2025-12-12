@@ -154,12 +154,12 @@
 				//fmod 返回 x/y 的余数(取模)。如果 y 为 0 ，结果不可预料
 				//float timeVal = fmod((TimeFac+0.001) * _Speed,_HorizaontalCount * _VerticalCount);  //进行取余数操作 得到当前要显示的图片的下标
 				//timeVal = floor(timeVal);
-
+				
 				//UV横向位移角标计算
-				float timeVal_u = fmod((TimeFac+0.001) * _Speed,_HorizaontalCount);  //进行取余数操作 得到当前要显示的图片的下标
+				float timeVal_u = fmod((TimeFac+0.001 + (v.Color.r * 100)) * _Speed,_HorizaontalCount);  //进行取余数操作 得到当前要显示的图片的下标
 				timeVal_u = floor(timeVal_u);
 				//UV纵向位移角标计算
-				float timeVal_v = fmod((TimeFac+0.001)* _Speed/_HorizaontalCount,_VerticalCount);  //进行取余数操作 得到当前要显示的图片的下标
+				float timeVal_v = fmod((TimeFac+0.001 + (v.Color.r * 100))* _Speed/_HorizaontalCount,_VerticalCount);  //进行取余数操作 得到当前要显示的图片的下标
 				timeVal_v = _VerticalCount - floor(timeVal_v) - 1;
 
 				
@@ -172,8 +172,9 @@
 				xValue += timeVal_u * uAddPerFrame; 
 				yValue += timeVal_v * vAddPerFrame; 
 				spriteUV = float2(xValue,yValue);
-				fixed4 c = tex2D (_MainTex, spriteUV) * tint * v.Color;
-				//c.a *= 2.0f;
+				fixed4 c = tex2D (_MainTex, spriteUV) * tint ;
+				
+				c.a *= v.Color.a;
 				return c;
 			}
 

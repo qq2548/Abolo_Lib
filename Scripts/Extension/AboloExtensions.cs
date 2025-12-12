@@ -85,6 +85,26 @@ namespace AboloLib
             return ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(duration, _deltaAnim, callback));
         }
 
+        // <summary>
+        /// transform 本地坐标缩放动画扩展方法,Pop效果
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="to">结束缩放大小</param>
+        /// <param name="duration">动画时长</param>
+        /// <param name="curve">动画采样曲线</param>
+        /// <param name="callback">回调</param>
+        /// <returns>动画协程</returns>
+        public static Coroutine ScaleTo(this Transform transform , 
+            Vector3 to, float duration, AnimationCurve curve = null, Action callback = null)
+        {
+            if (curve == null) curve = ArtUtility.IncreaseLinearCurve;
+            Action<float> _deltaAnim = (value) =>
+            {
+                transform.localScale = to * curve.Evaluate(value);
+            };
+            return ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(duration, _deltaAnim, callback));
+        }
+
         /// <summary>
         /// transform 子节点带间隔时间的位移动画扩展方法
         /// </summary>

@@ -9,7 +9,7 @@ using UnityEditor;
 namespace AboloLib
 {
     [DisallowMultipleComponent]
-    public class FlyItem : MonoBehaviour
+    public class FlyItem : MyObject
     {
         static string OpenAnimationName = "ani_open";
         static string IdleAnimationName = "ani_idle";
@@ -43,7 +43,6 @@ namespace AboloLib
 
         public void OnFlyDone()
         {
-            OnItemFlyDone?.Invoke();
             if (MyFlyData.OnDoneFx != null)
             {
                 var fx = Instantiate(MyFlyData.OnDoneFx, transform.parent);
@@ -61,7 +60,7 @@ namespace AboloLib
                     delay = ani.GetClip(CloseAnimationName).length;
                 }
             }
-            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, () => gameObject.SetActive(false)));
+            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, () => OnItemFlyDone?.Invoke()));
         }
 #if UNITY_EDITOR
         static FlyItem()
