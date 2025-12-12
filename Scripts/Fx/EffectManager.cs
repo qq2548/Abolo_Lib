@@ -83,7 +83,7 @@ namespace AboloLib
             return item;
         }
 
-        public static List<FlyItem> FlyMultipleCurrency(int count , float interval , Vector3 from , Vector3 to , int id , Action callback = null)
+        public static List<FlyItem> FlyMultipleCurrency(int count , Vector3 from , Vector3 to , int id , Action callback = null)
         {
             int key = 3;
             switch (id)
@@ -131,11 +131,11 @@ namespace AboloLib
             }
             if(id == ArtGameManager.GoldId)
             {
-                FlyItemUtility.MultipleFlyProccedual(items ,interval , from , to , actions ,new Vector2(0.0f , 1.0f) ,callback);
+                FlyItemUtility.MultipleFlyProccedual(items , from , to , actions ,new Vector2(0.0f , 1.0f) ,callback);
             }
             else
             {
-                FlyItemUtility.MultipleFlyProccedual(items ,interval , from , to , actions , callback);
+                FlyItemUtility.MultipleFlyProccedual(items , from , to , actions , callback);
             }
             return items;
         }

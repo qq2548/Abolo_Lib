@@ -210,7 +210,7 @@ namespace AboloLib
             });
         }
 
-        public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval
+        public static void MultipleFlyProccedual(List<FlyItem> items 
              ,Vector3 from , Vector3 to , List<Action> singleFlyDoneActions, Action callback = null)
         {   
             int count = items.Count - 1;
@@ -230,11 +230,11 @@ namespace AboloLib
             ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoActionWithInterval(items.Count , MULTI_SHOOT_DURATION/items.Count , (index) =>
             {
                 //items[index].MyFlyData.FlyDelay = (shootInterval) * (items.Count - index) + items[index].MyFlyData.ShootDuraiotn * ((items.Count - index) /(float)items.Count);
-                FlyProccedual(items[index] , from , to , singleFlyDoneActions[index]);
+                FlyProccedual(items[index] , from , to , singleFlyDoneActions[index] += () => {items[index].MyFlyData.FlyDelay =0.0f; });
             } , callback));
         }
 
-        public static void MultipleFlyProccedual(List<FlyItem> items , float shootInterval 
+        public static void MultipleFlyProccedual(List<FlyItem> items  
             ,Vector3 from , Vector3 to , List<Action> singleFlyDoneActions ,float timeoffset , Action callback = null)
         {
             float amount = 0.0f;
@@ -246,10 +246,10 @@ namespace AboloLib
                 if(img != null)
                     img.color = new Color(amount, 1f, 1f, 1f); 
             }
-            MultipleFlyProccedual(items , shootInterval , from , to ,singleFlyDoneActions, callback);
+            MultipleFlyProccedual(items  , from , to ,singleFlyDoneActions, callback);
         }
 
-        public static void MultipleFlyProccedual(List<FlyItem> items, float shootInterval
+        public static void MultipleFlyProccedual(List<FlyItem> items 
             , Vector3 from, Vector3 to, List<Action> singleFlyDoneActions, Vector2 randomRange, Action callback = null)
         {
             for(int i = 0; i < items.Count; i++) 
@@ -258,7 +258,7 @@ namespace AboloLib
                 if(img != null)
                     img.color = new Color(UnityEngine.Random.Range(randomRange.x , randomRange.y), 1f, 1f, 1f); 
             }
-            MultipleFlyProccedual(items , shootInterval , from , to , singleFlyDoneActions , callback);
+            MultipleFlyProccedual(items  , from , to , singleFlyDoneActions , callback);
         }
     }
 }

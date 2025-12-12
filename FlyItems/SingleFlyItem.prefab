@@ -56,7 +56,7 @@ MonoBehaviour:
     ShootDuraiotn: 0.5
     FlyDelay: 0
     FlyDuraiotn: 0.5
-    Range: 1
+    Range: 0.33
     ShootPosCurve:
       serializedVersion: 2
       m_Curve:
@@ -120,20 +120,20 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0.56912464
         value: 0.55292284
-        inSlope: 1.3292841
-        outSlope: 1.3292841
+        inSlope: 1.6769215
+        outSlope: 1.6769215
         tangentMode: 0
         weightedMode: 3
         inWeight: 0.3248126
-        outWeight: 0.3814951
+        outWeight: 0.33803743
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 0.072244436
-        outSlope: 0.072244436
+        inSlope: -0
+        outSlope: -0
         tangentMode: 0
         weightedMode: 3
-        inWeight: 0.14244361
+        inWeight: 0.4705517
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -151,17 +151,17 @@ MonoBehaviour:
         inWeight: 0
         outWeight: 0.26028535
       - serializedVersion: 3
-        time: 0.19999999
-        value: 1.5
-        inSlope: 0.0032120985
-        outSlope: 0.0032120985
+        time: 0.25975502
+        value: 1.5453323
+        inSlope: 0.9009056
+        outSlope: 0.9009056
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.07376127
+        outWeight: 0.14349893
       - serializedVersion: 3
         time: 1
-        value: 1
+        value: 0.75
         inSlope: 0.0009034163
         outSlope: 0.0009034163
         tangentMode: 0
@@ -206,7 +206,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     MinDegree: 90
     MaxDegree: 90
-    OnDoneFx: {fileID: -5283117284170753628, guid: ea2ffba95b0be62458d85aadf9811db6, type: 3}
+    OnDoneFx: {fileID: -5283117284170753628, guid: 6c6b1949744c1d642b6197167a0f9d89, type: 3}
   TargetGraphic: {fileID: 0}
   Shadow: {fileID: 0}
 --- !u!111 &5187532181479315110
