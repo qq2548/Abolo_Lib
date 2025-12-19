@@ -135,7 +135,8 @@ namespace AboloLib
 
         public static float GetHitingInterval(int count)
         {
-            return MULTI_FLY_INTERVAL - MULTI_SHOOT_DURATION/(float)count;
+            float result = MULTI_FLY_INTERVAL - MULTI_SHOOT_DURATION/(float)count;
+            return result >= 0f ? result : 0.0f;
         }
 
         private static Vector3  FlyShootOut(FlyItem item  , Vector3 from , Vector3 to , Action callback = null)

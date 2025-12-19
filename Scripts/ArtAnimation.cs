@@ -210,6 +210,7 @@ namespace AboloLib
         public static IEnumerator DoAnimation(float duration , Action<float> deltaAnimation , Action callback = null)
         {
             float timer = 0.0f;
+            if(duration < 0.0f) duration = 0.0f;
             while (timer <= 1.0f)
             {
                 deltaAnimation?.Invoke(timer);
@@ -223,6 +224,7 @@ namespace AboloLib
         public static IEnumerator DoAnimation(float duration , Action<float> deltaAnimation ,AnimationCurve curve ,Action callback = null)
         {
             float timer = 0.0f;
+            if(duration < 0.0f) duration = 0.0f;
             while (timer <= 1.0f)
             {
                 deltaAnimation?.Invoke(curve.Evaluate(timer));
@@ -244,6 +246,7 @@ namespace AboloLib
         public static IEnumerator DoAnimationWithInterval(int count, float duration, float interval, Action<float> deltaAnimation, Action callback = null)
         {
             float timer = 0.0f;
+            if(duration < 0.0f) duration = 0.0f;
             while (timer <= 1.0f + count * interval)
             {
                 deltaAnimation?.Invoke(timer);
