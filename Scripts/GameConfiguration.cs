@@ -33,6 +33,11 @@ namespace AboloLib
         [Header("道具合成物Icon资源路径")]
         public string GameItemResPath;
         /// <summary>
+        /// 游戏角色Icon资源路径配置
+        /// </summary>
+        [Header("角色Icon资源路径")]
+        public string GameRoleResPath;
+        /// <summary>
         /// 游戏UI预制体资源路径配置
         /// </summary>
         [Header("UI预制体资源路径")]
