@@ -10,10 +10,10 @@ namespace AboloLib
     public class TMP_ColorModify : MonoBehaviour
     {
         [SerializeField] bool _changeOutlineColor;
-        [SerializeField] Color _outlineColor = Color.white;
+        [ColorUsage(true , true)][SerializeField] Color _outlineColor = Color.white;
 
         [SerializeField] bool _changeOverLayColor;
-        [SerializeField] Color _overlayColor = Color.white;
+        [ColorUsage(true , true)][SerializeField] Color _overlayColor = Color.white;
          
         [SerializeField] TMP_Text _tmpText ;
         Material _material;
