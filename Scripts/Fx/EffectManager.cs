@@ -44,6 +44,19 @@ namespace AboloLib
             ScheduleAdapter.DoSchedual(delay, () => { if (fx != null) DestroyImmediate(fx); });
             return fx;
         }
+        public static GameObject PlayFx(Transform parent, string name, float delay = 1.0f)
+        {
+            var fx = EffectDic.ContainsKey(name)? Instantiate(EffectDic[name], Vector3.zero, Quaternion.identity) : null;
+            if (fx != null)
+            {
+                fx.transform.SetParent(parent);
+                fx.transform.Reset();
+                if(fx.TryGetComponent( out IFxAnimCtrl fxAnim)) fxAnim.Play();
+            }
+            ScheduleAdapter.DoSchedual(delay, () => { if (fx != null) DestroyImmediate(fx); });
+            return fx;
+        }
+
 
         public static FlyItem FlyCurrency(Vector3 from , Vector3 to , int id , Action callback = null)
         {

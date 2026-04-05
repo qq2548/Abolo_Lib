@@ -51,9 +51,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MyFlyData:
+    MyFlyDirType: 0
     DisableRandomShootPosition: 0
     ShootDuraiotn: 0.5
-    FlyDlay: 0.075
+    FlyDelay: 0
     FlyDuraiotn: 0.5
     Range: 1
     ShootPosCurve:
@@ -215,6 +216,7 @@ MonoBehaviour:
     MinDegree: 0
     MaxDegree: 360
     OnDoneFx: {fileID: -5283117284170753628, guid: ea2ffba95b0be62458d85aadf9811db6, type: 3}
+  TargetGraphic: {fileID: 0}
   Shadow: {fileID: 0}
 --- !u!111 &5187532181479315110
 Animation:
@@ -293,7 +295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.32941177}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -405,7 +407,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

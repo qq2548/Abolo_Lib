@@ -13,6 +13,8 @@ using UnityEngine.UI;
 #if USE_SPINE
 using Spine;
 using Spine.Unity;
+using Unity.Mathematics;
+
 #endif
 #if USE_TMPRO
 using TMPro;
@@ -22,6 +24,16 @@ namespace AboloLib
 {
     public static class TransformExtension
     {
+        /// <summary>
+        /// 重置Transform
+        /// </summary>
+        /// <param name="transform"></param>
+        public static void Reset(this Transform transform)
+        {
+            transform.localPosition = Vector3.zero;
+            transform.localScale = Vector3.one;
+            transform.localRotation = quaternion.identity;
+        }
         /// <summary>
         /// transform 世界坐标位移动画扩展方法
         /// </summary>

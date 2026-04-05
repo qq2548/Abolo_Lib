@@ -55,7 +55,7 @@ MonoBehaviour:
     DisableRandomShootPosition: 1
     ShootDuraiotn: 0.5
     FlyDelay: 0
-    FlyDuraiotn: 0.5
+    FlyDuraiotn: 0.75
     Range: 0.33
     ShootPosCurve:
       serializedVersion: 2
@@ -261,7 +261,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 18.1, y: -5.1}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 256, y: 256}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &368707320593494970
 CanvasRenderer:
@@ -284,14 +284,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.32941177}
-  m_RaycastTarget: 1
+  m_Color: {r: 0, g: 0, b: 0, a: 0.6666667}
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 479b172e509a9f84882e0b85fcd2f201, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -397,7 +397,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
