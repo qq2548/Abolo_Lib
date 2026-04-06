@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,6 +32,11 @@ namespace AboloLib
         }
         public virtual MyObject Get(int objectId = 0)
         {
+            if(objectId < 0 || objectId >= prefabs.Length)
+            {
+                Debug.LogError($"Do not have this Object__id:{objectId} to Instantiate!!!!");
+                return null;
+            }
             MyObject instance;
             if (recycle)
             {
@@ -62,6 +67,26 @@ namespace AboloLib
             }
             
             return instance;
+        }
+
+        public virtual MyObject Get(string name)
+        {
+            return Get(GetIndex(name));
+        }
+
+        int GetIndex(string name)
+        {
+            int index = -1;
+            for (int i = 0; i < prefabs.Length; i++)
+            {
+                if(prefabs[i].gameObject.name == name)
+                {
+                    index =  i;
+                    return index;
+                }
+            }
+
+            return index;
         }
 
 

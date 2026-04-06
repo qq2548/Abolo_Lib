@@ -11,7 +11,7 @@ namespace AboloLib
         public PrefabFactory EffectFactory;
         public MyObjectFactory FlyItemFactory;
         public static Dictionary<string, GameObject> EffectDic;
-        //public static Dictionary<int, MyObject> FlyItemDic;
+        public static Dictionary<string, MyObject> FlyItemDic;
         public override void Init()
         {
             base.Init();
@@ -21,11 +21,11 @@ namespace AboloLib
                 EffectDic.Add(item.name, item.prefab);
             }
 
-            // FlyItemDic = new Dictionary<int, MyObject>();
-            // foreach (var item in FlyItemFactory.prefabs)
-            // {
-            //     FlyItemDic.Add(item.Id, item);
-            // }
+            FlyItemDic = new Dictionary<string, MyObject>();
+            foreach (var item in FlyItemFactory.prefabs)
+            {
+                FlyItemDic.Add(item.gameObject.name, item);
+            }
         }
         /// <summary>
         /// 播放指定名称的特效，并在一定延迟后销毁
@@ -95,6 +95,39 @@ namespace AboloLib
             FlyItemUtility.FlyProccedual(item , from , to , callback);
             return item;
         }
+
+        
+        public static FlyItem FlyItem(Vector3 from , Vector3 to , string name , int id  = -1, Action callback = null)
+        {
+            FlyItem item = null;
+            if(FlyItemDic.ContainsKey("name"))
+            {
+                item = Instantiate(FlyItemDic[name]) as FlyItem;
+            }
+            
+            if(item != null)
+            {
+                if(id >= 0)
+                {
+                    var img = item.transform.Find("root/Art").GetComponent<Image>();
+                    img.sprite = ArtUtility.InstantiateSpriteFromResource(GlobalText.ItemSpritePath(id));
+                }
+                item.transform.SetParent(UICanvasAdapter.CurrentCanvas.transform.GetChild(4), true);
+                item.transform.localScale = Vector3.one;
+                item.OnItemFlyDone = () =>
+                {
+                    item.transform.SetParent(null);
+                    Destroy(item.gameObject);
+                } ;            
+                callback += () =>
+                {
+
+                };
+                FlyItemUtility.FlyProccedual(item , from , to , callback);
+            }
+            return item;
+        }
+
 
         public static List<FlyItem> FlyMultipleCurrency(int count , Vector3 from , Vector3 to , int id , Action callback = null)
         {
