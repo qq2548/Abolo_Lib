@@ -239,6 +239,17 @@ namespace AboloLib
         }
     }
 
+    public static class SliderExtension
+    {
+        public static Coroutine ValueAnimation(this Slider slider,float from , float to , float duration = 0.33f)
+        {
+            return slider.StartCoroutine(ArtAnimation.DoAnimation(duration , (fac) =>
+            {
+                slider.value = Mathf.Lerp(from, to, fac);
+            }));
+        }
+    }
+
     public static class SpriteRendererExtension
     {
         /// <summary>

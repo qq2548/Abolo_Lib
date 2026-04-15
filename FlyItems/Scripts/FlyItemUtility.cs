@@ -231,8 +231,15 @@ namespace AboloLib
             ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoActionWithInterval(items.Count , MULTI_SHOOT_DURATION/items.Count , (index) =>
             {
                 //items[index].MyFlyData.FlyDelay = (shootInterval) * (items.Count - index) + items[index].MyFlyData.ShootDuraiotn * ((items.Count - index) /(float)items.Count);
-                FlyProccedual(items[index] , from , to , singleFlyDoneActions[index] += () => {items[index].MyFlyData.FlyDelay =0.0f; });
-            } , callback));
+                FlyProccedual(items[index] , from , to , singleFlyDoneActions[index] += () =>
+                {
+                    items[index].MyFlyData.FlyDelay =0.0f; 
+                    if(index == count)
+                    {
+                        callback?.Invoke();
+                    }
+                });
+            }));
         }
 
         public static void MultipleFlyProccedual(List<FlyItem> items  
