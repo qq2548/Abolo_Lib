@@ -141,6 +141,20 @@ namespace AboloLib
             Selection.activeObject = go;
         }
 
+        //将Sprite渲染器转换成Image，100像素每单位
+        [MenuItem("GameObject/ArtUtilsCreate/ConvertSpriteRenerersToImage", false, 20)]
+        private static void ConvertSpriteRenererToImage(MenuCommand menuCommand)
+        {
+            var go = menuCommand.context as GameObject;
+            PrefabUtility.UnpackPrefabInstance(go , PrefabUnpackMode.Completely , InteractionMode.UserAction);
+            ConvertToImage.ConvertSpriteRenerersToImage(go.transform);
+            
+            //注册到U3D的Undo系统中。就是指我们可以使用Ctrl+Z组合键对这个物体进行撤销操作。
+            Undo.RegisterCreatedObjectUndo(go, "Convert " + go.name);
+
+            EditorUtility.SetDirty(go);
+        }
+
         public static void FunctionEditorOnly(System.Action action)
         {
             if (!Application.isPlaying)
@@ -242,7 +256,7 @@ namespace AboloLib
         }
     }
 
-    [CustomEditor(typeof(ConvertToImage))]
+    [CustomEditor(typeof(ConvertToImage))] 
     [CanEditMultipleObjects]
     public class ConvertToImageEditor : Editor
     {
