@@ -91,7 +91,7 @@ namespace AboloLib
 
             //这个1.5应该是为了粒子动画播放完毕预留的延迟
             _myUnlockDuration = 1.5f + _maxGroupDuration
-                + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * _interval);
+                + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * Interval);
         }
 
         float GetMaxDurationGroupDuration(out int index)
@@ -103,7 +103,7 @@ namespace AboloLib
             {
                 counts[i] = spr_root.GetChild(i).GetComponentsInChildren<Renderer>().Length;
                 
-                float t = CurveAdapter.CurveFactory.durationPreset3 * (1.0f + counts[i] * _interval) + (i) * _groupInterval;
+                float t = CurveAdapter.CurveFactory.durationPreset3 * (1.0f + counts[i] * Interval) + (i) * _groupInterval;
                 if (duration < t)
                 {
                     duration = t;
@@ -147,7 +147,7 @@ namespace AboloLib
             {
                 if (!pop_root.gameObject.activeInHierarchy) pop_root.gameObject.SetActive(true);
                 yield return StartCoroutine(DoAnimationWithInterval(_popItems.Length, CurveAdapter.CurveFactory.durationPreset3,
-                    _interval , MultiPopDeltaAnimation(_popItems , _interval ,true)));
+                    Interval , MultiPopDeltaAnimation(_popItems , Interval ,true)));
             }
             callback?.Invoke();
         }
@@ -161,12 +161,12 @@ namespace AboloLib
                 startPositions[i] = graphics[i].transform.position;
             }
 
-            while (timer <= 1.0f + graphics.Length * _interval)
+            while (timer <= 1.0f + graphics.Length * Interval)
             {
                 timer += Time.deltaTime / duration;
                 for (int i = 0; i < graphics.Length; i++)
                 {
-                    float t = Mathf.Clamp01(timer - _interval * i);
+                    float t = Mathf.Clamp01(timer - Interval * i);
                     //Renderers 通过什么效果入场，由 GrowAnimationTypeInfo 标记
                     if (graphics[i].TryGetComponent( out GrowAnimationTypeInfo aniInfo))
                     {

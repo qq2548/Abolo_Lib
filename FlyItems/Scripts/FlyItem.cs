@@ -91,6 +91,7 @@ namespace AboloLib
                 fly_item.MyFlyData.FlyPosOffsetCurve = data.FlyPosOffsetCurve;
                 fly_item.MyFlyData.MinDegree = data.MinDegree;
                 fly_item.MyFlyData.MaxDegree = data.MaxDegree;
+                fly_item.MyFlyData.FlyOffset = data.FlyOffset;
                 fly_item.MyFlyData.OnDoneFx = data.OnDoneFx;
                 data = null;
             }

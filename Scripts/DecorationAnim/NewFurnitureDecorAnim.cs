@@ -72,6 +72,7 @@ namespace AboloLib
 //#if _ARTEST_PRESENTATION
 //            callback += SetCollider;
 //#endif
+            if(!root.gameObject.activeInHierarchy) root.gameObject.SetActive(true);
             StartCoroutine(MultiGraphicFadeInFixed(CurveAdapter.CurveFactory.durationPreset3 , callback));
         }
 
@@ -93,6 +94,26 @@ namespace AboloLib
             _mySelectID = Instances.IndexOf(this);
         }
 
+        public override void ResetSubItems(float factor)
+        {
+            base.ResetSubItems(factor);
+            if(_spineAnims.Length > 0)
+            {
+                foreach (var anim in _spineAnims)
+                {
+                    anim.Initialize(true);
+                    if(factor == 0f)
+                    {
+                        anim.AnimationState.SetAnimation(0, "ani_init", false);
+                    }
+                    else
+                    {
+                        anim.AnimationState.SetAnimation(0, "ani_idle", true);
+                    }
+                    anim.Update(0.2f);
+                }
+            }
+        }
         private void SetCollider()
         {
             if (transform.TryGetComponent<MeshCollider>(out MeshCollider mc))
@@ -119,10 +140,17 @@ namespace AboloLib
         /// </summary>
         public override void SetUnlockDuration()
         {
+            float commDuration = CurveAdapter.CurveFactory.durationPreset4;
+           
+            _myUnlockDuration = 
+                (commDuration*(1.0f + _decorItems.Length * Interval)) 
+                + (commDuration * (1.0f + _popItems.Length * Interval));
+            _myUnlockDuration /= SPEED;
+            float spineDelay = GetSpineUnlockDelay()/SPEED;
+            _myUnlockDuration = _myUnlockDuration > spineDelay ? _myUnlockDuration : spineDelay;
+
             //这个1.5应该是为了粒子动画播放完毕预留的延迟
-            _myUnlockDuration = 1.5f
-                + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _decorItems.Length * _interval)
-                + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * _interval);
+            //_myUnlockDuration += 1.5f;
         }
 
 
@@ -142,6 +170,8 @@ namespace AboloLib
                 {
                     item.weight = _particleAmount;
                 }
+                //设置粒子播放速度
+                ArtUtility.SetParticlesPlaySpeed(dp.gameObject , SPEED);
                 dp.EmitDecorationParticle(transform);
                 //演示装修动画音效
                 //DecorationAniamtionTest.instance.PlayAudioClip(this._myAudioName);//本地的方法，废弃
@@ -240,17 +270,27 @@ namespace AboloLib
 
         public IEnumerator MultiGraphicFadeInFixed(float duration, Action callback = null)
         {
+            StartCoroutine(UnlockSpineAnimations());
+            //装修动画结束时回调
+            StartCoroutine(ArtAnimDelayCoroutine(MyUnlockAnimDuration , callback));
+#if _ARTEST_PRESENTATION
+            Debug.Log($"MyUnlockAnimDuration is {MyUnlockAnimDuration}");
+#endif
             //anim_items 子节点入场动画
-            yield return StartCoroutine(DoAnimationWithInterval(_decorItems.Length, duration , _interval , MultiFadeDeltaAnimation(_decorItems, _startPositions,_interval, true)));
+            if (spr_root != null && _decorItems != null && _decorItems.Length > 0)
+            {
+                if(!spr_root.gameObject.activeInHierarchy) spr_root.gameObject.SetActive(true);
+                yield return StartCoroutine(DoAnimationWithInterval(_decorItems.Length, duration, 
+                    Interval, MultiFadeDeltaAnimation(_decorItems, _startPositions, Interval, true)));
+            }
+            
             //pop_items 子节点缩放动画
             if (pop_root != null && _popItems != null && _popItems.Length > 0)
             {
                 if(!pop_root.gameObject.activeInHierarchy) pop_root.gameObject.SetActive(true);
                 yield return StartCoroutine(DoAnimationWithInterval(_popItems.Length, CurveAdapter.CurveFactory.durationPreset3,
-                    _interval , MultiPopDeltaAnimation(_popItems , _interval ,true)));
+                    Interval , MultiPopDeltaAnimation(_popItems , Interval ,true)));
             }
-            //装修动画结束时回调
-            callback?.Invoke();
         }
 
     }

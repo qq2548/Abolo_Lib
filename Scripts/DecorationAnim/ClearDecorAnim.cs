@@ -31,6 +31,26 @@ namespace AboloLib
                 }
             }
         }
+        public override void ResetSubItems(float factor)
+        {
+            base.ResetSubItems(factor);
+            if(_spineAnims.Length > 0)
+            {
+                foreach (var anim in _spineAnims)
+                {
+                    anim.Initialize(true);
+                    if(factor == 0f)
+                    {
+                        anim.AnimationState.SetAnimation(0, "ani_idle", false);
+                    }
+                    else
+                    {
+                        anim.AnimationState.SetAnimation(0, "ani_init", true);
+                    }
+                    //anim.Update(0.2f);
+                }
+            }
+        }
         /// <summary>
         ///清扫类装修动画周期赋值
         /// </summary>
@@ -39,14 +59,14 @@ namespace AboloLib
             //清扫特效时长默认大于unlock动画clip时长
             if (_clearFx != null)
             {
-                _myUnlockDuration = MathF.Max(CurveAdapter.CurveFactory.durationPreset2 * (1.0f + _decorItems.Length * _interval)
-                                                                    + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * _interval),
+                _myUnlockDuration = MathF.Max(CurveAdapter.CurveFactory.durationPreset2 * (1.0f + _decorItems.Length * Interval)
+                                                                    + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * Interval),
                                                                       _mClearFxDuration);
             }
             else
             {
-                _myUnlockDuration = MathF.Max(CurveAdapter.CurveFactory.durationPreset2 * (1.0f + _decorItems.Length * _interval)
-                                                                    + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * _interval),
+                _myUnlockDuration = MathF.Max(CurveAdapter.CurveFactory.durationPreset2 * (1.0f + _decorItems.Length * Interval)
+                                                                    + CurveAdapter.CurveFactory.durationPreset3 * (1.0f + _popItems.Length * Interval),
                                                                         GetMyUnlockClipLength());
             }
         }
@@ -58,11 +78,17 @@ namespace AboloLib
             {
                 PlayFx(_clearFx);
             }
-            StartCoroutine(ArtAnimDelayCoroutine(_myUnlockDuration, new Action(() => HideSelf())));
+
+            StartCoroutine(UnlockSpineAnimations());
+
+            //StartCoroutine(ArtAnimDelayCoroutine(_myUnlockDuration, new Action(() => HideSelf())));
             if (_decorItems.Length > 0)
             {
                 StartCoroutine(MultiGraphicFadeOutFixed(
-                    CurveAdapter.CurveFactory.durationPreset2 , callback: null));
+                    CurveAdapter.CurveFactory.durationPreset2 , () =>
+                    {
+                        if (static_root != null) static_root.gameObject.SetActive(false);
+                    }));
             }
         }
 
@@ -71,13 +97,13 @@ namespace AboloLib
         {
 
             //ani_items 子节点消失动画
-            yield return StartCoroutine(DoAnimationWithInterval(_decorItems.Length, duration,_interval ,MultiFadeDeltaAnimation(_decorItems , _startPositions , _interval ,false)));
+            yield return StartCoroutine(DoAnimationWithInterval(_decorItems.Length, duration,Interval ,MultiFadeDeltaAnimation(_decorItems , _startPositions , Interval ,false)));
             //pop_items 子节点消失动画
             if (pop_root != null && _popItems != null && _popItems.Length > 0)
             {
                 if (!pop_root.gameObject.activeInHierarchy) pop_root.gameObject.SetActive(true);
-                yield return StartCoroutine(DoAnimationWithInterval(_popItems.Length , _interval , CurveAdapter.CurveFactory.durationPreset3 , 
-                    MultiPopDeltaAnimation(_popItems , _interval , false) ));
+                yield return StartCoroutine(DoAnimationWithInterval(_popItems.Length , Interval , CurveAdapter.CurveFactory.durationPreset3 , 
+                    MultiPopDeltaAnimation(_popItems , Interval , false) ));
             }
             callback?.Invoke();
         }

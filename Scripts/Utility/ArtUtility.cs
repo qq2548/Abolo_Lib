@@ -39,7 +39,23 @@ namespace AboloLib
             PlayFx(parent, fxInstance);
             fxInstance.transform.localPosition += offset;
         }
-
+        /// <summary>
+        /// 设置目标实例子节点所有粒子系统的播放速度
+        /// </summary>
+        /// <param name="fxInstance">实例目标节点</param>
+        /// <param name="Speed">速度</param>
+        public static void SetParticlesPlaySpeed(GameObject fxInstance , float Speed)
+        {
+            var pss = fxInstance.transform.GetComponentsInChildren<ParticleSystem>();
+            if(pss != null && pss.Length > 0)
+            {
+                foreach(var item in pss)
+                {
+                    var main = item.main;
+                    main.simulationSpeed = Speed;
+                }
+            }
+        }
         /// <summary>
         /// 通过脚本设置粒子系统自定义顶点数据，需要disable掉 Custom Data模块才会生效
         /// </summary>

@@ -35,7 +35,7 @@ namespace AboloLib
         public float MinDegree = 0f;
         public float MaxDegree = 0f;
         public FxAnim OnDoneFx;
-
+        public float FlyOffset = 1.0f;
         public float TotalDuration
         {
             get => ShootDuraiotn + FlyDuraiotn;
@@ -139,22 +139,22 @@ namespace AboloLib
             return result >= 0f ? result : 0.0f;
         }
 
-        private static Vector3  FlyShootOut(FlyItem item  , Vector3 from , Vector3 to , Action callback = null)
+        private static Vector3 FlyShootOut(FlyItem item, Vector3 from, Vector3 to, Action callback = null)
         {
             item.OnStartShootOut();
             Vector3 toscale = item.transform.localScale;
             Action<float> _delta = (value) =>
             {
-                item.transform.position = Vector3.Lerp(from , to , item.MyFlyData.ShootPosCurve.Evaluate(value));
+                item.transform.position = Vector3.Lerp(from, to, item.MyFlyData.ShootPosCurve.Evaluate(value));
                 item.transform.localScale = Vector3.one * item.MyFlyData.ShootScaleCurve.Evaluate(value);
             };
-            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(item.MyFlyData.ShootDuraiotn , _delta , callback));
+            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(item.MyFlyData.ShootDuraiotn, _delta, callback));
             return to;
         }
 
-        private static void FlyToPosition(FlyItem item , Vector3 from , Vector3 to , Action callback = null)
+        private static void FlyToPosition(FlyItem item, Vector3 from, Vector3 to, Action callback = null)
         {
-            Vector3 offset = GetOffsetScalor(from , item.MyFlyData.MyFlyDirType);
+            Vector3 offset = GetOffsetScalor(from, item.MyFlyData.MyFlyDirType) * item.MyFlyData.FlyOffset;
             Vector3 fromscale = item.transform.localScale;
             //Vector3 toscale = item.transform.localScale * 3.0f;
             Action<float> _delta = (value) =>
@@ -162,7 +162,7 @@ namespace AboloLib
                 Vector3 pos = Vector3.Lerp(from, to, item.MyFlyData.FlyPosCurve.Evaluate(value));
                 pos += offset * item.MyFlyData.FlyPosOffsetCurve.Evaluate(value);
                 item.transform.position = pos;
-                item.transform.localScale = fromscale * item.MyFlyData.FlyScaleCurve.Evaluate(value);//Vector3.Lerp(fromscale, toscale, item.MyFlyData.FlyScaleCurve.Evaluate(value));
+                item.transform.localScale = Vector3.one * item.MyFlyData.FlyScaleCurve.Evaluate(value);//Vector3.Lerp(fromscale, toscale, item.MyFlyData.FlyScaleCurve.Evaluate(value));
 
                 //shadow fly
                 if (item.Shadow != null)
@@ -170,7 +170,7 @@ namespace AboloLib
                     float delta = 0.0f;
                     Vector3 asix = to - from;
                     Vector3 v1 = pos - from;
-                    float fac = (Vector3.Distance(from, to) * Vector3.Distance(from, pos));
+                    float fac = Vector3.Distance(from, to) * Vector3.Distance(from, pos);
                     if (fac != 0f)
                     {
                         delta = v1.magnitude * Vector3.Dot(asix, v1) / fac;
@@ -179,7 +179,7 @@ namespace AboloLib
                     {
                         delta = 0f;
                     }
-                    Vector3 sPos = Vector3.LerpUnclamped(from, to, (delta / asix.magnitude));
+                    Vector3 sPos = Vector3.LerpUnclamped(from, to, delta / asix.magnitude);
                     item.Shadow.transform.position = sPos;
                     Vector3 shadow_scale = Vector3.Lerp(Vector3.one, Vector3.one * 0.5f, item.MyFlyData.FlyScaleCurve.Evaluate(value));
                     item.Shadow.transform.localScale = shadow_scale;
@@ -188,7 +188,7 @@ namespace AboloLib
             };
 
             var enumerator = ArtAnimation.DoAnimation(item.MyFlyData.FlyDuraiotn, _delta, callback);
-            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(item.MyFlyData.FlyDelay , () =>
+            ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(item.MyFlyData.FlyDelay, () =>
             {
                 ScheduleAdapter.Schedual.StartCoroutine(enumerator);
             }));

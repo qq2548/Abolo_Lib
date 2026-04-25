@@ -320,6 +320,10 @@ namespace AboloLib
                 skeletonAnimation.AnimationState.AddAnimation(0, clipNames[i], _loop, delay);
             }
         }
+        public static float GetClipDuration(this SkeletonAnimation skeletonAnimation , string clipName)
+        {
+            return skeletonAnimation.SkeletonDataAsset.GetSkeletonData(false).FindAnimation(clipName).Duration;
+        }
     }
 
     public static class SkeletonGraphicExtension
@@ -365,6 +369,10 @@ namespace AboloLib
                 bool _loop = i == clipNames.Length - 1 ? loop : false;
                 skeletonGraphic.AnimationState.AddAnimation(0, clipNames[i], _loop, delay);
             }
+        }
+        public static float GetClipDuration(this SkeletonGraphic skeletonAnimation, string clipName)
+        {
+            return skeletonAnimation.SkeletonDataAsset.GetSkeletonData(false).FindAnimation(clipName).Duration;
         }
     }
 #endif

@@ -33,6 +33,7 @@ namespace AboloLib
         {
             base.Play();
             DecorationParticle dp = Instantiate(_fixFx, transform);
+            ArtUtility.SetParticlesPlaySpeed(dp.gameObject, SPEED);
             dp.Play();
             //演示装修动画音效
             if (_playMyAudio)

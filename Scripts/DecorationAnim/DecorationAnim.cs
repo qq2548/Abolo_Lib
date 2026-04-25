@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using Spine.Unity;
 
 namespace AboloLib
 {
@@ -12,16 +13,43 @@ namespace AboloLib
     [RequireComponent(typeof(Animator))] [DisallowMultipleComponent] 
     public class DecorationAnim : ArtAnimation, IDecorAnimCtrl
     {
+        private static float AnimSpeed= 1.0f;
+        public static float SPEED
+        {
+            get
+            {
+                if(AnimSpeed > 0)
+                {
+                    return AnimSpeed;
+                }
+                else
+                {
+                    return 0.0001f;
+                }
+            }   
+            set
+            {
+                if(value > 0)
+                {
+                    AnimSpeed = value;
+                }
+                else
+                {
+                    Debug.LogError("AnimSpeed can not be equal or less than 0!!");
+                }
+            }
+        }
         [Header("每个物件开始动画之间的时间间隔")]
         [SerializeField] protected float _interval = 0.1f;
         public float Interval
         {
-            get => _interval;
+            get => _interval/SPEED;
             set => _interval = value;
         }
 
         [SerializeField] protected Renderer[] _decorItems;
         [SerializeField] protected Renderer[] _popItems;
+        [SerializeField] protected SkeletonAnimation[] _spineAnims;
         [Header("是否播放音效")]
         [SerializeField] protected bool _playMyAudio = true;
         protected Vector3[] _startPositions;
@@ -29,6 +57,8 @@ namespace AboloLib
         protected Transform root;
         protected Transform spr_root;
         protected Transform pop_root;
+        protected Transform spine_root;
+        protected Transform static_root;
 
         /// <summary>
         /// 这里保存一个音效名称，后续添加音效同步演示播放工能，这里字段用于读取资源，给程序同步资源和延迟信息
@@ -174,6 +204,9 @@ namespace AboloLib
             var _myFx = Instantiate(fx);
             _myFx.SetActive(false);
             _myFx.transform.localPosition = transform.position;
+            //设置粒子播放速度
+            ArtUtility.SetParticlesPlaySpeed(_myFx , SPEED);
+
             _myFx.SetActive(true);
 
             //一定延迟后销毁装修特效
@@ -240,8 +273,73 @@ namespace AboloLib
             return mclip.length;
         }
 
+        /// <summary>
+        /// 重置子节点Spine动画
+        /// </summary>
+        protected void InitSkeletonAnimations()
+        {
+            var sps = GetComponentsInChildren<SkeletonAnimation>(true);
+            if (sps !=null && sps.Length >0)
+            {
+                foreach (var item in sps)
+                {
+                    if (item != null && item.gameObject.activeInHierarchy)
+                    {
+                        item.Initialize(true);
+                    }
+                }
+            }
+        }
 
+        protected float GetSpineUnlockDelay()
+        {
+            float result = 0.0f;
+            if (_spineAnims == null || _spineAnims.Length == 0) return result;
+            for (int i = 0; i < _spineAnims.Length; i++)
+            {
+                float tmp = _spineAnims[i].GetClipDuration("ani_unlock") + i  * Interval;
+                result = result < tmp? tmp : result;
+            }
+            return result;
+        }
 
+        public void PlaySpine(string clipName)
+        {
+            if (_spineAnims != null && _spineAnims.Length > 0)
+            {
+                foreach (var anim in _spineAnims)
+                {
+                    anim.Play(clipName);
+                    if(clipName.Contains("unlock"))
+                    {
+                        float delay = anim.SkeletonDataAsset.GetSkeletonData(false).FindAnimation(clipName).Duration;
+                        string name = clipName.Replace("unlock", "idle");
+#if _ARTEST_PRESENTATION
+                        Debug.Log("8888888888888**********" + name);
+#endif
+                        anim.AnimationState.AddAnimation(0 , name , true , delay);
+                    }
+                }
+            }
+        }
+
+        public IEnumerator UnlockSpineAnimations()
+        {
+            yield return null;
+            if (_spineAnims != null && _spineAnims.Length > 0)
+            {
+                foreach (var anim in _spineAnims)
+                {
+                    anim.timeScale = SPEED;
+                    anim.Initialize(true);
+                    anim.AnimationState.SetAnimation(0 , "ani_unlock" , false);
+                    float delay = anim.SkeletonDataAsset.GetSkeletonData(false).FindAnimation("ani_unlock").Duration;
+                    anim.AnimationState.AddAnimation(0 , "ani_idle", true , delay);
+                    yield return new WaitForSeconds(Interval);
+                }
+            }
+            yield return null;
+        }
 
 #if _ARTEST_PRESENTATION
         #region 编辑器方法
