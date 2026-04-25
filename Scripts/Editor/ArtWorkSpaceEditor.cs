@@ -6,6 +6,7 @@ namespace AboloLib
 {
     public class ArtWorkSpaceEditor : Editor
     {
+
         [MenuItem("GameObject/ArtUtilsCreate/NewDecorationView", false, 10)]
         private static void CreateCustomNewDecorationNode(MenuCommand menuCommand)
         {
@@ -18,35 +19,38 @@ namespace AboloLib
             //创建一个新的游戏物体
             GameObject view = CreateCustomGameObject("view1" , go.transform);
             var _animator = view.AddComponent<Animator>();
+            //动画状态机剔除模式必须要改，否则反复切换状态时会有显示问题
+            _animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
             _animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>
                 (
-                    AboloConfig.DecorAnimatorPath+"ani_decoration_common_show/ani_common_show.controller"
+                    "Assets/ToonSuburbanPack/Animations/ani_decoration_common_show/ani_common_show.controller"
                 );
             var newFurnitureDecor = view.AddComponent<NewFurnitureDecorAnim>();
-            if (newFurnitureDecor._myAudioName != AboloConfig.DecorAudioName_Done)
+            if (newFurnitureDecor._myAudioName != "Newitem_Generate_Star")
             {
-                newFurnitureDecor._myAudioName = AboloConfig.DecorAudioName_Done;
+                newFurnitureDecor._myAudioName = "Newitem_Generate_Star";
                 newFurnitureDecor._myAudioPlayDelay = 0.4f;
             }
             if (newFurnitureDecor.DoneFx == null)
             {
                 newFurnitureDecor.DoneFx = AssetDatabase.LoadAssetAtPath<DecorationParticle>
                 (
-                    AboloConfig.DecorFxPath + "particle_decoration_done.prefab"
+                    "Assets/Art/MainApp/Prefabs/FX/Lobby/particle_decoration_done.prefab"
                 );
+                //Resources.UnloadAsset();
             }
 
             GameObject root = CreateCustomGameObject("root" , view.transform);
-
-            GameObject scale_items = CreateCustomGameObject("scale_items" , root.transform);
-
+            CreateCustomGameObject("static_items", root.transform);
+            GameObject scale_items = CreateCustomGameObject("scale_items", root.transform);
             CreateCustomGameObject("anim_items", root.transform);
+            CreateCustomGameObject("spine_items", root.transform);
             CreateCustomGameObject("pop_items", scale_items.transform);
 
             //注册到U3D的Undo系统中。就是指我们可以使用Ctrl+Z组合键对这个物体进行撤销操作。
             Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
             //将鼠标的选中物体自动的移动到刚刚创建的go物体上
-            Selection.activeObject = go;
+            Selection.activeObject = go; 
         }
 
         [MenuItem("GameObject/ArtUtilsCreate/ClearDecorationView", false, 10)]
@@ -61,14 +65,16 @@ namespace AboloLib
             //创建一个新的游戏物体
             GameObject view = CreateCustomGameObject("view1", go.transform);
             var _animator = view.AddComponent<Animator>();
+            //动画状态机剔除模式必须要改，否则反复切换状态时会有显示问题
+            _animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
             _animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>
                 (
-                    AboloConfig.DecorAnimatorPath+"ani_decoration_common_hide/ani_common_shrink.controller"
+                    "Assets/ToonSuburbanPack/Animations/ani_decoration_common_hide/ani_common_shrink.controller"
                 );
             var clearDecorAnim = view.AddComponent<ClearDecorAnim>();
-            if (clearDecorAnim._myAudioName != AboloConfig.DecorAudioName_Clean)
+            if (clearDecorAnim._myAudioName != "hotspot_Clean")
             {
-                clearDecorAnim._myAudioName = AboloConfig.DecorAudioName_Clean;
+                clearDecorAnim._myAudioName = "hotspot_Clean";
                 clearDecorAnim._myAudioPlayDelay = 0.1f;
             }
 
@@ -76,15 +82,16 @@ namespace AboloLib
             {
                 clearDecorAnim.ClearFx = AssetDatabase.LoadAssetAtPath<GameObject>
                 (
-                    AboloConfig.DecorFxPath+AboloConfig.DecorFxName_Clean
+                    "Assets/Art/MainApp/Prefabs/FX/Lobby/particle_decoration_clear.prefab"
                 );
             }
 
             GameObject root = CreateCustomGameObject("root", view.transform);
-
+            CreateCustomGameObject("static_items", root.transform);
             GameObject scale_items = CreateCustomGameObject("scale_items", root.transform);
-
             CreateCustomGameObject("anim_items", root.transform);
+            CreateCustomGameObject("spine_items", root.transform);
+            
             CreateCustomGameObject("pop_items", scale_items.transform);
 
             //注册到U3D的Undo系统中。就是指我们可以使用Ctrl+Z组合键对这个物体进行撤销操作。
@@ -104,22 +111,24 @@ namespace AboloLib
             //创建一个新的游戏物体
             GameObject view = CreateCustomGameObject("view1", go.transform);
             var _animator = view.AddComponent<Animator>();
+            //动画状态机剔除模式必须要改，否则反复切换状态时会有显示问题
+            _animator.cullingMode = AnimatorCullingMode.CullUpdateTransforms;
             _animator.runtimeAnimatorController = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>
                 (
-                    AboloConfig.DecorAnimatorPath+"ani_decoration_common_hide/ani_common_shrink.controller"
+                    "Assets/ToonSuburbanPack/Animations/ani_decoration_common_hide/ani_common_shrink.controller"
                 );
             var fixedDecor = view.AddComponent<FixedDecorAnim>();
-            if (fixedDecor._myAudioName != AboloConfig.DecorAudioName_Fix)
+            if (fixedDecor._myAudioName != "hotspot_Hammer_Multiple")
             {
-                fixedDecor._myAudioName = AboloConfig.DecorAudioName_Fix;
+                fixedDecor._myAudioName = "hotspot_Hammer_Multiple";
                 fixedDecor._myAudioPlayDelay = 0.0f;
             }
 
             if (fixedDecor.FixFx == null)
             {
-                fixedDecor.ClearFx = AssetDatabase.LoadAssetAtPath<GameObject>
+                fixedDecor.FixFx = AssetDatabase.LoadAssetAtPath<DecorationParticle>
                 (
-                    AboloConfig.DecorFxPath+AboloConfig.DecorFxName_Cover_S
+                    "Assets/Art/MainApp/Prefabs/FX/Lobby/particle_decoration_cover_s.prefab"
                 );
             }
 
@@ -129,10 +138,10 @@ namespace AboloLib
             }
 
             GameObject root = CreateCustomGameObject("root", view.transform);
-
+            CreateCustomGameObject("static_items", root.transform);
             GameObject scale_items = CreateCustomGameObject("scale_items", root.transform);
-
             CreateCustomGameObject("anim_items", root.transform);
+            CreateCustomGameObject("spine_items", root.transform);
             CreateCustomGameObject("pop_items", scale_items.transform);
 
             //注册到U3D的Undo系统中。就是指我们可以使用Ctrl+Z组合键对这个物体进行撤销操作。

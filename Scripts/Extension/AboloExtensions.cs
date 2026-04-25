@@ -13,7 +13,7 @@ using UnityEngine.UI;
 #if USE_SPINE
 using Spine;
 using Spine.Unity;
-using Unity.Mathematics;
+
 
 #endif
 #if USE_TMPRO
@@ -32,7 +32,7 @@ namespace AboloLib
         {
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one;
-            transform.localRotation = quaternion.identity;
+            transform.localRotation = Quaternion.identity;
         }
         /// <summary>
         /// transform 世界坐标位移动画扩展方法
