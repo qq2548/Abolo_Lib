@@ -1,6 +1,15 @@
-﻿using UnityEditor;
+﻿#define USE_TMPro
+using System.Collections.Generic;
+using System.Linq;
+using AboloLib;
+#if USE_TMPro
+    using TMPro;
+    using TMPro.EditorUtilities;
+#endif
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AboloLib
 {
@@ -162,6 +171,84 @@ namespace AboloLib
             Undo.RegisterCreatedObjectUndo(go, "Convert " + go.name);
 
             EditorUtility.SetDirty(go);
+        }
+
+#if USE_TMPro
+        //将选中路径下的所有TMP_FontAsset的faceInfo参数替换为Assets/ArtWorkSpace/Fonts的同名文件参数
+        [MenuItem("Assets/ArtUtils/TMPFillData", false, 20)]
+        private static void TMPFillData()
+        {
+            string path = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+            string sourcePath = "Assets/ArtWorkSpace/Fonts";
+            //如果选中的就是源文件夹，则不继续执行任何操作
+            if(path == sourcePath) return;
+            
+            List<TMP_FontAsset> assets_targets = new List<TMP_FontAsset>();
+            assets_targets.Clear();
+            assets_targets = SearchAndLoadAssets<TMP_FontAsset>("t:TMP_FontAsset" , new string[]{path});
+            var select = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            if(select != null) assets_targets.Add(select);
+            //如果目标文件夹没有任何TMP字体，则不继续执行任何操作
+            if(assets_targets == null || assets_targets.Count == 0) return;
+            List<TMP_FontAsset> assets_source = new List<TMP_FontAsset>();
+            assets_source.Clear();
+            assets_source = SearchAndLoadAssets<TMP_FontAsset>("t:TMP_FontAsset" , new string[]{sourcePath});
+            if(assets_source == null || assets_source.Count == 0)
+            {
+                Debug.LogError($"源文件夹中没有任何TMP_FontAsset文件,源文件夹路径:{sourcePath}");
+            }
+            foreach (var item in assets_targets)
+            {
+                var name = item.name;
+                var source = assets_source.FirstOrDefault(x => x.name == name);
+                if(source != null)
+                {
+                    var facinfo = source.faceInfo;  
+                    //比对目标字体跟源字体参数有差别才进行修改             
+                    if(!item.faceInfo.Compare(facinfo))
+                    {
+                        item.faceInfo = facinfo;
+                        EditorUtility.SetDirty(item);
+                        Debug.Log($"{AssetDatabase.GetAssetPath(item)}" , item);
+                        Debug.Log($"faceInfo参数修改");
+                        Debug.Log($"{AssetDatabase.GetAssetPath(source)}" , source);
+                    }
+                }
+            }
+            assets_targets = null;
+            assets_source = null;
+        }
+        //选中字体源文件打开TMPro字体创建窗口
+        [MenuItem("Assets/ArtUtils/CreateTMProFont", false, 30)]
+        private static void CreateTMProFont()
+        {
+            string path = AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs[0]);
+            var select = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(path);
+            if(select == null)
+            {
+                Debug.LogError($"必须选择TMP_FontAsset字体文件才能执行此命令，你选的是个啥？");
+                return;
+            }
+            TMPro_FontAssetCreatorWindow.ShowFontAtlasCreatorWindow(select);
+
+            Debug.Log(select.name , select);
+        }
+#endif
+        static List<T>  SearchAndLoadAssets<T>(string filter , string[] folders) where T : Object
+        {
+            var uids = AssetDatabase.FindAssets(filter, folders);
+            List<T> assets = new List<T>();
+            assets.Clear();
+            if(uids != null && uids.Length > 0)
+            {
+                foreach (var uid in uids)
+                {
+                    var obj_path = AssetDatabase.GUIDToAssetPath(uid);
+                    var obj_tmp = AssetDatabase.LoadAssetAtPath(obj_path , typeof(T));
+                    assets.Add(obj_tmp as T);
+                }
+            }
+            return assets;
         }
 
         public static void FunctionEditorOnly(System.Action action)
