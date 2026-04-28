@@ -9,7 +9,8 @@
 
 		[KeywordEnum(Default , XDir , YDir)]_Pattern("Effect_Pattern" , Float) = 0.0
 
-		//_DisolveThreshold("DisolveThreshold" , Range(0.0 , 1.0)) = 0.0
+		_SubTexUSpeed("SubTexUSpeed" , Range(0.0 , 10.0)) = 0.0
+		_SubTexVSpeed("SubTexVSpeed" , Range(0.0 , 10.0)) = 0.0
 
 		_SmoothRange("SmoothRange" , Range(0.0 , 0.5)) = 0.1
 
@@ -78,6 +79,7 @@
 			#include "UnityCG.cginc" 
 
 			#include "UnityUI.cginc" 
+			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
 			#pragma multi_compile __ _PATTERN_DEFAULT _PATTERN_XDIR _PATTERN_YDIR
 			#pragma multi_compile __ UNITY_UI_CLIP_RECT
             #pragma multi_compile __ UNITY_UI_ALPHACLIP
@@ -130,6 +132,8 @@
 			float _TileScalor_X;
 			float _TileScalor_Y;
 			float _Mirror;
+			float _SubTexUSpeed;
+			float _SubTexVSpeed;
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
@@ -151,7 +155,8 @@
 
 
 
-				//float t = frac(_Time.y * 0.001) * 1000.0;
+				
+				float t = ABL_FixTime(_Time.y);
 
 				
 				
@@ -163,9 +168,9 @@
 
 
 
-				
 				fixed4 color = tex2D(_MainTex , oriUV);
-				float2 fixedUV = IN.uv * float2(_TileScalor_X , _TileScalor_Y);
+				float2 fixedUV =  IN.uv 
+						* float2(_TileScalor_X , _TileScalor_Y) - float2(t * _SubTexUSpeed , t * _SubTexVSpeed);
 				color.rgb *= IN.Color.rgb;
 				fixed fac1 = 0;
 				//fixed fac2 = 1.0 - subColor.g;
@@ -204,6 +209,7 @@
                 #ifdef UNITY_UI_ALPHACLIP
                 clip (color.a - 0.001);
                 #endif
+				color.a *= IN.Color.a;
 				return   color;
 			}
 

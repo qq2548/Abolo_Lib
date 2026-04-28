@@ -17,6 +17,8 @@
 		_StartPercentage("StartDisolvePercentage" , Range(0.0 , 1.0)) = 0.5
 
 
+		_StartPuffPercentage("StartPuffPercentage" , Range(0.0 , 1.0)) = 0.0
+		_MaxPuffPercentage("MaxPuffPercentage" , Range(0.0 , 1.0)) = 0.0
 
 	}
 	SubShader 
@@ -54,6 +56,7 @@
 			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
+			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 			
 			#pragma multi_compile_particles 
 			#pragma multi_compile_instancing
 			#pragma multi_compile __ _PATTERN_DEFAULT _PATTERN_REMAINEDGE
@@ -113,7 +116,8 @@
             UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
 		    UNITY_INSTANCING_BUFFER_END(Props)
 
-			
+			fixed _StartPuffPercentage;
+			fixed _MaxPuffPercentage;			
 			fixed4 frag(v2f v) : SV_Target
 			{
 				
@@ -124,14 +128,20 @@
 											cos(t * _YFlowSpeed),sin(t * _YFlowSpeed),
 											-sin(t * _YFlowSpeed),cos(t * _YFlowSpeed)
 										};
+
 				
+
 				float2 oriUV = v.subuv + float2(0.0 , t * 0.1 * _YFlowSpeed);
-				fixed4 subColor = tex2D(_SubTex , oriUV);
+				fixed4 subColor = tex2D(_SubTex , oriUV );
+				fixed4 subColor_1 = tex2D(_SubTex , v.uv );
 				float2 uv = (frac(v.uv *_SubTex_ST.xy) - 0.5) * (sin(t*6.0)*0.05 + 0.995);
 				
 				float mask2 = saturate( length(max(abs(uv*1.5) , 0.0)));
 
-				float2 coord =v.uv - 0.5 ;
+				float2 coord = v.uv.xy - 0.5 ;
+				float p_fac = lerp(_StartPuffPercentage , _MaxPuffPercentage , v.uv.z) ;
+				float len = pow(length(coord * 2) , p_fac);
+				float2 coord_new = coord * len;
 				float2 Rcoord = mul(frac(v.uv*_SubTex_ST.xy ) -0.5,rot);
 				float2 grid = floor(v.uv * 2.0);
 
@@ -139,12 +149,12 @@
 				float facX = saturate(sin(Rcoord.x * 30.1415 + 123)*0.005 + sin(Rcoord.x * 2.5 + 66)*0.001 +  cos(Rcoord.x * 23.5)*0.007);
 				float facY = saturate(sin(Rcoord.y * 30.1415 + 123)*0.005 + sin(Rcoord.y * 2.5 + 66)*0.01 +  cos(Rcoord.y * 23.5)*0.007);
 				
-				fixed4 color = tex2D(_MainTex , (coord +float2(facX , facY)+ 0.5));
+				fixed4 color = tex2D(_MainTex , (coord_new +float2(facX , facY)+ 0.5));
 
 				color *= UNITY_ACCESS_INSTANCED_PROP(Props, _Color) * v.Color;
 
-				fixed fac1 = 1.0 - subColor.r;
-				fixed fac2 = 1.0 - subColor.g;
+				fixed fac1 = 1.0 - subColor.r * subColor_1 .g;
+				
 				#ifdef _PATTERN_DEFAULT
 					color.a *= smoothstep(saturate(fac1 - _SmoothRange*.5) , 
 														  saturate(fac1 + _SmoothRange*.5), 
@@ -158,6 +168,16 @@
 													   1.0 - (saturate(v.uv.z - _StartPercentage)) / (1.0 - _StartPercentage));
 					//color *= smoothstep(saturate(fac2 - 0.2) , fac2 , 1.0 - (saturate(v.uv.z - _StartPercentage)) / (1.0 - _StartPercentage)) * v.Color.a;
 				#endif
+
+				#ifdef _PATTERN_MASK
+					fac1 = 1.0 - tex2D(_SubTex , v.uv).r;	
+					fixed fac2 = tex2D(_SubTex , v.subuv).g;	
+					color.a *= smoothstep(saturate(fac1 - _SmoothRange*.5) , 
+														  saturate(fac1 + _SmoothRange*.5), 
+														  1.0 - (saturate(v.uv.z  - _StartPercentage)) / (1.0 - _StartPercentage));
+					color.a *= fac2 ;
+				#endif
+
 				color.rgb *= color.a;
 				return   color;
 			}
