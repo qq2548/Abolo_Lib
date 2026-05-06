@@ -61,6 +61,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BlendDst: 10
+    - _BlendMode: 0
+    - _BlendSrc: 5
     - _Brightness: 1.6
     - _BumpScale: 1
     - _ColorMask: 15

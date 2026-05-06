@@ -1,16 +1,10 @@
-﻿Shader "2d/Image_Grey"
+﻿Shader "2d/Image_BSC"
 
 {
 	Properties
 	{
 
 		[PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-
-        [Space(20)] //与上一行的间距
-		
-
-		_Color ("TintColor", Color) = (1.0,1.0,1.0,1.0)
-
 		_Brightness("Brightness", Float) = 1	//调整亮度
 		_Saturation("Saturation", Float) = 1	//调整饱和度
 		_Contrast("Contrast", Float) = 1		//调整对比度
@@ -23,8 +17,9 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
-		[Toggle]_TextMode("TextMode" ,Float) = 0.0
-
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 	}
 	SubShader 
 	{
@@ -60,26 +55,23 @@
 
 
 
-		Blend SrcAlpha OneMinusSrcAlpha
+		Blend [_BlendSrc] [_BlendDst] 
 
 		
 
 		Pass 
 		{
-			Name "ImageGrey"
+			Name "ImageBSC"
 			CGPROGRAM
 
 			
 
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma target 2.0
+			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
 			#include "UnityUI.cginc"  
-
-
-			#pragma multi_compile __ _TEXTMODE_ON
 
 
 			struct appdata
@@ -119,15 +111,10 @@
 			}
 
 
-
-			fixed4 _Color;
-
 			fixed4 frag(v2f IN) : SV_Target
 			{
 				fixed4 color = tex2D(_MainTex , IN.texcoord);
-				#ifdef _TEXTMODE_ON
-					color.rgb =  IN.Color.rgb;
-				#endif
+
 				    //brigtness亮度直接乘以一个系数，也就是RGB整体缩放，调整亮度
 					color.rgb =saturate(_Brightness * color.rgb);
 					//saturation饱和度：首先根据公式计算同等亮度情况下饱和度最低的值：
@@ -140,7 +127,9 @@
 					//根据Contrast在对比度最低的图像和原图之间差值
 					color.rgb = lerp(avgColor, color.rgb, _Contrast);
 					color.rg = saturate(color.rg + fixed2(0.05,0.02));
-				color *= _Color * IN.Color;
+				
+					color *=  IN.Color;
+
 				//color = tex2D(_MainTex , IN.texcoord)* IN.Color;
 
 
@@ -169,5 +158,5 @@
 		
 	}
 
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }
