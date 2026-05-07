@@ -15,6 +15,10 @@
         //_UVRect("UVRect" , Vector) = (0,0,1,1)
         //[HideInInspector]
         //_UVScale("UVScale" , Vector) = (0,0,0,0)
+
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
     }
 
     SubShader
@@ -36,7 +40,7 @@
 		ZWrite Off
 
 
-		Blend One One
+		Blend [_BlendSrc] [_BlendDst] 
        
 
         Pass
@@ -139,4 +143,5 @@
         ENDCG
         }
     }
+	CustomEditor "AboloLib.AboloSpriteShaderGUI" 
 }

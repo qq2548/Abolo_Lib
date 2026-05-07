@@ -1,4 +1,4 @@
-﻿Shader "2d/Image_Additive"
+﻿Shader "2d/Image_Breath"
 
 {
 	Properties
@@ -8,8 +8,9 @@
 
         [Space(20)] //与上一行的间距
 
-		_Color ("TintColor", Color) = (1.0,1.0,1.0,1.0)
-
+	    _TimeOffset("TimeOffset" , Float) = 0.0
+        _BreathMinAlpha("BreathMinAlpha" , Float) = 0.0
+        _Speed("Speed" , Float) = 1.0
 
 		[Header(StencilBuffer)]//模板缓冲
 		_StencilComp ("Stencil Comparison", Float) = 8
@@ -19,6 +20,9 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 	}
 	SubShader 
 	{
@@ -54,26 +58,27 @@
 
 
 
-		Blend SrcAlpha One
+		Blend [_BlendSrc] [_BlendDst] 
 
-
+		
 
 		Pass 
 		{
-			
+			Name "ImageBreath"
 			CGPROGRAM
 
 			
 
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma target 2.0
-			//#pragma target 3.0
+			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
 			#include "UnityUI.cginc" 
+            #include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
 
-			//#pragma multi_compile_instancing
+
+
 
 
 			struct appdata
@@ -81,8 +86,6 @@
 				float4 vertex : POSITION ;
 				float2 uv : TEXCOORD0;
 				fixed4 Color:COLOR;
-				//UNITY_VERTEX_INPUT_INSTANCE_ID //gpu instancing 默认的shader带了两个函数接口
-				
 				
 			};
 
@@ -90,57 +93,50 @@
 			{
 				
 				float4 vertex : SV_POSITION;
-				float2 uv0 : TEXCOORD0;
+				float2 uv : TEXCOORD0;
 				float4 worldPosition : TEXCOORD1;
 				fixed4 Color:COLOR;
-				//UNITY_VERTEX_INPUT_INSTANCE_ID
-				
+
 			};
 
 			sampler2D _MainTex;
-
 			float4 _MainTex_ST;
+			
+             float _TimeOffset;
+             fixed _BreathMinAlpha;
+             float _Speed;
 
-
-
-			v2f vert(appdata i)
+			v2f vert(appdata input)
 			{
-				v2f o;
-				//UNITY_SETUP_INSTANCE_ID(i);
-				o.worldPosition = i.vertex;
-				o.vertex = UnityObjectToClipPos(i.vertex);
-				o.uv0 = TRANSFORM_TEX(i.uv, _MainTex);
-				o.Color = i.Color;
-				//UNITY_TRANSFER_INSTANCE_ID(i,o);
+				v2f output;
+				output.worldPosition = input.vertex;
+				output.vertex = UnityObjectToClipPos(input.vertex);
+				output.uv = TRANSFORM_TEX(input.uv, _MainTex);
+				output.Color = input.Color;
 
-				return o;
+				return output;
 			}
 
 
 
-
-			UNITY_INSTANCING_BUFFER_START(Props)
-			// put more per-instance properties here
-            UNITY_DEFINE_INSTANCED_PROP(fixed4, _Color)
-		    UNITY_INSTANCING_BUFFER_END(Props)
-
-
 			fixed4 frag(v2f IN) : SV_Target
 			{
-				//UNITY_SETUP_INSTANCE_ID(IN);
-
-
-
-				fixed4 color = tex2D(_MainTex, IN.uv0) * IN.Color;
-
-				return color;
+				float t = ABL_FixTime(_Time.z  * _Speed);
+                float n = _BreathMinAlpha*0.5 + 0.5;
+                //fixed fac = saturate(sin(t + _TimeOffset)*0.5 + 0.5 + _BreathMinAlpha);
+                fixed fac = saturate(sin(t + _TimeOffset) * (0.5 -_BreathMinAlpha*0.5) + 0.5 + (_BreathMinAlpha * 0.5));
+                // sample the texture
+                fixed4 col = tex2D(_MainTex, IN.uv) * IN.Color;
+                 col.a *= fac;
+                //col.rgb *= col.a;
+               
+                return col;
 			}
 
 			ENDCG
 		}
 
-	
 		
 	}
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

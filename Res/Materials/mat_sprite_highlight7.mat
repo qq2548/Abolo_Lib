@@ -77,6 +77,9 @@ Material:
     m_Ints: []
     m_Floats:
     - WorldBending: 1
+    - _BlendDst: 1
+    - _BlendMode: 1
+    - _BlendSrc: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1

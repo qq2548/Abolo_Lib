@@ -18,6 +18,10 @@ Shader "2d/SpriteAnimation"
 		
 
 		_reverseInt("reverseFac" , Float) = 1.
+
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 	}
 	SubShader 
 	{
@@ -36,7 +40,8 @@ Shader "2d/SpriteAnimation"
 
 		ZWrite Off
 		ZTest LEqual
-		Blend One One
+
+		Blend [_BlendSrc] [_BlendDst] 
 
 
 
@@ -47,7 +52,7 @@ Shader "2d/SpriteAnimation"
 
 			#pragma vertex vert
 			#pragma fragment frag
-			//#pragma target 2.5
+			#pragma target 3.0
 			#include "UnityCG.cginc" 
 			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc"
 			#pragma multi_compile_instancing
@@ -163,5 +168,5 @@ Shader "2d/SpriteAnimation"
 	
 		
 	}
-
+	CustomEditor "AboloLib.AboloSpriteShaderGUI" 
 }

@@ -31,6 +31,10 @@
 		_flowSpeedX("flowSpeedX" ,Range(0.0,5.0)) = 1.0
 		_flowSpeedY("flowSpeedY" ,Range(0.0,5.0)) = 1.0
 		_reverseInt("reverseFac" , Float) = 1.
+
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 	}
 	SubShader 
 	{
@@ -58,9 +62,8 @@
         Lighting Off
         ZWrite Off
         ZTest [unity_GUIZTestMode]
-        Blend SrcAlpha OneMinusSrcAlpha
 
-
+		Blend [_BlendSrc] [_BlendDst] 
 
 		Pass 
 		{
@@ -184,5 +187,5 @@
 	
 		
 	}
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

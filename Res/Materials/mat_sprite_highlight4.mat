@@ -74,8 +74,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - WorldBending: 0
     - _Angle: 0
     - _ArcRange: 0
+    - _BlendDst: 1
+    - _BlendMode: 1
+    - _BlendSrc: 1
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5

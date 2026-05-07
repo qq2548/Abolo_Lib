@@ -1,4 +1,4 @@
-﻿Shader "2d/UV_FlowEffect_AlphaBlend"
+﻿Shader "2d/UV_FlowEffect"
 
 {
 	Properties
@@ -38,7 +38,9 @@
         [HideInInspector]
         _UVScale("UVScale" , Vector) = (0,0,0,0)
 
-
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 	}
 	SubShader 
 	{
@@ -73,7 +75,9 @@
         ZTest [unity_GUIZTestMode]
 
 
-		Blend SrcAlpha OneMinusSrcAlpha
+
+		Blend [_BlendSrc] [_BlendDst] 
+
 
 
 		Pass 
@@ -88,7 +92,7 @@
 			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
-			#include "UnityUI.cginc" 
+			#include "UnityUI.cginc"  
 
 			#pragma multi_compile_instancing
 			#pragma multi_compile __ _FROMATLAS_ON
@@ -228,12 +232,13 @@
 					uv.x += sin(t*(_YFlowSpeed +4) - uv.y *6.0)* uv.y * 0.02 + subColor.g * (IN.texcoord.x - 0.5) * IN.texcoord.y * 0.5;
 					color = tex2D(_MainTex , uv) ;
 					color.rgb =saturate(color.rgb + lerp(fixed3(1.0,0.9,0.0) , fixed3(0.0,0.0,0.0) , (1.0 - IN.texcoord.y * 0.5)));
-					color.a *= 1.0 - smoothstep(0.4,0.9,IN.texcoord.y);
+					color *= 1.0 - smoothstep(0.4,0.9,IN.texcoord.y);
 
 					//color
 				#endif
 				
 				color *= UNITY_ACCESS_INSTANCED_PROP(Props, _Color) * IN.Color;
+				color.rgb *= color.a;
 
 				return color;
 			}
@@ -244,5 +249,5 @@
 	
 		
 	}
-
+	CustomEditor "AboloLib.AboloSpriteShaderGUI" 
 }

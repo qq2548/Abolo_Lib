@@ -81,6 +81,9 @@ Material:
     m_Ints: []
     m_Floats:
     - WorldBending: 1
+    - _BlendDst: 10
+    - _BlendMode: 0
+    - _BlendSrc: 1
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5

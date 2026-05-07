@@ -1,4 +1,4 @@
-﻿Shader "2d/ImageHighLigh_AlphaManual"
+﻿Shader "2d/ImageHighLigh_UseAlphaManual"
 
 {
 	Properties
@@ -25,6 +25,9 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 
 		[HideInInspector]
         _UVRect("UVRect" , Vector) = (0,0,1,1)
@@ -65,7 +68,7 @@
 
 
 
-		Blend SrcAlpha One
+		Blend [_BlendSrc] [_BlendDst] 
 
 
 
@@ -204,5 +207,5 @@
 	
 		
 	}
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

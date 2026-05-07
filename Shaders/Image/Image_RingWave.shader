@@ -25,7 +25,9 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
-		
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0		
 	}
 	SubShader 
 	{
@@ -58,7 +60,7 @@
 
 
 
-		Blend SrcAlpha One
+		Blend [_BlendSrc] [_BlendDst] 
 
 
 
@@ -202,5 +204,5 @@
 	
 		
 	}
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

@@ -16,6 +16,10 @@
 
         _FacA("Speed" , Float) = 0.0
 
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
+
         [HideInInspector]
         _UVRect("UVRect" , Vector) = (0,0,1,1)
         [HideInInspector]
@@ -48,7 +52,8 @@
         Lighting Off
         ZWrite Off
         ZTest [unity_GUIZTestMode]
-        Blend SrcAlpha One
+
+		Blend [_BlendSrc] [_BlendDst] 
        
 
         Pass
@@ -178,4 +183,5 @@
         ENDCG
         }
     }
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

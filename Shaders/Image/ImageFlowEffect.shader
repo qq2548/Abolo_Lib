@@ -25,6 +25,10 @@ Shader "2d/ImageFlowEffect"
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
+		
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 	}
 	SubShader 
 	{
@@ -56,7 +60,7 @@ Shader "2d/ImageFlowEffect"
 
 
 
-		Blend SrcAlpha OneMinusSrcAlpha
+		Blend [_BlendSrc] [_BlendDst] 
 
 
 		Pass
@@ -67,7 +71,7 @@ Shader "2d/ImageFlowEffect"
 
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma target 2.0
+			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
 			#include "Assets/Abolo_Lib/Shaders/AboloCG.cginc" 
@@ -144,5 +148,5 @@ Shader "2d/ImageFlowEffect"
 
 		
 	}
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

@@ -72,6 +72,9 @@ Material:
     m_Floats:
     - _Angle: 0
     - _ArcRange: 0
+    - _BlendDst: 1
+    - _BlendMode: 1
+    - _BlendSrc: 1
     - _BlurThreshold: 0.5
     - _Brightness: 1
     - _BumpScale: 1

@@ -8,6 +8,10 @@
 
         [Toggle]_Turn_Off_HSB("TURN_OFF_HSB" , Float) = 0.0
 		[Toggle] WorldBending("WorldBending", Float) = 0.0  //开关
+
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
     }
 
     SubShader
@@ -33,7 +37,7 @@
 
 
 
-		Blend One OneMinusSrcAlpha
+		Blend [_BlendSrc] [_BlendDst] 
        
 
         Pass
@@ -139,4 +143,5 @@
         ENDCG
         }
     }
+	CustomEditor "AboloLib.AboloSpriteShaderGUI" 
 }

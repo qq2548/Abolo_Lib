@@ -126,7 +126,7 @@
 					fixed3 avgColor = fixed3(0.5, 0.5, 0.5);
 					//根据Contrast在对比度最低的图像和原图之间差值
 					color.rgb = lerp(avgColor, color.rgb, _Contrast);
-					color.rg = saturate(color.rg + fixed2(0.05,0.02));
+
 				
 					color *=  IN.Color;
 

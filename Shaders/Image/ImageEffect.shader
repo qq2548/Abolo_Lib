@@ -36,6 +36,10 @@
         _ShadowOffsetX("ShadowOffsetX" , Range(-0.1 , 0.1)) = 0.0
         _ShadowOffsetY("ShadowOffsetY" , Range(-0.1 , 0.1)) = 0.0
         _OutlineColor("OutlineColor" , Color) = (1.0,1.0,1.0,1.0)
+        
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
     }
 
     SubShader
@@ -63,7 +67,8 @@
         Lighting Off
         ZWrite Off
         ZTest [unity_GUIZTestMode]
-        Blend SrcAlpha OneMinusSrcAlpha
+
+		Blend [_BlendSrc] [_BlendDst] 
        
 
         Pass
@@ -298,5 +303,5 @@
         }
         
     }
-    FallBack "Mobile/Diffuse"
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

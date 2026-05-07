@@ -1,4 +1,4 @@
-﻿Shader "2d/ImageHallowLight_Auto"
+﻿Shader "2d/ImageHighLight_Pattern"
 
 {
 	Properties
@@ -10,7 +10,7 @@
 		
 		_SubTex("SubTexture",2D) = "white"{} //副贴图，用于特效动画的之类的
 		_Color ("TintColor", Color) = (1.0,1.0,1.0,1.0)
-		_MinMaskAlpha("MinMaskAlpha" , Range(0.0 , 1.0)) = 0.95
+
 
 	    _Speed("Speed" , Range(0.0 , 2.0)) = 0.5
 	    _Duration("Duration" , Range(1.0 , 5.0)) = 1.0
@@ -25,6 +25,9 @@
         _StencilReadMask ("Stencil Read Mask", Float) = 255
         _ColorMask ("Color Mask", Float) = 15
 
+		[HideInInspector]_BlendMode("BlendMode" , int) = 0
+		[HideInInspector]_BlendSrc("BlendSrc" , int) = 0
+		[HideInInspector]_BlendDst("BlendDst" , int) = 0
 
 		[HideInInspector]
         _UVRect("UVRect" , Vector) = (0,0,1,1)
@@ -65,7 +68,7 @@
 
 
 
-		Blend SrcAlpha One
+		Blend [_BlendSrc] [_BlendDst] 
 
 
 
@@ -81,7 +84,7 @@
 			#pragma target 3.0
 
 			#include "UnityCG.cginc" 
-			#include "UnityUI.cginc" 
+			#include "UnityUI.cginc"  
 
 			#pragma multi_compile_instancing
 
@@ -135,7 +138,7 @@
 		  float _Speed;
 		  float _Duration;
 		  float _LightScalor;
-		  float _MinMaskAlpha;
+
 
 			UNITY_INSTANCING_BUFFER_START(Props)
 			// put more per-instance properties here
@@ -187,18 +190,17 @@
                 float2 flowUV = float2(subuv.x - t , subuv.y -  t ) ;
 			    fixed subColor = tex2D(_SubTex, flowUV).r;
 			    fixed subMask = tex2D(_SubTex, IN.uv2).g;
-
-				fixed gray = 0.29 * color.r + 0.59 * color.g + 0.12 * color.b;
-
-				color.a *= clamp(1.0 - subMask , _MinMaskAlpha , 1.0);
-				fixed maskColor = color.a *gray;
-				color *= IN.Color;
-                    //color.rgb += saturate(UNITY_ACCESS_INSTANCED_PROP(Props, _Color).rgb * subColor * color.g * 2.5 * maskColor);
+			    fixed lightMask = 1.0 - tex2D(_SubTex, uv).b;
+				//color.a *= 1.0 - tex2D(_SubTex, uv).b;
+				//color.a *= clamp(1.0 - subMask , 0.99 , 1.0);
+				fixed maskColor = color.a * color.b * (1.0 - subMask + subColor);
+				
+                    color.rgb = saturate(color.rgb + UNITY_ACCESS_INSTANCED_PROP(Props, _Color).rgb * subColor * color.g * 2.5 * maskColor * lightMask);
                 //#endif
-
+				color *= IN.Color;
 				//color *= UNITY_ACCESS_INSTANCED_PROP(Props, _Color);
 
-				return subColor * maskColor * _Color * IN.Color;
+				return color ;
 			}
 
 			ENDCG
@@ -207,5 +209,5 @@
 	
 		
 	}
-
+	CustomEditor "AboloLib.AboloImageShaderGUI" 
 }

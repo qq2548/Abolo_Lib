@@ -76,6 +76,9 @@ Material:
     m_Ints: []
     m_Floats:
     - _Arc: 0
+    - _BlendDst: 1
+    - _BlendMode: 1
+    - _BlendSrc: 5
     - _Brightness: 1
     - _BumpScale: 1
     - _ColorMask: 15
