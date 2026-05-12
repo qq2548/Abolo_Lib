@@ -56,6 +56,28 @@ namespace AboloLib
         }
 
         /// <summary>
+        /// transform 世界坐标位移动画扩展方法,可超过终点位置用于带回弹效果的移动
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="from">起点位置坐标</param>
+        /// <param name="to">终点位置坐标</param>
+        /// <param name="duration">动画时长</param>
+        /// <param name="curve">动画采样曲线</param>
+        /// <param name="callback">回调</param>
+        /// <returns>动画协程</returns>
+        public static Coroutine DistanceMoveTo(this Transform transform , 
+            Vector3 from , Vector3 to , float duration , AnimationCurve curve = null ,Action callback = null)
+        {
+            var direction = (to - from).normalized;
+            var len = Vector3.Distance(from, to);
+            if (curve == null) curve = ArtUtility.IncreaseLinearCurve;
+            Action<float> _deltaAnim = (value) =>
+            {
+                transform.position = from + direction * (curve.Evaluate(value)* len);
+            };
+            return ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(duration , _deltaAnim , callback));
+        }
+        /// <summary>
         /// transform 本地坐标位移动画扩展方法
         /// </summary>
         /// <param name="transform"></param>
