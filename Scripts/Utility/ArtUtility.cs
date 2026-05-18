@@ -223,7 +223,8 @@ namespace AboloLib
         public static bool CheckElementInsideScreen(Camera camera , GameObject go)
         {
             var screenPos = camera.WorldToScreenPoint(go.transform.position);
-            return screenPos.x > 0 && screenPos.x < Screen.width && screenPos.y > 0 && screenPos.y < Screen.height;
+            Vector2 tolerance = new Vector2(200f , 200f);
+            return screenPos.x > -tolerance.x && screenPos.x < Screen.width + tolerance.x && screenPos.y > -tolerance.y && screenPos.y < Screen.height + tolerance.y;
         }
 
         /// <summary>

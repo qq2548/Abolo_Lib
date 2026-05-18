@@ -347,7 +347,8 @@ namespace AboloLib
                     }
                     else
                     {
-                        SetSubAnimationObjects(animations, true);
+                        //SetSubAnimationObjects(animations, true);
+                        item.transform.localScale = Vector3.one;
                     }
                 }
             }
