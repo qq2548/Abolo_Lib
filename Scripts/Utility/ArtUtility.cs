@@ -56,6 +56,8 @@ namespace AboloLib
                 }
             }
         }
+
+
         /// <summary>
         /// 通过脚本设置粒子系统自定义顶点数据，需要disable掉 Custom Data模块才会生效
         /// </summary>
@@ -155,6 +157,29 @@ namespace AboloLib
                 //em.enabled = false;
                 ps.Stop();
             }
+        }
+
+        /// <summary>
+        /// 2d矩阵旋转向量
+        /// </summary>
+        /// <param name="vector">需要旋转的向量</param>
+        /// <param name="radius">弧度</param>
+        /// <returns></returns>
+        public static Vector2 RotateVector(Vector2 vector , float radius)
+        {
+            return new Vector2(vector.x * Mathf.Cos(radius) - vector.y * Mathf.Sin(radius), 
+             vector.x * Mathf.Sin(radius) + vector.y * Mathf.Cos(radius));
+        }
+         /// <summary>
+        /// 2d矩阵旋转向量
+        /// </summary>
+        /// <param name="vector">需要旋转的向量</param>
+        /// <param name="radius">弧度</param>
+        /// <returns></returns>
+        public static Vector3 RotateVector(Vector3 vector , float radius)
+        {
+            var vec2 = RotateVector(new Vector2(vector.x , vector.y) , radius);
+            return new Vector3(vec2.x , vec2.y , 0.0f);
         }
 
         public static void DisableObjects<T>(T[] objects) where T: Component

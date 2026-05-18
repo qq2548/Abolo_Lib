@@ -173,6 +173,31 @@ namespace AboloLib
             EditorUtility.SetDirty(go);
         }
 
+        //创建UI Particle
+        [MenuItem("GameObject/Effects/Abolo UI Particle", false, 0)]
+        private static void CreateUIParticle(MenuCommand menuCommand)
+        {
+            var go = menuCommand.context as GameObject;
+            
+            var cg = CreateCustomGameObject("ui_particle" , go.transform);
+            var ps = cg.AddComponent<ParticleSystem>();
+            var uip = cg.AddComponent<UIParticleSystem>();
+            var source = SearchAndLoadAssets<Material>("mat_ui_bsc_add" , new string[]{});
+            if(source != null && source.Count > 0)
+            {
+                uip.material = source[0];
+            }
+            uip.raycastTarget = false;
+            ps.transform.localScale = Vector3.one * 100f;
+            ps.GetComponent<ParticleSystemRenderer>().enabled = false;
+            //选中当前创建的新物体
+            Selection.activeObject = cg;
+            //注册到U3D的Undo系统中。就是指我们可以使用Ctrl+Z组合键对这个物体进行撤销操作。
+            Undo.RegisterCreatedObjectUndo(cg, "Convert " + cg.name);
+
+            EditorUtility.SetDirty(go);
+        }
+
 #if USE_TMPro
         //将选中路径下的所有TMP_FontAsset的faceInfo参数替换为Assets/ArtWorkSpace/Fonts的同名文件参数
         [MenuItem("Assets/ArtUtils/TMPFillData", false, 20)]

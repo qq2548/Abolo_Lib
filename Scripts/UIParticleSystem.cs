@@ -27,6 +27,12 @@ namespace AboloLib
 
         [SerializeField]
         public int StartFrameOverride;
+
+        [SerializeField][Header("粒子朝向运动方向")]
+        bool _fixTextureDirection = false;
+
+        [SerializeField]
+        private Vector2 pivotOverride = new Vector2(0.5f , 0.5f);
         public override Texture mainTexture
         {
             get
@@ -185,11 +191,11 @@ namespace AboloLib
 
                 // get particle properties
 
-                Vector2 position = (main.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position));
+                Vector2 position = main.simulationSpace == ParticleSystemSimulationSpace.Local ? particle.position : _transform.InverseTransformPoint(particle.position);
                 float rotation = -particle.rotation * Mathf.Deg2Rad;
                 float rotation90 = rotation + Mathf.PI / 2;
                 Color32 color = particle.GetCurrentColor(_particleSystem);
-                float size = particle.GetCurrentSize(_particleSystem) * 0.5f;
+                Vector3 size = particle.GetCurrentSize3D(_particleSystem) * 0.5f;
 
                 // apply scale
                 if (main.scalingMode == ParticleSystemScalingMode.Shape)
@@ -261,11 +267,24 @@ namespace AboloLib
                 _quad[3].color = color;
                 _quad[3].uv0 = new Vector2(particleUV.z, particleUV.y);
 
+                if(_fixTextureDirection)
+                {
+                    //跟随运动修改粒子朝向
+                    float angle = Vector3.Angle(Vector3.right, particle.totalVelocity );
+                    Vector3 cross = Vector3.Cross(Vector3.right, particle.totalVelocity);
+                    if (cross.z > 0)
+                    {
+                        angle *= -1;
+                    }
+                    rotation = -angle * Mathf.Deg2Rad;
+                    rotation90 = rotation + Mathf.PI / 2;
+                }    
+                
                 if (rotation == 0)
                 {
                     // no rotation
-                    Vector2 corner1 = new Vector2(position.x - size, position.y - size);
-                    Vector2 corner2 = new Vector2(position.x + size, position.y + size);
+                    Vector2 corner1 = new Vector2(position.x - size.x * (pivotOverride.x * 2), position.y - size.y * (pivotOverride.y * 2));
+                    Vector2 corner2 = new Vector2(position.x + size.x * (2.0f - pivotOverride.x * 2), position.y + size.y * (2.0f - pivotOverride.y * 2));
 
                     _quad[0].position = new Vector2(corner1.x, corner1.y);
                     _quad[1].position = new Vector2(corner1.x, corner2.y);
@@ -275,18 +294,35 @@ namespace AboloLib
                 else
                 {
                     // apply rotation
-                    Vector2 right = new Vector2(Mathf.Cos(rotation), Mathf.Sin(rotation)) * size;
-                    Vector2 up = new Vector2(Mathf.Cos(rotation90), Mathf.Sin(rotation90)) * size;
+                    Vector2 fac = pivotOverride * 2 - Vector2.one;
+                    Vector2 offset = new Vector2(size.x * fac.x , size.y * fac.y);
 
-                    _quad[0].position = position - right - up;
-                    _quad[1].position = position - right + up;
-                    _quad[2].position = position + right + up;
-                    _quad[3].position = position + right - up;
+                    //Quaternion rot = Quaternion.Euler(new Vector3(0  , 0 , particle.rotation));
+                    //Matrix4x4 matrix = Matrix4x4.TRS(position , rot , Vector3.one);
+                    Vector2 corner1 = new Vector2(- size.x * (pivotOverride.x * 2),  - size.y * (pivotOverride.y * 2));
+                    Vector2 corner2 = new Vector2(size.x * (2.0f - pivotOverride.x * 2),  size.y * (2.0f - pivotOverride.y * 2));
+                    // Vector2 p1 =  matrix.MultiplyPoint(new Vector2(corner1.x, corner1.y)) ;
+                    // Vector2 p2 = matrix.MultiplyPoint(new Vector2(corner1.x, corner2.y)) ;
+                    // Vector2 p3 = matrix.MultiplyPoint(new Vector2(corner2.x, corner2.y));
+                    // Vector2 p4 = matrix.MultiplyPoint(new Vector2(corner2.x, corner1.y));
+
+                    Vector2 p1 = ArtUtility.RotateVector(new Vector2(corner1.x, corner1.y) , -rotation);
+                    Vector2 p2 = ArtUtility.RotateVector(new Vector2(corner1.x, corner2.y) , -rotation);
+                    Vector2 p3 = ArtUtility.RotateVector(new Vector2(corner2.x, corner2.y) , -rotation);
+                    Vector2 p4 = ArtUtility.RotateVector(new Vector2(corner2.x, corner1.y) , -rotation);
+
+                    _quad[0].position = position + p1;
+                    _quad[1].position = position + p2;
+                    _quad[2].position = position + p3;
+                    _quad[3].position = position + p4;
+
                 }
 
                 vh.AddUIVertexQuad(_quad);
             }
         }
+        
+
 
         void Update()
         {
