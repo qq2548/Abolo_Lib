@@ -18,7 +18,7 @@ namespace AboloLib
         private ParticleSystem _particleSystem;
         private ParticleSystem.Particle[] _particles;
         private UIVertex[] _quad = new UIVertex[4];
-        private Vector4 _uv = Vector4.zero;
+        private Vector4 _uv = new Vector4(0 , 0 , 1 , 1);
         private ParticleSystem.TextureSheetAnimationModule _textureSheetAnimation;
         private int _textureSheetAnimationFrames;
         private Vector2 _textureSheedAnimationFrameSize;
@@ -47,7 +47,7 @@ namespace AboloLib
                     return particleSprite.texture;
                 }
 
-                return null;
+                return s_WhiteTexture;
             }
         }
 
@@ -130,11 +130,7 @@ namespace AboloLib
             }
 
             // prepare uvs
-            if (particleTexture)
-            {
-                _uv = new Vector4(0, 0, 1, 1);
-            }
-            else if (particleSprite)
+            if (particleSprite)
             {
                 _uv = UnityEngine.Sprites.DataUtility.GetOuterUV(particleSprite);
             }
