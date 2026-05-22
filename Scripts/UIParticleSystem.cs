@@ -47,7 +47,7 @@ namespace AboloLib
                     return particleSprite.texture;
                 }
 
-                return s_WhiteTexture;
+                return null;
             }
         }
 

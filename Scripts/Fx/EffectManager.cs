@@ -58,29 +58,9 @@ namespace AboloLib
         }
 
 
-        public static FlyItem FlyCurrency(Vector3 from , Vector3 to , int id , Action callback = null)
+        public static FlyItem FlyFx(Vector3 from , Vector3 to , string name , Action callback = null)
         {
-            int key = 3;
-            switch (id)
-            {
-                case 999:
-                    key = 0;
-                break;
-                case 648:
-                    key = 1;
-                break;
-                case 998:
-                    key = 2;
-                break;
-            }
-            bool isCurrency = ArtGameManager.IsCurrency(id);
-            //string key = isCurrency ? id.ToString() : "SingleItem";
-            var item = _instance.FlyItemFactory.Get(key) as FlyItem;
-            if(!isCurrency)
-            {
-                var img = item.transform.Find("root/Art").GetComponent<Image>();
-                img.sprite = ArtUtility.InstantiateSpriteFromResource(GlobalText.ItemSpritePath(id));
-            }
+            var item = _instance.FlyItemFactory.Get(name) as FlyItem;
             item.transform.SetParent(UICanvasAdapter.CurrentCanvas.transform.GetChild(4), true);
             item.transform.localScale = Vector3.one;
             item.OnItemFlyDone = () =>

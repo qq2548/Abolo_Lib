@@ -104,7 +104,9 @@
             float _VerticalFactor;
             float _FeatherAmount;
 
-
+			float applyDotGain30(float g) {
+				return g + 0.3 * (g * (1.0 - g));
+			}
 			v2f vert(appdata i)
 			{
 				v2f o;
@@ -124,6 +126,31 @@
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
+
+				// // Sample texture and convert to grayscale
+				// vec4 texColor = tex2D(uTexture, vTexCoord);
+				// float gray = dot(texColor.rgb, vec3(0.299, 0.587, 0.114));
+				
+				// // Apply dot gain compensation
+				// float adjustedGray = applyDotGain30(gray);
+				
+				// // Create a simple halftone pattern based on screen frequency
+				// float frequency = 40.0;
+				// vec2 st = gl_FragCoord.xy / uResolution.xy;
+				// vec2 pattern = mod(st * frequency, 1.0) - 0.5;
+				
+				// // Calculate dot radius based on the gain-adjusted grayscale value
+				// float radius = sqrt(adjustedGray * 0.5);
+				// float dist = length(pattern);
+				
+				// // Smooth edges for the dot
+				// float dotFactor = smoothstep(radius + 0.01, radius - 0.01, dist);
+				
+				// // Output the final halftone color
+				// gl_FragColor = vec4(vec3(dotFactor), 1.0);
+
+
+
 				fixed4 color = tex2D(_MainTex , IN.texcoord.xy);
 				fixed4 subColr = tex2D(_SubTex , IN.texcoord_sub);
 				float offset_horizontal = subColr.r * 0.1;
@@ -134,6 +161,24 @@
 					smoothstep( _HorizontalFactor  + offset_horizontal - _FeatherAmount * 0.5 ,
 						_HorizontalFactor + offset_horizontal + _FeatherAmount * 0.5 , ruler);
 
+
+				//测试dot gain 30%
+				float gray = dot(color.rgb, float3(0.299, 0.587, 0.114));
+				// Apply dot gain compensation
+				float adjustedGray = applyDotGain30(gray);
+				// Create a simple halftone pattern based on screen frequency
+				float frequency = 40.0;
+				float2 st = IN.texcoord.xy;
+				float2 pattern = fmod(st * frequency, 1.0) - 0.5;
+				
+				// Calculate dot radius based on the gain-adjusted grayscale value
+				float radius = sqrt(adjustedGray * 0.5);
+				float dist = length(pattern);
+
+				// Smooth edges for the dot
+				float dotFactor = smoothstep(radius + 0.01, radius - 0.01, dist);
+
+				fixed4 gl_FragColor = float4(float3(adjustedGray , adjustedGray, adjustedGray), color.a);
 				return color;
 			}
 

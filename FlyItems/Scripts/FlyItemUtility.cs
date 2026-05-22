@@ -147,6 +147,14 @@ namespace AboloLib
             {
                 item.transform.position = Vector3.Lerp(from, to, item.MyFlyData.ShootPosCurve.Evaluate(value));
                 item.transform.localScale = Vector3.one * item.MyFlyData.ShootScaleCurve.Evaluate(value);
+                //shadow fly
+                if (item.Shadow != null)
+                {
+                    // Vector3 lightDir = new Vector3(1.0f , -1.0f , 0.0f);
+                    // float len = 0.4f;
+                    // Vector3 from = item.transform.position;
+                    // item.Shadow.transform.position = from + lightDir * (item.MyFlyData.ShootScaleCurve.Evaluate(value)* len);                    
+                }
             };
             ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.DoAnimation(item.MyFlyData.ShootDuraiotn, _delta, callback));
             return to;
@@ -167,21 +175,29 @@ namespace AboloLib
                 //shadow fly
                 if (item.Shadow != null)
                 {
-                    float delta = 0.0f;
-                    Vector3 asix = to - from;
-                    Vector3 v1 = pos - from;
-                    float fac = Vector3.Distance(from, to) * Vector3.Distance(from, pos);
-                    if (fac != 0f)
-                    {
-                        delta = v1.magnitude * Vector3.Dot(asix, v1) / fac;
-                    }
-                    else
-                    {
-                        delta = 0f;
-                    }
-                    Vector3 sPos = Vector3.LerpUnclamped(from, to, delta / asix.magnitude);
-                    item.Shadow.transform.position = sPos;
-                    Vector3 shadow_scale = Vector3.Lerp(Vector3.one, Vector3.one * 0.5f, item.MyFlyData.FlyScaleCurve.Evaluate(value));
+                    Vector3 lightDir = new Vector3(1.0f , -1.0f , 0.0f);
+                    float len = 0.667f * item.MyFlyData.FlyPosOffsetCurve.Evaluate(value);
+                    Debug.Log($"------------len is {len}");
+                    Vector3 from = item.transform.position;
+                    item.Shadow.transform.position = from + lightDir.normalized * (item.MyFlyData.FlyScaleCurve.Evaluate(value)* len);
+
+
+                    // float delta = 0.0f;
+                    // Vector3 asix = to - from;
+                    // Vector3 v1 = pos - from;
+                    // float fac = Vector3.Distance(from, to) * Vector3.Distance(from, pos);
+                    // if (fac != 0f)
+                    // {
+                    //     delta = v1.magnitude * Vector3.Dot(asix, v1) / fac;
+                    // }
+                    // else
+                    // {
+                    //     delta = 0f;
+                    // }
+                    // Vector3 sPos = Vector3.LerpUnclamped(from, to, delta / asix.magnitude);
+                    // item.Shadow.transform.position = sPos;
+
+                    Vector3 shadow_scale = Vector3.Lerp(Vector3.one, Vector3.one * 0.667f, item.MyFlyData.FlyPosOffsetCurve.Evaluate(value));
                     item.Shadow.transform.localScale = shadow_scale;
                 }
                 //end shadow fly
