@@ -47,7 +47,7 @@ namespace AboloLib
 
         public void Modify()
         {
-            if (_tmpText == null) _tmpText = GetComponent<TextMeshProUGUI>();
+            if (_tmpText == null) _tmpText = GetComponent<TMP_Text>();
             if (ChangeOutlineColor)
             {
                 SetOutlineColor();
@@ -61,8 +61,20 @@ namespace AboloLib
 
         void SetOutlineColor()
         {
-            if (_tmpText == null) _tmpText = GetComponent<TextMeshProUGUI>();
-            Material originalMaterial = _tmpText.materialForRendering;
+            if (_tmpText == null) _tmpText = GetComponent<TMP_Text>();
+            Material originalMaterial;
+            //判断使用UI还是mesh渲染，获取材质的方式有区别
+            if(_tmpText.GetType() == typeof(TextMeshProUGUI))
+            {
+                originalMaterial = _tmpText.materialForRendering;
+
+            }
+            else
+            {
+                Renderer renderer = GetComponent<Renderer>();
+                originalMaterial = renderer.sharedMaterial;
+            }
+
             Material newMaterial = new Material(originalMaterial);
             newMaterial.SetColor("_OutlineColor", OutlineColor);
             if (!newMaterial.IsKeywordEnabled("OUTLINE_ON"))
@@ -74,8 +86,19 @@ namespace AboloLib
 
         void SetOverlayColor()
         {
-            if (_tmpText == null) _tmpText = GetComponent<TextMeshProUGUI>();
-            Material originalMaterial = _tmpText.materialForRendering;
+            if (_tmpText == null) _tmpText = GetComponent<TMP_Text>();
+            Material originalMaterial;
+            //判断使用UI还是mesh渲染，获取材质的方式有区别           
+            if(_tmpText.GetType() == typeof(TextMeshProUGUI))
+            {
+                originalMaterial = _tmpText.materialForRendering;
+
+            }
+            else
+            {
+                Renderer renderer = GetComponent<Renderer>();
+                originalMaterial = renderer.sharedMaterial;
+            }
             Material newMaterial = new Material(originalMaterial);
             if (!newMaterial.IsKeywordEnabled("UNDERLAY_ON"))
             {

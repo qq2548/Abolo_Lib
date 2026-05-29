@@ -32,5 +32,10 @@ namespace AboloLib
         {
             
         }
+
+        public static void StopSchedual(Coroutine coroutine)
+        {
+            if(coroutine != null) Schedual.StopCoroutine(coroutine);
+        }
     }
 }

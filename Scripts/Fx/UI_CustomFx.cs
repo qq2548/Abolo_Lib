@@ -13,6 +13,8 @@ namespace AboloLib
 {
     public class UI_CustomFx : MonoBehaviour
     {
+        //全局UI mask动画的最大alpha值，以后只能改这里
+        public static float  MaxMaskAlpha = 0.67f;
         [SerializeField] List<Animation> _subAnimations;
         [Header("如果不需要背景模糊效果则勾选此项")]
         [SerializeField] bool _disableBlurBg = false;
@@ -22,6 +24,7 @@ namespace AboloLib
         public bool _isDynamicSubAnimItems = false;
         [Header("子节点Animation逐个激活间隔时间")]
         [SerializeField] float interval = 0.05f;
+        [SerializeField] CanvasGroup mask;
         public float AnimInterval
         {
             get => interval;
@@ -39,6 +42,7 @@ namespace AboloLib
 
         private void Awake()
         {
+            ResetSpineAnimation();
             if (_subAnimations == null)
             {
                 _subAnimations = new List<Animation>();
@@ -46,11 +50,117 @@ namespace AboloLib
             }
             _animators = new List<Animator>();
             _animators.Clear();
-        }
 
+            Animation anm = GetComponent<Animation>();
+
+            var masktf = transform.Find("mask");
+            if (masktf == null) return;
+            
+            if (masktf.TryGetComponent(out mask))
+            {   
+                mask.alpha = 0.01f;
+            }
+        }
+        void OnEnable()
+        {
+            if (mask != null) mask.alpha = 0.01f;
+        }
         public void Setup()
         {
 
+        }
+
+                /// <summary>
+        /// 用于处理Spine动画衔接播放
+        /// </summary>
+        [SerializeField]
+        List<SkeletonGraphic> _spineGraphics;
+        [SerializeField] float _spineAnimDelay = 0.33f;
+        public IEnumerator QueuedPlaySpine(List<SkeletonGraphic> animations, float timeOffset)
+        {
+            yield return new WaitForSeconds(_spineAnimDelay);
+            foreach (var item in animations)
+            {
+                if (item != null && item.gameObject.activeInHierarchy)
+                {
+                    item.timeScale = 1.0f;
+                    string unlockName = "ani_unlock";
+                    if (item.AnimationState.GetCurrent(0) != null) unlockName = item.AnimationState.GetCurrent(0).Animation.Name;
+                    string idleName = "ani_idle";
+                    if (unlockName.Contains("ani_unlock")) idleName = unlockName.Replace("ani_unlock", "ani_idle");
+                    var data = item.SkeletonDataAsset.GetSkeletonData(false);
+
+                    if (data.FindAnimation(unlockName) != null)
+                    {
+                        float delay = data.FindAnimation(unlockName).Duration;
+                        if (data.FindAnimation(idleName) != null)
+                            item.AnimationState.AddAnimation(0, idleName, true, delay);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("当前spine动画不包含 ani_unlock 动画");
+                    }
+                    yield return new WaitForSeconds(timeOffset);
+                }
+                else
+                {
+                    Debug.LogWarning("当前spine动画为空");
+                }
+            }
+            yield return null;
+        }
+
+        void ResetSpineAnimation()
+        {
+            if (_spineGraphics != null && _spineGraphics.Count > 0)
+            {
+                foreach (var item in _spineGraphics)
+                {
+                    if (item != null)
+                    {
+                        if(!item.startingAnimation.Contains("unlock"))
+                        {
+                            var data = item.SkeletonDataAsset.GetSkeletonData(false);   
+                            var unlockClip = data.Animations.FirstOrDefault(x =>x.Name.Contains("unlock"));                 
+                            item.startingAnimation = unlockClip != null?data.Animations.FirstOrDefault(x =>x.Name.Contains("unlock")).Name : string.Empty;
+                        }
+                        item.startingLoop = false;
+                        item.Initialize(true);
+                        item.timeScale = 0f;
+                        // spine  初始化 override 重新生成mesh，会导致 Follower 脚本初始化失败，需要再次手动初始化
+                        var boneFollowers = transform.GetComponentsInChildren<BoneFollowerGraphic>();
+                        if (boneFollowers != null && boneFollowers.Length > 0)
+                        {
+                            foreach (var follwers in boneFollowers)
+                            {
+                                follwers.Initialize();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        void MaskAnimation(bool isOpen = true)
+        {
+            if(mask == null) return;
+            var curve = isOpen ? ArtUtility.IncreaseLinearCurve : ArtUtility.DecreaseLinearCurve;
+            StartCoroutine(ArtAnimation.DoAnimation(0.33f , (value) =>
+            {
+                mask.alpha =  Mathf.Lerp(0.01f , MaxMaskAlpha , curve.Evaluate(value));
+                //Mathf.Lerp(0.01f , MaxMaskAlpha , Mathf.Pow(curve.Evaluate(value), 2.2f));
+            }));
+        }
+
+        public void MaskOpen()
+        {
+            MaskAnimation();
+        }
+
+        public void MaskClose()
+        {
+            MaskAnimation(false);
         }
 
         /// <summary>

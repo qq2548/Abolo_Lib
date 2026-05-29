@@ -171,7 +171,7 @@
 				fixed4 color = tex2D(_MainTex , oriUV);
 				float2 fixedUV =  IN.uv 
 						* float2(_TileScalor_X , _TileScalor_Y) - float2(t * _SubTexUSpeed , t * _SubTexVSpeed);
-				color.rgb *= IN.Color.rgb;
+				//color.rgb *= IN.Color.rgb;
 				fixed fac1 = 0;
 				//fixed fac2 = 1.0 - subColor.g;
 				#ifdef _PATTERN_DEFAULT
@@ -179,7 +179,7 @@
 					fac1 = max(0 , 1.0 * _Mirror) - subColor.r * _Mirror;
 					color.a *= smoothstep(saturate(fac1 - _SmoothRange*.5) , 
 														  saturate(fac1 + _SmoothRange*.5), 
-														   (saturate(IN.Color.a  - _StartPercentage)) / (1.0 - _StartPercentage));
+														   (saturate(IN.Color.r  - _StartPercentage)) / (1.0 - _StartPercentage));
 					//color.a *= step(fac2 ,  v.Color.a) ; 
 				#endif
 
@@ -189,7 +189,7 @@
 					fac1 = a * step(0, _Mirror) + b * step(0 , -_Mirror);
 					color *= smoothstep(saturate(fac1 - _SmoothRange*.5) , 
 													   saturate(fac1 + _SmoothRange*.5), 
-													   (saturate(IN.Color.a  - _StartPercentage)) / (1.0 - _StartPercentage));
+													   (saturate(IN.Color.r  - _StartPercentage)) / (1.0 - _StartPercentage));
 					//color *= smoothstep(saturate(fac2 - 0.2) , fac2 , 1.0 - (saturate(v.uv.z - _StartPercentage)) / (1.0 - _StartPercentage)) * v.Color.a;
 				#endif
 				#ifdef _PATTERN_YDIR
@@ -198,7 +198,7 @@
 					fac1 = a * step(0, _Mirror) + b * step(0 , -_Mirror);
 					color *= smoothstep(saturate(fac1 - _SmoothRange*.5) , 
 													   saturate(fac1 + _SmoothRange*.5), 
-													   (saturate(IN.Color.a  - _StartPercentage)) / (1.0 - _StartPercentage));
+													   (saturate(IN.Color.r  - _StartPercentage)) / (1.0 - _StartPercentage));
 					//color *= smoothstep(saturate(fac2 - 0.2) , fac2 , 1.0 - (saturate(v.uv.z - _StartPercentage)) / (1.0 - _StartPercentage)) * v.Color.a;
 				#endif
 
