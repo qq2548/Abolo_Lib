@@ -392,6 +392,31 @@ namespace AboloLib
                 item.transform.localPosition = new Vector3(oriPos.x, oriPos.y, 0f);
             }
         }
+        /// <summary>
+        /// 清除意外保存的缓存
+        /// </summary>
+        public void ClearRendererBuffer()
+        {
+            if (_decorItems != null)
+            {
+                _decorItems = null;
+            }
+            if (_popItems != null)
+            {
+                _popItems = null;
+            }
+        }
+        /// <summary>
+        /// 设置层级排序点位
+        /// </summary>
+        public void SetSortingPoint()
+        {
+            SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+            foreach (var item in renderers)
+            {
+                item.spriteSortPoint = SpriteSortPoint.Pivot;
+            }
+        }
         #endregion
 #endif
     }

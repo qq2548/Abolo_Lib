@@ -15,5 +15,14 @@ namespace AboloLib
         public string name;
         public string discription;
         public GameObject prefab;
+
+        public GameObjectPreSet(string name , GameObject prefab)
+        {
+            this.name = name;
+            this.discription = string.Empty;
+            this.prefab = prefab;
+        }
     }
+
+    
 }

@@ -16,6 +16,13 @@ namespace AboloLib
             set => _clearFx = value;
         }
         [SerializeField] float _mClearFxDuration = 1.5f;
+        [SerializeField] float _mDelayForCombineNode = 0.5f;
+        public float MyDelayForCombineNode
+        {
+            get => _mDelayForCombineNode/SPEED;
+            set => _mDelayForCombineNode = value;
+        }
+        public float _mDelayForSpriteAnim = 0.0f;
 
         public override void SetUp()
         {
@@ -31,6 +38,7 @@ namespace AboloLib
                 }
             }
         }
+
         public override void ResetSubItems(float factor)
         {
             base.ResetSubItems(factor);
@@ -95,7 +103,7 @@ namespace AboloLib
 
         public IEnumerator MultiGraphicFadeOutFixed( float duration , Action callback = null)
         {
-
+            yield return new WaitForSeconds(_mDelayForSpriteAnim);
             //ani_items 子节点消失动画
             yield return StartCoroutine(DoAnimationWithInterval(_decorItems.Length, duration,Interval ,MultiFadeDeltaAnimation(_decorItems , _startPositions , Interval ,false)));
             //pop_items 子节点消失动画
@@ -107,6 +115,7 @@ namespace AboloLib
             }
             callback?.Invoke();
         }
+
 
     }
 }

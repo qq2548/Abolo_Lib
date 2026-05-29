@@ -7,11 +7,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.SceneManagement;
+using Spine.Unity;
 
 namespace AboloLib
 {
     public class DecorationAniamtionTest : ArtAnimation
     {
+        public static string MyDecorationSceneName = "Bloom_DecorScene_Art";
         public static DecorationAniamtionTest instance;
 
         [Header("如果要自由组合节点演示，勾选此项")]
@@ -33,18 +36,18 @@ namespace AboloLib
         [Tooltip("演示选中动画效果的UI开关")]
         [SerializeField] Toggle selectToggle;
 
-        [Header("需要填充预制体参数的根节点")]
+        [Header("需要编辑的根节点")]
         [SerializeField] Transform _modifyRoot;
-        //Coroutine _unlockAnimation;
-        [Header("需要引用的资源")]
-        [SerializeField] GameObject _clearFx;
-        [SerializeField] DecorationParticle _fixFx;
-        [SerializeField] DecorationParticle _doneFx;
-        [SerializeField] RuntimeAnimatorController _showAntr;
-        [SerializeField] RuntimeAnimatorController _showImmdAntr;
-        [SerializeField] RuntimeAnimatorController _shrinkAntr;
-        [SerializeField] RuntimeAnimatorController _fadeoutAntr;
 
+        [SerializeField] int TargetChapterIndex = 0;
+        [SerializeField] PrefabFactory _buildingList;
+        Dictionary<string , GameObject> GameBuildingDic;
+        List<string> buildingData;
+        List<Vector3> buildingPosition;
+
+        [SerializeField]bool _useDynamicInstantiateMode = false;
+        [Header("装修动画播放速度")]
+        [SerializeField] float decorAnimPlaySpeed = 1.0f;
         int _presentMax = 160;
         public int PresentMax
         {
@@ -88,29 +91,54 @@ namespace AboloLib
 
         private void Awake()
         {
-
+            DecorationAnim.SPEED = decorAnimPlaySpeed;
             instance = this;
 
             if (SceneManager.sceneCount > 1)
             {
-                var DecorScene = SceneManager.GetSceneByName("Merge2X_SampleScene_1");
+                var DecorScene = SceneManager.GetSceneByName("Bloom_DecorScene_Art");
                 if (DecorScene != null)
                 {
-                    Init();
+  
+                    StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(0.05f , () => Initialize()));                  
                 }
             }
             else
             {
-                StartCoroutine(LoadDecorationScene(() => Init()));
+                StartCoroutine(LoadDecorationScene(() => Initialize()));
             }
 
-            selectToggle.onValueChanged.AddListener((value) => SelectAnim(value));
+            if(selectToggle != null) selectToggle.onValueChanged.AddListener((value) => SelectAnim(value));
 
-            RenameNodesOnPlay();
+            StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(0.1f , () => RenameNodesOnPlay()));
+            //Material material = GetComponent<Renderer>().material;
+            //material.shader.name
         }
 
 
-
+        public void SetupBuildingList()
+        {
+#if UNITY_EDITOR
+            if(_buildingList == null) return;
+            if(_buildingList.MyPrefabs == null)
+            {
+                _buildingList.MyPrefabs = new List<GameObjectPreSet>();
+            }
+            _buildingList.MyPrefabs.Clear();
+            var rootFolder = "Assets/Buildings";
+            var rs = AssetDatabase.FindAssets("t:prefab" + " " , new string[] { rootFolder });
+            foreach (var guid in rs)
+            {
+                var asset_path = AssetDatabase.GUIDToAssetPath(guid);
+                var ass = AssetDatabase.LoadAssetAtPath<GameObject>(asset_path);
+                if(ass.transform.TryGetComponent(out DecorationAnim component))
+                {
+                    _buildingList.MyPrefabs.Add(new GameObjectPreSet(ass.name , ass));
+                }
+            }
+            EditorUtility.SetDirty(_buildingList);
+#endif
+        }
         
 
 
@@ -121,10 +149,11 @@ namespace AboloLib
         public void SelectAnim(bool selected)
         {
 #if _ARTEST_PRESENTATION
+
             if (selectedIndex < NewFurnitureDecorAnim.Instances.Count && selectedIndex >= 0)
             {
                 NewFurnitureDecorAnim.Instances[selectedIndex].Selecting = selected;
-                StartCoroutine(MoveCameraRoot(GameCameraAdapter.CurrentCamera.transform.parent,
+                StartCoroutine(MoveCameraRoot(ArtGameManager.instance.MainCameraRoot,
                                                                    NewFurnitureDecorAnim.Instances[selectedIndex].transform.position, 16f, 0.001f));
             }
             else
@@ -142,26 +171,100 @@ namespace AboloLib
         /// </summary>
         static string[] DecorationNodesPath =
         {
-            "Decorations/Area1_Demo/Nodes",
-            "Decorations/Area_PlayGround/Nodes",
-            "Decorations/Area_Kitchen/Nodes",
-            "Decorations/Area_Activity/Nodes",
-            "Decorations/Area_DuelFloorRestrant/Nodes",
-            "Decorations/Area_EntertainingHouse/Nodes",
-            "Decorations/Area_FlowerHouse/Nodes",
-            "Decorations/Area_CollectionHouse/Nodes",
-            "Decorations/Area_Activity_V2/Nodes",
+            //"Decorations/Area1_Demo/Nodes",
+            "Decorations/Area_Chapter_001/Nodes",
+            "Decorations/Area_Chapter_002/Nodes",
+            "Decorations/Area_Chapter_003/Nodes",
+            // "Decorations/Area_PlayGround/Nodes",
+            // "Decorations/Area_Kitchen/Nodes",
+            // "Decorations/Area_Activity/Nodes",
+            // "Decorations/Area_DuelFloorRestrant/Nodes",
+            // "Decorations/Area_EntertainingHouse/Nodes",
+            // "Decorations/Area_FlowerHouse/Nodes",
+            // "Decorations/Area_CollectionHouse/Nodes",
+            // "Decorations/Area_Activity_V2/Nodes",
+            // "Decorations/Area_PlayGround_DLC_1/Nodes",
+            // "Decorations/Area_PlayGround_DLC_2/Nodes",
+            // "Decorations/Area_Market/Nodes",
+            // "Decorations/Area_Gym/Nodes",
         };
      
-        public override void Init()
+        public void  Initialize()
         {
-            var DecorScene = SceneManager.GetSceneByName("Merge2X_SampleScene_1");
+            //
+            var DecorScene = SceneManager.GetSceneByName("Bloom_DecorScene_Art");
             SceneManager.SetActiveScene(DecorScene);
             GameObject EnvironmentRoot = DecorScene.GetRootGameObjects().FirstOrDefault(s => s.name == "EnvironmentRoot");
+          
+            if(Application.isPlaying)
+            {
+                if(_buildingList != null)
+                {
+                    GameBuildingDic = new Dictionary<string, GameObject>();
+                    foreach(var building in _buildingList.MyPrefabs)
+                    {
+                        if(building.name.Contains($"cpt_{TargetChapterIndex}_")) 
+                            GameBuildingDic.Add(building.name, building.prefab);
+                    }
+                }
+                buildingData = new List<string>(); 
+                buildingData.Clear();
+                buildingPosition = new List<Vector3>();
+                buildingPosition.Clear();
+                if (_nodes == null) _nodes = new List<Transform>();
+                _nodes.Clear();
+
+                var decor_static_root = EnvironmentRoot.transform.Find("Props/root");
+                for (int i = 0; i < decor_static_root.childCount; i++)
+                {
+                    decor_static_root.GetChild(i).gameObject.SetActive(i+1 == TargetChapterIndex);
+                }
+
+                var decor_root = EnvironmentRoot.transform.Find("Decorations");
+                for (int i = 0; i < decor_root.childCount; i++)
+                {
+                    decor_root.GetChild(i).gameObject.SetActive(i+1 == TargetChapterIndex);
+                }
+                string nodeName = $"Area_Chapter_{TargetChapterIndex:D3}/Nodes";
+                Debug.Log(nodeName + "========================================");
+                var derNode = decor_root.Find(nodeName);
+                if(derNode != null)
+                {
+                    for (int i = 0; i < derNode.childCount; i++)
+                    {
+                        buildingData.Add(derNode.GetChild(i).name);
+                        buildingPosition.Add(derNode.GetChild(i).position);
+                        //Debug.Log(derNode.GetChild(i).name);
+                    }
+                }
+                int index = derNode.childCount;
+                for (int i = 0; i < index; i++)
+                {
+                    GameObject.DestroyImmediate(derNode.GetChild(0).gameObject);
+                }
+                //加载资源
+                for (int i = 0; i < buildingData.Count; i++)
+                {
+                    var ob = Instantiate(GameBuildingDic.FirstOrDefault(x => x.Key.Contains(buildingData[i])).Value);
+                    var parent = new GameObject($"{i}_{buildingData[i]}");
+                    parent.transform.SetParent(EnvironmentRoot.transform);
+                    parent.transform.position = buildingPosition[i];
+                    ob.transform.position = buildingPosition[i];
+                    ob.name = ob.name.Replace("(Clone)","");
+                    ob.transform.SetParent(parent.transform);
+                    _nodes.Add(parent.transform);
+                    ob.GetComponent<DecorationAnim>().SetUp();
+                }
+            }
+            else
+            {
+                GetDecorationNodes(EnvironmentRoot);
+            }
+
 
             GetCoverNodes(EnvironmentRoot);
 
-            GetDecorationNodes(EnvironmentRoot);
+            //
 
             // 运行后调整节点最大值不要超过实际节点数
             _presentMax = _nodes.Count -1;
@@ -169,6 +272,16 @@ namespace AboloLib
             {
                 _presentToIndex = _presentMax;
             }
+
+        }
+
+        IEnumerator SetTargetSceneActicve(UnityEngine.SceneManagement.Scene scene)
+        {
+            while(!scene.isLoaded)
+            {
+                yield return null;
+            }
+            SceneManager.SetActiveScene(scene);
         }
 
         /// <summary>
@@ -185,9 +298,12 @@ namespace AboloLib
 
             _nodes_cover.Clear();
             Transform nodes_cover_root = RootGo.transform.Find(CoverNodePath);
-            for (int c = 0; c < nodes_cover_root.childCount; c++)
+            if(nodes_cover_root != null)
             {
-                _nodes_cover.Add(nodes_cover_root.GetChild(c));
+                for (int c = 0; c < nodes_cover_root.childCount; c++)
+                {
+                    _nodes_cover.Add(nodes_cover_root.GetChild(c));
+                }
             }
         }
         /// <summary>
@@ -213,7 +329,8 @@ namespace AboloLib
                 {
                     for (int i = 0; i < nodes_root.childCount; i++)
                     {
-                        _nodes.Add(nodes_root.GetChild(i));
+                        var node = nodes_root.GetChild(i);
+                        _nodes.Add(node);  
                     }
                 }
                 else
@@ -233,7 +350,8 @@ namespace AboloLib
         public void Unlock()
         {
             StopAnimation();
-            ResetImmediateByRange();
+            if (_nodes == null || _nodes.Count == 0) return;
+            //ResetImmediateByRange();
             foreach (var item in _nodes)
             {
                var animators = item.GetComponentsInChildren<Animator>(true);
@@ -266,26 +384,35 @@ namespace AboloLib
         public void UnlockImmediate()
         {
             StopAnimation();
-            //解锁房顶节点
-            for (int c = 0; c < _nodes_cover.Count; c++)
+
+            if(_nodes_cover !=null && _nodes_cover.Count > 0)
             {
-                Animator[] animators = _nodes_cover[c].GetComponentsInChildren<Animator>(true);
-                foreach (var item in animators)
+                //解锁房顶节点
+                for (int c = 0; c < _nodes_cover.Count; c++)
                 {
-                    item.gameObject.SetActive(false);
+                    Animator[] animators = _nodes_cover[c].GetComponentsInChildren<Animator>(true);
+                    foreach (var item in animators)
+                    {
+                        item.gameObject.SetActive(false);
+                    }
                 }
             }
-            //解锁装修节点
-            for (int i = 0; i < _nodes.Count; i++)
+
+            if (_nodes!= null && _nodes.Count > 0)
             {
-                Animator animator = GetDecorationNode(_nodes[i]);
-                if (!animator.gameObject.activeSelf)
-                    {   
-                        animator.gameObject.SetActive(true);
-                    }
-                CheckEnableAnimator(animator);
-                animator.Play("Idle",0);
-                DisableAnimatorWhenClipIsDone( animator);
+               //解锁装修节点
+                for (int i = 0; i < _nodes.Count; i++)
+                {
+                    Animator animator = GetDecorationNode(_nodes[i]);
+                    if (!animator.gameObject.activeSelf)
+                        {   
+                            animator.gameObject.SetActive(true);
+                        }
+                    CheckEnableAnimator(animator);
+
+                    animator.Play("Idle",0);
+                    //DisableAnimatorWhenClipIsDone( animator);
+                }
             }
          }
 
@@ -303,7 +430,8 @@ namespace AboloLib
         /// <summary>
         /// 当前装修场景有多少套可选装修
         /// </summary>
-        const int _maxActicityDecorCount = 7;
+        const int _maxActicityDecorCount_Old = 7;
+        const int _maxActicityDecorCount_New = 7;
 
         void RemoveEditScript(GameObject go)
         {
@@ -322,19 +450,7 @@ namespace AboloLib
         public void HideCovers()
         {
             //获取场景数据
-            Init();
-            //解锁房顶节点
-            UnlockCovers();
-            _nodes_cover.Clear();
-            _nodes.Clear();
-        }
-
-        public void UnlockCovers()
-        {
-            if (_nodes_cover == null || _nodes_cover.Count == 0)
-            {
-                return;
-            }
+            Initialize();
             //解锁房顶节点
             for (int c = 0; c < _nodes_cover.Count; c++)
             {
@@ -344,6 +460,8 @@ namespace AboloLib
                     item.gameObject.SetActive(false);
                 }
             }
+            _nodes_cover.Clear();
+            _nodes.Clear();
         }
 
         /// <summary>
@@ -384,7 +502,7 @@ namespace AboloLib
         public void EditorModeUnlockImmediate()
         {
             int index ;
-            Init();
+            Initialize();
 
             //解锁房顶节点
             for (int c = 0; c < _nodes_cover.Count; c++)
@@ -436,34 +554,44 @@ namespace AboloLib
                             var decor = animator.transform.GetComponent<DecorationAnim>();
 
                             if (decor != null)
-                            {
+                            {   
+                                var sps = decor.transform.Find("root/spine_items").GetComponentsInChildren<SkeletonAnimation>(true);
                                 if (decor.GetType().Name.Equals("NewFurnitureDecorAnim") || decor.GetType().Name.Equals("ComplexGrowNewDecoration"))
                                 {
                                     if (!animator.gameObject.activeSelf)
                                     {
                                         animator.gameObject.SetActive(true);
                                     }
+                                    
                                 }
                                 else
                                 {
                                     animator.gameObject.SetActive(false);
                                 }
+                                                            
+                                foreach (var s in sps)
+                                {
+                                    SetEditorModeSpineAniamtion("ani_idle" , s ); 
+                                }
+
+                                
                             }
                             else
                             {
                                 Debug.LogWarning(ArtUtility.WarningLog + anis[a].transform.parent.name +"缺少装修脚本，检查场景挂点资源");
                             }
-                        }
+
+                        } 
                         else
                         {
-                            anis[a].gameObject.SetActive(false);
+                            anis[a].gameObject.SetActive(false); 
                         }
                     }
                 }
                 else
                 {
 
-                    for (int b = 0; b < _maxActicityDecorCount; b++)
+                    for (int b = 0; b < _maxActicityDecorCount_Old; b++)
                     {
                         if (b == index)
                         {
@@ -471,7 +599,7 @@ namespace AboloLib
                         }
                         else
                         {
-                            if (anis.Length >= _maxActicityDecorCount)
+                            if (anis.Length >= _maxActicityDecorCount_Old)
                             {
                                 anis[b].gameObject.SetActive(false);
                             }
@@ -490,14 +618,15 @@ namespace AboloLib
                     }
 
                 }
-
+ 
             }
             
-            _nodes.Clear();
+            _nodes.Clear(); 
+    
         }
         public void EditorModeResetImmediate()
         {
-            Init();
+            Initialize();
             
             //重置房顶节点
             for (int c = 0; c < _nodes_cover.Count; c++)
@@ -518,6 +647,7 @@ namespace AboloLib
                 {
                     //检测删除SetLookAt脚本
                     RemoveEditScript(item.gameObject);
+                    var sps = item.transform.Find("root/spine_items").GetComponentsInChildren<SkeletonAnimation>(true);
                     if (item.transform.TryGetComponent(out NewFurnitureDecorAnim decAnim))
                     {
                         if (item.transform.parent.name.Contains("activity") && item.gameObject.name == "view1")
@@ -536,6 +666,10 @@ namespace AboloLib
                     else
                     {
                         item.gameObject.SetActive(true);
+                    }
+                    foreach(var s in sps)
+                    { 
+                        SetEditorModeSpineAniamtion("ani_init" , s);
                     }
                 }
             }
@@ -559,50 +693,57 @@ namespace AboloLib
         public void ResetImmediate()
         {
             StopAnimation();
+            //if (_nodes_cover == null || _nodes_cover.Count == 0) return;
             //重置房顶节点
-            for (int c = 0; c < _nodes_cover.Count; c++)
+            if(_nodes_cover != null && _nodes_cover.Count > 0)
             {
-                Animator[] animators = _nodes_cover[c].GetComponentsInChildren<Animator>(true);
-                foreach (var item in animators)
+                for (int c = 0; c < _nodes_cover.Count; c++)
                 {
-                    item.gameObject.SetActive(true);
-                }
-            }
-
-            //重置装修节点
-            for (int i = 0; i < _nodes.Count; i++)
-            {
-                Animator[] animators = _nodes[i].GetComponentsInChildren<Animator>(true);
-                foreach (var item in animators)
-                {
-                    if (item.transform.TryGetComponent(out NewFurnitureDecorAnim decAnim))
+                    Animator[] animators = _nodes_cover[c].GetComponentsInChildren<Animator>(true);
+                    foreach (var item in animators)
                     {
-                        decAnim.SetUp();
-                        if (item.transform.parent.name.Contains("activity") && item.gameObject.name == "view1")
+                        item.gameObject.SetActive(true);
+                    }
+                } 
+            }
+            //if (_nodes == null || _nodes.Count == 0) return;
+            //重置装修节点
+            if(_nodes != null && _nodes.Count > 0)
+            {
+                for (int i = 0; i < _nodes.Count; i++)
+                {
+                    Animator[] animators = _nodes[i].GetComponentsInChildren<Animator>(true);
+                    foreach (var item in animators)
+                    {
+                        if (item.transform.TryGetComponent(out NewFurnitureDecorAnim decAnim))
                         {
-                            item.gameObject.SetActive(true);
-                            CheckEnableAnimator(item);
-                            decAnim.ShowSelf();
-                            item.Play("Idle", 0);
-                            DisableAnimatorWhenClipIsDone(item);
+                            decAnim.SetUp();
+                            if (item.transform.parent.name.Contains("activity") && item.gameObject.name == "view1")
+                            {
+                                item.gameObject.SetActive(true);
+                                CheckEnableAnimator(item);
+                                //decAnim.ShowSelf();
+                                item.Play("Idle", 0);
+                                DisableAnimatorWhenClipIsDone(item);
+                            }
+                            else
+                            {
+                                if (item.gameObject.activeSelf)
+                                {
+                                    decAnim.ResetSubItems(factor: 0f);
+                                    item.gameObject.SetActive(false);
+                                }
+                            }
                         }
                         else
                         {
-                            if (item.gameObject.activeSelf)
-                            {
-                                decAnim.ResetSubItems(factor: 0f);
-                                item.gameObject.SetActive(false);
-                            }
+                            item.gameObject.SetActive(true);
+                            CheckEnableAnimator(item);
+                            item.Play("Init", 0);
+                            DisableAnimatorWhenClipIsDone(item);
                         }
-                    }
-                    else
-                    {
-                        item.gameObject.SetActive(true);
-                        CheckEnableAnimator(item);
-                        item.Play("Init", 0);
-                        DisableAnimatorWhenClipIsDone(item);
-                    }
 
+                    }
                 }
             }
         }
@@ -635,7 +776,7 @@ namespace AboloLib
                         {
                             item.gameObject.SetActive(true);
                             CheckEnableAnimator(item);
-                            decAnim.ShowSelf();
+                            //decAnim.ShowSelf();
                             item.Play("Idle", 0);
                             DisableAnimatorWhenClipIsDone(item);
                         }
@@ -650,7 +791,7 @@ namespace AboloLib
                     }
                     else
                     {
-                        if (i >= PresentFrom)
+                        if (i >= PresentFrom && i <= PresentTo)
                         {
                             item.gameObject.SetActive(true);
                             CheckEnableAnimator(item);
@@ -801,8 +942,12 @@ namespace AboloLib
             if (animator.transform.TryGetComponent(out DecorationAnim _decorationAnim))
             {
                 _decorationAnim.SetUp();
-                delay = _decorationAnim.MyUnlockAnimDuration;
-
+                delay = _decorationAnim.MyUnlockAnimDuration + 1.0f;
+                if(_decorationAnim.transform.parent.name.Contains("_wreck"))
+                {
+                    ClearDecorAnim clearDecorAnim = _decorationAnim as ClearDecorAnim;
+                    delay = clearDecorAnim.MyDelayForCombineNode;
+                }
                 Debug.Log(animator.transform.parent.name + "-----------" + delay);
 
             }
@@ -811,15 +956,16 @@ namespace AboloLib
                 delay = 1.0f;
                 //Debug.Log("没有找到Decoration节点");
             }
-            yield return null;
+            
 
             if (!animator.gameObject.activeSelf)
             {
                 animator.gameObject.SetActive(true);
             }
             CheckEnableAnimator(animator);
+            yield return null;
             animator.Play("Unlock");
-            DisableAnimatorWhenClipIsDone(animator);
+            //DisableAnimatorWhenClipIsDone(animator);
 
             yield return new WaitForSeconds(delay);
         }
@@ -836,7 +982,7 @@ namespace AboloLib
                 while (timer <= 1.0f)
                 {
                     timer += Time.deltaTime / duration;
-                    from.position = Vector3.Lerp(startPos, to + new Vector3(-1.0f, 0.0f, 1.0f) * 2.0f, curve.Evaluate(timer));
+                    from.position = Vector3.Lerp(startPos, to , curve.Evaluate(timer));
 
                     camera.fieldOfView = Mathf.Lerp(st, fov, curve.Evaluate(timer));
                     yield return null;
@@ -912,16 +1058,23 @@ namespace AboloLib
         }
 
         /// <summary>
-        /// 检查是否有装修挂点重名，view节点是否命名正确
+        /// 检查是否有装修挂点重名，view节点是否命名正确，动画状态机剔除模式是否正确
         /// </summary>
         public void CheckRepeatNodeName()
         {
             //获取场景数据
-            Init();
+            Initialize();
             List<string> decorNames = new List<string>();
             decorNames.Clear();
             for (int i = 0; i < _nodes.Count; i++)
             {
+
+                var decors = _nodes[i].GetComponentsInChildren<DecorationAnim>(true);
+                foreach (var item in decors)
+                {
+                    item.ClearRendererBuffer();
+                }
+
                 string node_name = _nodes[i].name.Split("-")[0];
 
                 if (_nodes[i].name.Contains("三选一"))
@@ -942,10 +1095,21 @@ namespace AboloLib
                 }
                 else
                 {
-                    if (_nodes[i].childCount != _maxActicityDecorCount)
+                    if (!_nodes[i].name.Contains("2ndversion"))
                     {
-                        Debug.LogError(_nodes[i].name + "___________此节点view子节点数量不正确");
-                        return;
+                        if (_nodes[i].childCount != _maxActicityDecorCount_Old)
+                        {
+                            Debug.LogError(_nodes[i].name + "___________此节点view子节点数量不正确");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        if (_nodes[i].childCount != _maxActicityDecorCount_New)
+                        {
+                            Debug.LogError(_nodes[i].name + "___________此节点view子节点数量不正确");
+                            return;
+                        }
                     }
                 }
 
@@ -965,7 +1129,7 @@ namespace AboloLib
                 }
 
                 //Debug.Log(node_name + "__________" + _nodes[i].childCount.ToString());
-                //检查子节点view命名是否正确以及localPosition是否归零
+                //检查子节点view命名是否正确以及localPosition是否归零，动画化状态机剔除模式修正
                 for (int s = 0; s < _nodes[i].childCount; s++)
                 {
                     if (_nodes[i].GetChild(s).name != "view" + (s + 1).ToString())
@@ -975,6 +1139,11 @@ namespace AboloLib
                     if (_nodes[i].GetChild(s).localPosition != Vector3.zero)
                     {
                         Debug.LogError(_nodes[i].name + "此节点" + s.ToString() + "号位子节点本地坐标未归零！！！！！");
+                    }
+
+                    if (_nodes[i].GetChild(s).GetComponent<Animator>().cullingMode != AnimatorCullingMode.CullUpdateTransforms)
+                    {
+                        _nodes[i].GetChild(s).GetComponent<Animator>().cullingMode = AnimatorCullingMode.CullUpdateTransforms;
                     }
                 }
 
@@ -991,223 +1160,74 @@ namespace AboloLib
 
             //清除节点数据
             _nodes_cover.Clear();
+            _nodes_cover = null;
             _nodes.Clear();
+            _nodes = null;
         }
 
-        public void FillupDecorParameter()
+        public void SetSpriteRenderersSortingPointToPivot()
         {
-            if (_modifyRoot != null)
+            if(_modifyRoot != null)
             {
-                List<Transform> _modNodes = new List<Transform>();
-                _modNodes.Clear();
-                for (int a = 0; a < _modifyRoot.childCount; a++)
+                var decors = _modifyRoot.GetComponentsInChildren<DecorationAnim>(true).ToList();
+                foreach(var decor in decors)
                 {
-                    _modNodes.Add(_modifyRoot.GetChild(a));
+                    decor.SetSortingPoint();
                 }
+                _modifyRoot = null;
+            }
+        }
 
-                for (int i = 0; i < _modNodes.Count; i++)
+        [SerializeField] float Scalor = 1.0f;
+        public void ScalingAllSubRoots()
+        {
+            if(_modifyRoot != null)
+            {
+                _modifyRoot.localScale = Vector3.one * Scalor;
+                var decors = _modifyRoot.GetComponentsInChildren<DecorationAnim>(true).ToList();
+                List<Transform> roots = new List<Transform>();
+                roots.Clear();
+                for (int a = 0; a < decors.Count; a++)
                 {
-                    var animators = _modNodes[i].GetComponentsInChildren<Animator>(true);
-                    foreach (var item in animators)
-                    {
-                        DecorationAnim decorationAnim = item.transform.GetComponent<DecorationAnim>();
-                        if (decorationAnim != null)
-                        {
-                            string name = decorationAnim.GetType().Name;
-                            if (decorationAnim .Interval == 0f)
-                            {
-                                decorationAnim.Interval = 0.1f;
-                            }
-                            Debug.Log(name);
-                            if (name.Contains("Clear"))
-                            {
-                                ClearDecorAnim clearDecorAnim = decorationAnim as ClearDecorAnim;
-                                if (clearDecorAnim._myAudioName != "hotspot_Clean")
-                                {
-                                    clearDecorAnim._myAudioName = "hotspot_Clean";
-                                    clearDecorAnim._myAudioPlayDelay = 0.1f;
-                                }
-
-                                //if (clearDecorAnim.ClearFx == null)
-                                //{
-                                    clearDecorAnim.ClearFx = _clearFx;
-                                //}
-
-                                if (item.runtimeAnimatorController == null)
-                                {
-                                    if (item.transform.parent.name.Contains("floor") || item.transform.parent.name.Contains("wall"))
-                                    {
-                                        item.runtimeAnimatorController = _fadeoutAntr;
-                                    }
-                                    else
-                                    {
-                                        item.runtimeAnimatorController = _shrinkAntr;
-                                    }
-                                }
-                            }
-                            else if (name.Contains("Fix"))
-                            {
-                                FixedDecorAnim fixedDecor = decorationAnim as FixedDecorAnim;
-                                if (fixedDecor._myAudioName != "hotspot_Hammer_Multiple")
-                                {
-                                    fixedDecor._myAudioName = "hotspot_Hammer_Multiple";
-                                    fixedDecor._myAudioPlayDelay = 0.0f;
-                                }
-                                if (fixedDecor.FixFx == null)
-                                {
-                                    fixedDecor.FixFx = _fixFx;
-                                }
-
-                                if (fixedDecor.FixFxStopDelay == 0f)
-                                {
-                                    fixedDecor.FixFxStopDelay = 2.0f;
-                                }
-
-                                if (item.runtimeAnimatorController == null)
-                                {
-                                    item.runtimeAnimatorController = _shrinkAntr;
-                                }
-                            }
-                            else if (name.Contains("New") || name.Contains("Complex"))
-                            {
-                                NewFurnitureDecorAnim newFurnitureDecor = decorationAnim as NewFurnitureDecorAnim;
-                                if (newFurnitureDecor._myAudioName != "Newitem_Generate_Star")
-                                {
-                                    newFurnitureDecor._myAudioName = "Newitem_Generate_Star";
-                                    newFurnitureDecor._myAudioPlayDelay = 0.4f;
-                                }
-                                if (newFurnitureDecor.DoneFx == null)
-                                {
-                                    newFurnitureDecor.DoneFx = _doneFx;
-                                }
-
-                                if (item.runtimeAnimatorController == null)
-                                {
-                                    if (item.transform.parent.name.Contains("floor") || item.transform.parent.name.Contains("wall"))
-                                    {
-                                        item.runtimeAnimatorController = _showImmdAntr;
-                                        newFurnitureDecor.Floating = false;
-                                    }
-                                    else
-                                    {
-                                        item.runtimeAnimatorController = _showAntr;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Debug.Log("这个Dcor脚本不知道是个啥___" + "name:"
-                                    + decorationAnim.transform.parent.name + "___" + decorationAnim.gameObject.name);
-                            }
-                        }
-                    }
+                    var root = decors[a].transform.Find("root");
+                    roots.Add(root);
+                    root.SetParent(_modifyRoot.parent);
+                }
+                _modifyRoot.localScale = Vector3.one;
+                for (int b = 0; b < roots.Count; b++)
+                {
+                    roots[b].SetParent(decors[b].transform);
                 }
 
                 _modifyRoot = null;
-                _modNodes.Clear();
-            }
-            else
-            {
-                Debug.LogError("请先在Inspector上引用指定需要填充的根节点！！！");
             }
         }
-
-        public static void FillupDecrationNodeParameters(Animator item)
+        public void SetEditorModeSpineAniamtion(string clipName , SkeletonAnimation skeletonAniamtion)
         {
-            //var antor = AssetDatabase.LoadAssetAtPath<RuntimeAnimatorController>("Assets/ToonSuburbanPack/Animations/ani_decoration_common_show/ani_common_show.controller");
-            //item.runtimeAnimatorController = antor;
-            //DecorationAnim decorationAnim = item.transform.GetComponent<DecorationAnim>();
-            //if (decorationAnim != null)
-            //{
-            //    string name = decorationAnim.GetType().Name;
-            //    if (decorationAnim.Interval == 0f)
-            //    {
-            //        decorationAnim.Interval = 0.1f;
-            //    }
-            //    Debug.Log(name);
-            //    if (name.Contains("Clear"))
-            //    {
-            //        ClearDecorAnim clearDecorAnim = decorationAnim as ClearDecorAnim;
-            //        if (clearDecorAnim._myAudioName != "hotspot_Clean")
-            //        {
-            //            clearDecorAnim._myAudioName = "hotspot_Clean";
-            //            clearDecorAnim._myAudioPlayDelay = 0.1f;
-            //        }
-
-            //        //if (clearDecorAnim.ClearFx == null)
-            //        //{
-            //        clearDecorAnim.ClearFx = _clearFx;
-            //        //}
-
-            //        if (item.runtimeAnimatorController == null)
-            //        {
-            //            if (item.transform.parent.name.Contains("floor") || item.transform.parent.name.Contains("wall"))
-            //            {
-            //                item.runtimeAnimatorController = _fadeoutAntr;
-            //            }
-            //            else
-            //            {
-            //                item.runtimeAnimatorController = _shrinkAntr;
-            //            }
-            //        }
-            //    }
-            //    else if (name.Contains("Fix"))
-            //    {
-            //        FixedDecorAnim fixedDecor = decorationAnim as FixedDecorAnim;
-            //        if (fixedDecor._myAudioName != "hotspot_Hammer_Multiple")
-            //        {
-            //            fixedDecor._myAudioName = "hotspot_Hammer_Multiple";
-            //            fixedDecor._myAudioPlayDelay = 0.0f;
-            //        }
-            //        if (fixedDecor.FixFx == null)
-            //        {
-            //            fixedDecor.FixFx = _fixFx;
-            //        }
-
-            //        if (fixedDecor.FixFxStopDelay == 0f)
-            //        {
-            //            fixedDecor.FixFxStopDelay = 2.0f;
-            //        }
-
-            //        if (item.runtimeAnimatorController == null)
-            //        {
-            //            item.runtimeAnimatorController = _shrinkAntr;
-            //        }
-            //    }
-            //    else if (name.Contains("New") || name.Contains("Complex"))
-            //    {
-            //        NewFurnitureDecorAnim newFurnitureDecor = decorationAnim as NewFurnitureDecorAnim;
-            //        if (newFurnitureDecor._myAudioName != "Newitem_Generate_Star")
-            //        {
-            //            newFurnitureDecor._myAudioName = "Newitem_Generate_Star";
-            //            newFurnitureDecor._myAudioPlayDelay = 0.4f;
-            //        }
-            //        if (newFurnitureDecor.DoneFx == null)
-            //        {
-            //            newFurnitureDecor.DoneFx = _doneFx;
-            //        }
-
-            //        if (item.runtimeAnimatorController == null)
-            //        {
-            //            if (item.transform.parent.name.Contains("floor") || item.transform.parent.name.Contains("wall"))
-            //            {
-            //                item.runtimeAnimatorController = _showImmdAntr;
-            //                newFurnitureDecor.Floating = false;
-            //            }
-            //            else
-            //            {
-            //                item.runtimeAnimatorController = _showAntr;
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-            //        Debug.Log("这个Dcor脚本不知道是个啥___" + "name:"
-            //            + decorationAnim.transform.parent.name + "___" + decorationAnim.gameObject.name);
-            //    }
-            //}
+            skeletonAniamtion.AnimationName = clipName;
+            //spine默认有0.2s 过渡动画，这里需要直接更新到第0.2s，才能完全显示正确
+            skeletonAniamtion.Update(0.2f);
+            //EditorUtility.SetDirty(skeletonAniamtion.skeletonDataAsset);
         }
 
+        public void AddDecorationScene()
+        {
+            var sc = EditorSceneManager.GetActiveScene();
+            if(sc.name == MyDecorationSceneName)
+            {
+                Debug.Log($"{MyDecorationSceneName} 场景已打开");
+                return;
+            }
+            var uids = AssetDatabase.FindAssets(MyDecorationSceneName, new string[]{"Assets"});
+            var obj_path = AssetDatabase.GUIDToAssetPath(uids[0]);
+            var targetScene = EditorSceneManager.OpenScene(obj_path , OpenSceneMode.Additive);
+            if(targetScene != null)
+            {
+                EditorSceneManager.SetActiveScene(targetScene);
+                EditorUtility.SetDirty(this);
+            }
+            
+        }
 #endif
 
         #endregion
