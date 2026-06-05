@@ -182,7 +182,7 @@ namespace AboloLib
                 FixParentNodePosition(node);
                 var slider = node.AddComponent<Slider>();
                 slider.transition = Selectable.Transition.None;
-                var fill = node.Find("Fill");
+                var fill = node.FindTargetChild("Fill");
 
                 if (fill != null)
                 {
@@ -199,7 +199,7 @@ namespace AboloLib
                     if (fill_image != null) fill_image.type =  Image.Type.Sliced;
                 }
                 
-                var handle = node.Find("Handle");
+                var handle = node.FindTargetChild("Handle");
 
                 if (handle != null)
                 {
@@ -209,6 +209,8 @@ namespace AboloLib
                     handlerect.anchoredPosition = Vector2.zero;
                     handlerect.sizeDelta = new Vector2(handlesize.x , handlesize.y * 0.5f);
                 }
+
+                slider.value = 0.5f;
             }
             if(nodeName.Contains("Btn_"))
             {
@@ -217,7 +219,7 @@ namespace AboloLib
                 btn.transition = Selectable.Transition.None;
                 btn.targetGraphic = node.GetComponentInChildren<Graphic>();
             }
-            if(nodeName.Contains("TmpText_"))
+            if(nodeName.Contains("TmpText"))
             {
                 var img = node.GetComponent<Image>();
                 if(img != null)
@@ -230,14 +232,14 @@ namespace AboloLib
                 }
                 var tmp_text = node.AddComponent<TextMeshProUGUI>();
                 var info = nodeName.Split("_");  
-                node.name = info[0];
-                tmp_text.text = info[1];
-                float fontSize = float.Parse(info[2]);
+                node.name = info[1];
+                tmp_text.text = info[2];
+                float fontSize = float.Parse(info[3]);
                 tmp_text.fontSize = fontSize;
                 tmp_text.enableWordWrapping = false;
                 tmp_text.alignment = TextAlignmentOptions.Center;
                 tmp_text.characterSpacing = -7.25f;
-                UnityEngine.ColorUtility.TryParseHtmlString(info[3] , out Color color);
+                UnityEngine.ColorUtility.TryParseHtmlString(info[4] , out Color color);
                 //color = new Color(Mathf.Pow(color.r , 2.2f) , Mathf.Pow(color.g , 2.2f),Mathf.Pow(color.b , 2.2f) ,1.0f);
                 tmp_text.color = color; 
                 var rectTransform = node.GetComponent<RectTransform>();

@@ -15,7 +15,10 @@ namespace AboloLib
 
         public static string CustomNamespace
         {
-            get => getNamespace?.Invoke();
+            get
+            {
+                return getNamespace != null ? getNamespace.Invoke() : "AboloLib";
+            }
         }
     }
 }

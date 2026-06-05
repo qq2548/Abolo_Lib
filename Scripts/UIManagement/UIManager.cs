@@ -32,24 +32,21 @@ namespace AboloLib
             UI_Camera = UICanvasAdapter.CurrentCanvas.worldCamera;
             if (UI_Prefabs != null)
             {
-                if (UI_Prefabs.MyPrefabs != null)
+                if (UI_Prefabs.MyPrefabs != null && UI_Prefabs.MyPrefabs.Count > 0)
                 {
                     GameUIDic = new Dictionary<Type, UI_Base>();
 
                     foreach (var item in UI_Prefabs.MyPrefabs)
                     {
-                        string winName = $"{CustomDataRegister.CustomNamespace}.{item.name}";
-                        var win_obj = Instantiate(item.prefab, GetCanvas(0));
-                        var ui_base = win_obj.gameObject.AddComponent(Type.GetType(winName)) as UI_Base;
-                        //隐藏所有界面
-                        win_obj.gameObject.SetActive(false);
-                        //测试特性反射start  貌似成功
-                        UI_Base.SetUIElementsBinding(ui_base, win_obj.transform);
-                        //测试特性反射end
-                        ui_base.Setup();
-                        win_obj.transform.localScale = Vector3.one;
-                        win_obj.transform.localPosition = Vector3.zero;
-                        GameUIDic.Add(ui_base.GetType(), ui_base);
+                        if(item.prefab != null)
+                        {
+                            UI_Base ui_base = InstantiateUI(item.prefab);
+                            GameUIDic.Add(ui_base.GetType(), ui_base);                           
+                        }
+                        else
+                        {
+                            Debug.LogError($"UI_Manager.UI_Prefabs：{item.name} 无法实例化， 引用值为空.");
+                        }
                     }
 
                     Initialized = true;
@@ -68,6 +65,22 @@ namespace AboloLib
                 Debug.LogError("UI_Prefabs 赋值为空");
 #endif
             }
+        }
+
+        public UI_Base InstantiateUI(GameObject item)
+        {
+            string winName = $"{CustomDataRegister.CustomNamespace}.{item.name}";
+            var win_obj = Instantiate(item, GetCanvas(0));
+            var ui_base = win_obj.gameObject.AddComponent(Type.GetType(winName)) as UI_Base;
+            //隐藏所有界面
+            win_obj.gameObject.SetActive(false);
+            //测试特性反射start  貌似成功
+            UI_Base.SetUIElementsBinding(ui_base, win_obj.transform);
+            //测试特性反射end
+            ui_base.Setup();
+            win_obj.transform.localScale = Vector3.one;
+            win_obj.transform.localPosition = Vector3.zero;
+            return ui_base;
         }
 
         public static Transform GetCanvas(int index)

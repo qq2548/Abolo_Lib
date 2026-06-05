@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 #if USE_SPINE
@@ -33,6 +34,16 @@ namespace AboloLib
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one;
             transform.localRotation = Quaternion.identity;
+        }
+
+        /// <summary>
+        /// 查找特定名称的子节点,SB PsdImporter勾选了保留同名图层选项，依然还要强制重命名，导致有了这个拓展方法
+        /// </summary>
+        /// <param name="transform"></param>
+        public static Transform FindTargetChild(this Transform transform , string filter)
+        {
+            var children = transform.GetComponentsInChildren<Transform>();
+            return children.FirstOrDefault(child => child.gameObject.name.Contains(filter));
         }
         /// <summary>
         /// transform 世界坐标位移动画扩展方法

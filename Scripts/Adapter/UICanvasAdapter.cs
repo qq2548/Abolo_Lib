@@ -20,4 +20,19 @@ public static class UICanvasAdapter
     {
         get { return canvasFunc?.Invoke(); }
     }
+
+    public static Camera UICamera
+    {
+        get
+        {
+            if(CurrentCanvas != null)
+            {
+                return CurrentCanvas.worldCamera;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 }

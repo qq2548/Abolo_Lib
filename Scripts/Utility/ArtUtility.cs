@@ -479,6 +479,20 @@ namespace AboloLib
             }
             Gizmos.DrawLine(vertices[0], vertices[vertices.Length - 1]);
         }
+        /// <summary>
+        /// 游戏世界坐标转换成UI空间坐标
+        /// </summary>
+        /// <param name="worldPosotion"></param>
+        /// <param name="worldCamera"></param>
+        /// <param name="uiCamera"></param>
+        /// <returns></returns>
+        public static Vector3 GameWorldSpaceToUISpacePosition(Vector3 worldPosotion , Camera worldCamera , Camera uiCamera)
+        {
+            var spos = worldCamera.WorldToScreenPoint(worldPosotion);
+            var Pos = uiCamera.ScreenToWorldPoint(spos);
+            Pos = new Vector3(Pos.x , Pos.y , UICanvasAdapter.CurrentCanvas.transform.position.z);
+            return Pos;
+        }
 
         /// 这里有一个关键点：世界相机的 orthographicSize 等于 Screen.height * 0.005f 时，两个矩阵下的物体尺寸是相同的，否则会出现偏差
         /// 需要使用下列方法进行修复对齐
