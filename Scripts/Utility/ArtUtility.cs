@@ -308,6 +308,11 @@ namespace AboloLib
             return Sprite.Create(tex, new Rect(0f, 0f, size.x, size.y), Vector2.one * 0.5f);
         }
 
+        public static Sprite CreateSprite(Texture2D tex, Vector2 size , Vector2 pivot)
+        {
+            return Sprite.Create(tex, new Rect(0f, 0f, size.x, size.y), pivot);
+        }
+
         public static Mesh CreateCombinedMesh(Transform root , Matrix4x4 matrix)
         {
             Mesh combine = new Mesh();

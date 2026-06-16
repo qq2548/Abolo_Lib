@@ -14,16 +14,26 @@ namespace AboloLib
     public class UI_CustomFx : MonoBehaviour
     {
         //全局UI mask动画的最大alpha值，以后只能改这里
-        public static float  MaxMaskAlpha = 0.67f;
+        public static float  MaxMaskAlpha = 0.77f;
         [SerializeField] List<Animation> _subAnimations;
         [Header("如果不需要背景模糊效果则勾选此项")]
         [SerializeField] bool _disableBlurBg = false;
+        public bool DisableBlurBg
+        {
+            get { return _disableBlurBg;}
+            set { _disableBlurBg = value;}
+        }
         [Header("如果不需要控制子节点Animation逐个激活则勾选此项")]
         public bool _IgnoreSubAnim = false;
         [Header("子动画播放是否要兼容item动态删减")]
         public bool _isDynamicSubAnimItems = false;
         [Header("子节点Animation逐个激活间隔时间")]
         [SerializeField] float interval = 0.05f;
+        public float Interval
+        {
+            get { return interval; }
+            set { interval = value; }
+        }
         [SerializeField] CanvasGroup mask;
         public float AnimInterval
         {
@@ -436,7 +446,7 @@ namespace AboloLib
         }
 #endif
 
-
+        [SerializeField] bool visiableCheck = false;
         public IEnumerator QueuedPlayAnimation(List<Animation> animations , float timeOffset ,Action callback = null)
         {
             if (animations == null)
@@ -448,7 +458,7 @@ namespace AboloLib
             {
                 if (item != null && item.gameObject.activeInHierarchy)
                 {
-                    var canPlay = ArtUtility.CheckElementInsideScreen(UICanvasAdapter.CurrentCanvas.worldCamera, item.gameObject);
+                    var canPlay = visiableCheck?ArtUtility.CheckElementInsideScreen(UICanvasAdapter.CurrentCanvas.worldCamera, item.gameObject) : true;
 
                     if(canPlay)
                     {

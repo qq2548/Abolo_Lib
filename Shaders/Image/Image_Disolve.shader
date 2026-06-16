@@ -171,7 +171,7 @@
 				fixed4 color = tex2D(_MainTex , oriUV);
 				float2 fixedUV =  IN.uv 
 						* float2(_TileScalor_X , _TileScalor_Y) - float2(t * _SubTexUSpeed , t * _SubTexVSpeed);
-				//color.rgb *= IN.Color.rgb;
+				color.rgb *= IN.Color.rgb;
 				fixed fac1 = 0;
 				//fixed fac2 = 1.0 - subColor.g;
 				#ifdef _PATTERN_DEFAULT
