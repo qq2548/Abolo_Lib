@@ -245,8 +245,42 @@ namespace AboloLib
                 return false;
             }
         }
+        /// <summary>
+        /// 获取transform世界坐标转换到UI空间的结果，若世界相机或者UI相机为空则返回0
+        /// </summary>
+        /// <returns></returns>
+        public static Vector3 UISpacePosition(this Transform transform)
+        {
+            if(GameCameraAdapter.CurrentCamera != null && UICanvasAdapter.CurrentCanvas.worldCamera != null)
+            {
+                return ArtUtility.GameWorldSpaceToUISpacePosition(transform.position , GameCameraAdapter.CurrentCamera , UICanvasAdapter.CurrentCanvas.worldCamera);
+            }
+            else
+            {
+                return Vector3.zero;
+            }
+        }
     }
 
+    
+    public static class Vector3Extension
+    {
+        /// <summary>
+        /// 获取Vector3世界坐标转换到UI空间的结果，若世界相机或者UI相机为空则返回0
+        /// </summary>
+        /// <returns></returns>
+        public static Vector3 UISpacePosition(this Vector3 vector3)
+        {
+            if(GameCameraAdapter.CurrentCamera != null && UICanvasAdapter.CurrentCanvas.worldCamera != null)
+            {
+                return ArtUtility.GameWorldSpaceToUISpacePosition(vector3 , GameCameraAdapter.CurrentCamera , UICanvasAdapter.CurrentCanvas.worldCamera);
+            }
+            else
+            {
+                return Vector3.zero;
+            }
+        }
+    } 
     public static class GraphicExtension
     {
         /// <summary>

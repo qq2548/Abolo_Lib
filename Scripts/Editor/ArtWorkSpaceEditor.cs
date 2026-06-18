@@ -198,6 +198,25 @@ namespace AboloLib
             EditorUtility.SetDirty(go);
         }
 
+        [MenuItem("GameObject/GetSelectedFullPath", false, 99)]
+        private static void GetSelectedFullPath(MenuCommand menuCommand)
+        { 
+            if(Selection.gameObjects.Length == 0) return;
+            var selectedGo = Selection.gameObjects[0];
+            string path = selectedGo.name;
+            Transform parent = selectedGo.transform.parent;
+            while (parent != null)
+            {
+                path = $"{parent.name}/{path}";
+                parent = parent.parent;
+            }
+            TextEditor text = new TextEditor();
+            text.text = path;
+            text.SelectAll();
+            text.Copy();
+            Debug.Log("FullPath is : " + path);
+        }
+
 #if USE_TMPro
         //将选中路径下的所有TMP_FontAsset的faceInfo参数替换为Assets/ArtWorkSpace/Fonts的同名文件参数
         [MenuItem("Assets/ArtUtils/TMPFillData", false, 20)]
