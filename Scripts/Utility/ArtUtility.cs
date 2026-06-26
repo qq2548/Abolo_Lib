@@ -446,6 +446,18 @@ namespace AboloLib
             target.localScale = Vector3.one;
         }
 
+        /// <summary>
+        /// 把current值映射到min到max区间0-1的值
+        /// </summary>
+        /// <param name="min">区间最小值</param>
+        /// <param name="max">区间最大值</param>
+        /// <param name="current">当前值</param>
+        /// <returns></returns>
+        public static float Map01(float min , float max , float current)
+        {
+            return (current-min)/(max - min);
+        }
+
         //获取椭圆边缘指定角度位置
         public static Vector2 GetPointOnEllipse(Vector2 rect, float degree)
         {

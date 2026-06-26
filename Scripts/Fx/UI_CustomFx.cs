@@ -198,6 +198,8 @@ namespace AboloLib
                 _subAnimations.Clear();
             }
         }
+
+        RawImage _rawImage = null;
         /// <summary>
         /// 调用背景抓帧模糊效果，目前通过动画事件帧驱动
         /// </summary>
@@ -205,9 +207,20 @@ namespace AboloLib
         {
             try
             {
-                if (!_disableBlurBg)
+                if (!DisableBlurBg)
                 {
-                    BgFromCamera.instance.PlayOpen();
+                    if(_rawImage == null)
+                    {
+                        var blurGo = new GameObject("blurbg");
+                        blurGo.transform.parent = transform;
+                        blurGo.transform.SetAsFirstSibling();
+                        blurGo.transform.Reset();
+                        var rectTran = blurGo.AddComponent<RectTransform>();
+                        rectTran.sizeDelta = new Vector2(Screen.width, Screen.height);
+                        _rawImage = blurGo.AddComponent<RawImage>();
+                        _rawImage.color = new Color(1 , 1, 1 , 0);
+                    }
+                    BgFromCamera.instance.PlayFullOpen(_rawImage);
                 }
             }
             catch (Exception e)
@@ -224,9 +237,9 @@ namespace AboloLib
         /// </summary>
         public void SetDisable()
         {
-            if (!_disableBlurBg)
+            if (!DisableBlurBg && _rawImage != null)
             {
-                BgFromCamera.instance.PlayClose();
+                BgFromCamera.instance.PlayFullClose(_rawImage);
             }
         }
 

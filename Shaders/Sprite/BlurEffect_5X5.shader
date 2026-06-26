@@ -156,7 +156,7 @@
 
                 color = saturate(blur)  * input.Color; 
 
-                color.a = 1.0;
+                //color.a =  blur.a * 0.04;
                 return color;
             }
             ENDCG
