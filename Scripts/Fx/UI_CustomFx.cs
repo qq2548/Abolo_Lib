@@ -216,7 +216,10 @@ namespace AboloLib
                         blurGo.transform.SetAsFirstSibling();
                         blurGo.transform.Reset();
                         var rectTran = blurGo.AddComponent<RectTransform>();
-                        rectTran.sizeDelta = new Vector2(Screen.width, Screen.height);
+                        rectTran.anchorMin = new Vector2(0.0f, 0.0f);
+                        rectTran.anchorMax = new Vector2(1.0f, 1.0f);
+                        rectTran.sizeDelta = 
+                            transform.GetComponent<RectTransform>().sizeDelta;//new Vector2(Screen.width, Screen.height);
                         _rawImage = blurGo.AddComponent<RawImage>();
                         _rawImage.color = new Color(1 , 1, 1 , 0);
                     }
@@ -469,6 +472,14 @@ namespace AboloLib
             }
             foreach (var item in animations)
             {
+                float itv = timeOffset;
+                //速度暂时还没有同步
+                foreach (AnimationState state in item)
+                {
+                    //state.speed = Speed;
+                }
+
+                if(item.TryGetComponent(out CustomAnimationData data)) itv = data.interval;
                 if (item != null && item.gameObject.activeInHierarchy)
                 {
                     var canPlay = visiableCheck?ArtUtility.CheckElementInsideScreen(UICanvasAdapter.CurrentCanvas.worldCamera, item.gameObject) : true;
@@ -476,7 +487,7 @@ namespace AboloLib
                     if(canPlay)
                     {
                         item.Play();
-                        yield return new WaitForSeconds(timeOffset);
+                        yield return new WaitForSeconds(itv);
                     }
                     else
                     {
