@@ -1,6 +1,6 @@
 #ifndef AboloCG
 	#define AboloCG
-	//�ض�����ʱ�����������ֵ���ڹ����¾��Ȳ���������ʾ���⣬�׶��ǻ���ֶ����νӶ���
+	//防止时间超过浮点数精度上限造成卡顿效果
 	float ABL_FixTime(float UnityTime)
 	{
 		float c;
@@ -14,13 +14,13 @@
             return b*t + a * (1.0 - t);
         }
 
-		
+		//三维浮点数混合算法
         float3 mix3(float3 a , float3 b ,float t)
         {
             return float3(mix(a.x , b.x ,t) , mix(a.y , b.y ,t) , mix(a.z , b.z ,t));
         }
 
-		
+		//色彩转换
 		float3 hsb2rgb(float3 c)
         {
             float3 rgb = saturate(abs(fmod(c.x * 6.0 + float3(0.0 , 4.0 , 2.0) , 6.0) -3.0) - 1.0);
@@ -36,7 +36,7 @@
         }
 
 
-	        //2D噪声
+	    //2D噪声
         float noise(float2 _uv)
         {
             float2 i = floor(_uv);
@@ -56,7 +56,7 @@
             return mix(a, b, u.x) +(c - a)* u.y * (1.0 - u.x) +(d - b) * u.x * u.y;
         }
 
-	//���� uv ƫ�Ƶļ��� ���Ƽ�г�˶� ,͵�������в���������һ���� ������ϸ��©��
+	//波纹算法
 	float2 ABL_WaveMotion(float4 mainTex_ST , float2 uv , float _WaveFrequency ,  float _WaveSpeed , float _WaveHeight , float TimeFactor )
 	{
 		float2 uvCoord = mainTex_ST.xy*0.5;
@@ -66,8 +66,7 @@
 		return wave_uv;
 	}
 
-	//ʹ������ ͨ������ʵ��uv��ƫ��
-	//��һ����ά���� channelWeight ��ΪȨ������������һ��ͨ��
+	//通道偏移算法
 	float2 ABL_TexChannelUVOffset(float4 SamplerColor , float2 uv , float2  speed ,  float DistortionFactor , float UndistortionFactor , float TimeFactor  , int reverse , float3 channelWeight)
 	{
 		float texOffset = dot(SamplerColor , channelWeight);
@@ -79,26 +78,17 @@
 	}
 
 
-	//������Ӱ����򿪣������޷���ȡ������������ͼ�����Ч���Ͳ���
-	//��ĻͶӰ������Ȳ���
+	//深度纹理采样
 	float ABL_ScreenSamplerDepth(sampler2D CameraDepth , float4 ScreenPosition)
 	{
-		//SAMPLE_DEPTH_TEXTURE_PROJ ��ͬ��������������������������һ��float3��float4���͵��������꣬
-		//�����ڲ�ʹ����tex2Dproj�����ĺ�������ͶӰ������������������ǰ�����������Ȼ�������һ��������
-		//�ٽ����������������ṩ�˵��ĸ��������������һ�αȽϣ� ͨ��������Ӱ��ʵ���С�
+		
 		float4 depthSample = SAMPLE_DEPTH_TEXTURE_PROJ(CameraDepth , ScreenPosition);
-		//Unity�ṩ����������������Ϊ���ǽ��������ļ�����̡���LinearEyeDepth �� Linear01Depth��
-		//LinearEyeDepth ������������Ĳ������ת�����ӽǿռ��µ����ֵ��
-		//�� Linear01Depth ��᷵��һ����Χ��[0, 1]���������ֵ��
-		//�����������ڲ�ʹ�������õ�_ZBufferParams�������õ�Զ���ü�ƽ��ľ���
 		float depth = LinearEyeDepth(depthSample);
 		return depth;
 	}
 
 
-	//ʹ�������RGBͨ�� �����뷴�����ƶ������ٽ�����˵õ����ƹ����˸�Ĳ������
-	//��һ����ά������ΪȨ������������һ��ͨ��
-	//Ҫ��Ҫ������ tex2D �������������д�����
+	//双通道对象运动混合,用于获得类似光点闪烁效果
 	float ABL_DouddleChannelCross(sampler2D _Tex , float2 uv , float TimeFactor , float3 channelWeight)
 	{
 		float2 suv1 = uv + TimeFactor * 0.01;
@@ -111,7 +101,7 @@
 		return sparcle;
 	}
 
-	//��͸ɫ������ģʽ�µĻ�ϼ���
+	//RGB通道使用Normal模式混合
 	fixed3 ABL_NormalBlendRGB(fixed3 ScrColor , float3 DstColor , float Threshold)
 	{
 		//float4 BlendColor = DstColor;
@@ -124,34 +114,33 @@
         return cc;
 	}
 
-	//�ڷ������
+	//绘制内发光
 	float ABL_Rim(float viewDir , float3 normal , float rimThreshold)
 	{
-		//�ڷ�����ɫ����
         float r = 1 -  max(0, dot(normal, viewDir));
         float rim =  saturate(pow(r  , rimThreshold*40.0));
 		return rim;
 	}
 
-	//�ҽ׼���
+	//色彩纯度运算
 	fixed3 ABL_Luminance(fixed3 InColor , float _Saturation)
 	{
-		//saturation���Ͷȣ����ȸ��ݹ�ʽ����ͬ����������±��Ͷ���͵�ֵ��
+
 		float gray = 0.29f * InColor.r + 0.59f * InColor.g + 0.12f * InColor.b;
-		//����Saturation�ڱ��Ͷ���͵�ͼ���ԭͼ֮���ֵ
+
 		return lerp( fixed3(gray, gray, gray), InColor, _Saturation);
 	}
 
-	//�Աȶȼ���
+	//色彩对比度运算
 	fixed3 ABL_ContrastModify(float3 InColor , float _Contrast)
 	{
-		//contrast�Աȶȣ����ȼ���Աȶ���͵�ֵ
+
 		float3 avgColor = float3(0.5, 0.5, 0.5);
-		//����Contrast�ڶԱȶ���͵�ͼ���ԭͼ֮���ֵ
+
 		return lerp(avgColor, InColor, _Contrast);
 	}
 
-	//��������ͼ��������Ч��
+	//流光效果运算1，带方向翻转参数
 	float4 ABL_FlowThroughPattern(fixed3 InColor ,sampler2D _Tex , float2 uv , float speed , float TimeFactor , int reverse)
 	{
 		float uu = InColor.r ;
@@ -159,7 +148,7 @@
 		vv -= TimeFactor * speed * reverse + sin( length(uv) + uv.x);
 		return tex2D(_Tex,float2(uu, vv)) * InColor.b;
 	}
-	//������д
+	//流光效果运算2
 	float4 ABL_FlowThroughPattern(fixed3 InColor ,sampler2D _Tex , float2 uv , float speed , float TimeFactor )
 	{
 		float uu = InColor.r ;
@@ -168,7 +157,7 @@
 		return tex2D(_Tex,float2(uu, vv)) * InColor.b;
 	}
 
-	//2d��ת����
+	//2d旋转矩阵
 	float2x2 ABL_2dRotationMatrix(float speed , float angle)
 	{
 		return float2x2(
@@ -177,7 +166,7 @@
 																													    );
 	}
 
-	//3d Y����ת���������ٶȰ� �����ʵҲ�ǰٶȵ�
+	//3d沿Y轴旋转矩阵
 	float4x4 ABL_3dYaxisRotationMatrix(float speed , float angle)
 	{
 		//����д��,�����ź�С����
@@ -205,6 +194,39 @@
 		vertexInfo += float4(0, fac_y + fac_x , 0 , 0);
 		//test end
 		return UnityObjectToClipPos(mul(unity_WorldToObject , vertexInfo));
+	}
+
+	const float ABL_PI = 3.1415926;
+	//影像变形波纹
+	float ABL_MorphingWave(float x , float t)
+	{
+		float result = sin(ABL_PI * (x + 0.5 * t));
+		result += 0.5 * sin(ABL_PI * 2.0 * (x + t));
+		return result;
+	}
+	//对向波纹动画
+	float AnimatedRipple(float x , float t)
+	{
+		float d = abs(x);
+		float result = sin(ABL_PI * (4.0 * d - t));
+		return result/(1.0 + 10.0 * d);
+	}
+
+	//3d波纹动画
+	float TrippleWave(float x , float z , float t)
+	{
+		float result = sin(ABL_PI * (x + 0.5 * t));
+		result += 0.5 * sin(ABL_PI * 2.0 * (z + t));
+		result += sin(ABL_PI * (x + z + 0.25 * t));
+		return result * (1.0 / 2.5);
+	}
+
+	//3d Y轴扩散波纹动画
+	float RippleOnXZ(float x , float z , float t)
+	{
+		float d = sqrt(x * x + z * z);
+		float result = sin(ABL_PI * (4.0 * d - t));
+		return result / (1.0 + 10.0 * d);
 	}
 
 	//

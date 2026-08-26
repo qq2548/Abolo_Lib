@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using TMPro;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using static UnityEngine.Mathf;
 
 namespace AboloLib
 {
+    public delegate void AboloFunction(Vector2Int coord);
     public class CellData
     {
         public GameObject cellObject;
@@ -48,6 +49,8 @@ namespace AboloLib
             {
                 cell.Value.cellObject = objects[cell.Key];
             }
+
+            DrawCellStateInfo();
         }
 
         public static Grid CreateGrid(Vector3 startPos , Vector2Int gridSize , Vector2 cellSize)
@@ -142,7 +145,32 @@ namespace AboloLib
             return position;
         }
 
-        public static Vector3 GetSnappingPosition(Grid grid , Vector2Int size , Vector3 mouseWorldPosition)
+        public static Vector2Int GetSnapCoord(Grid grid, Vector2Int size, Vector3 mouseWorldPosition)
+        {
+            Vector3 offset = new Vector3(size.x * 0.5f * grid.CellSize.x, size.y * 0.5f * grid.CellSize.y , 0.0f);
+            Vector2Int coord = GetGridCoord(grid , mouseWorldPosition - offset);
+            Vector2Int snap_coord = ConstraintCoordInGrid(grid , coord , size);
+            return snap_coord;
+        }
+
+        public static Vector3 GetSnappingPos(Grid grid, Vector2Int size, Vector3 mouseWorldPosition, out Vector2Int dl_coord)
+        {
+            Vector3 result = Vector3.zero;
+            Vector3 offset = new Vector3(size.x * 0.5f * grid.CellSize.x, size.y * 0.5f * grid.CellSize.y , 0.0f);
+            Vector2Int coord = GetGridCoord(grid , mouseWorldPosition - offset);
+            Vector2Int snap_coord = ConstraintCoordInGrid(grid , coord , size);
+            result = GetPositionByCoord(grid , snap_coord) + offset;
+            dl_coord = snap_coord;
+            return result;
+        }
+
+        public static Vector3 GetSnappingPos(Grid grid, Vector2Int size, Vector3 mouseWorldPosition)
+        {
+            Vector2Int coord;
+            return GetSnappingPos(grid , size , mouseWorldPosition ,out coord);
+        }
+
+        public static Vector3 GetSnappingPosition(Grid grid , Vector2Int size , Vector3 mouseWorldPosition , out Vector2Int dl_coord)
         {
             Vector3 result;
             Vector2Int pivot = new Vector2Int(FloorToInt(size.x * 0.5f) , FloorToInt(size.y * 0.5f));
@@ -155,7 +183,14 @@ namespace AboloLib
             snap_coord = ConstraintCoordInGrid(grid , snap_coord , downLeft , upperRight);
             Debug.Log($"coord is {coord}---------pivot is {pivot}------snap_coord is {snap_coord}");
             result = GetPositionByCoord(grid , snap_coord);
+            dl_coord = snap_coord - downLeft;
             return result + offset;
+        }
+
+        public static Vector3 GetSnappingPosition(Grid grid , Vector2Int size , Vector3 mouseWorldPosition)
+        {
+            Vector2Int coord;
+            return GetSnappingPosition(grid , size , mouseWorldPosition ,out coord);
         }
         public static Vector2Int ConstraintCoordInGrid(Grid grid , Vector2Int coord , Vector2Int downLeft , Vector2Int upperRight)
         {
@@ -165,6 +200,59 @@ namespace AboloLib
             if(coord.y < downLeft.y) result.y = downLeft.y;
             if(coord.y >= grid.Size.y-upperRight.y) result.y = grid.Size.y -1-upperRight.y;
             return result;
+        }
+
+        public static Vector2Int ConstraintCoordInGrid(Grid grid , Vector2Int coord , Vector2Int size)
+        {
+            Vector2Int result = coord;
+            if(result.x < 0) result.x = 0;
+            if(result.x + size.x -1 >= grid.Size.x) result.x = grid.Size.x - size.x;
+            if(result.y < 0) result.y = 0;
+            if(result.y + size.y -1 >= grid.Size.y) result.y = grid.Size.y - size.y;
+            return result;
+        }
+
+        public static List<Vector2Int> GetOverlayCoords(Vector2Int downLeftCoord , Vector2Int size)
+        {
+            List<Vector2Int> result = new List<Vector2Int>();
+            for (int x = 0; x < size.x; x++)
+            {
+                for (int y = 0; y < size.y; y++)
+                {
+                    result.Add(downLeftCoord + new Vector2Int(x, y));
+                }
+            }
+            return result;
+        }
+
+        public static bool CheckAllClear(Grid grid , List<Vector2Int> coords)
+        {
+            bool result = true;
+            if(coords != null && coords.Count > 0)
+            {
+                foreach (Vector2Int coord in coords)
+                {
+                    if(grid.Cells.ContainsKey(coord) && grid.Cells[coord].State != 0)
+                    {
+                        result = false;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static void SetCellsState(Grid grid , List<Vector2Int> coords , int state)
+        {
+            if(coords != null && coords.Count > 0)
+            {
+                foreach (Vector2Int coord in coords)
+                {
+                    if(grid.Cells.ContainsKey(coord))
+                    {
+                        grid.Cells[coord].State = state;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -326,6 +414,33 @@ namespace AboloLib
             StartCoroutine(ArtAnimation.DoAnimation(1.0f , _deltaAnim));
         }
 
+        /// <summary>
+        /// 绘制状态数值
+        /// </summary>
+        public void DrawCellStateInfo()
+        {
+            var p = new GameObject("DebugInfo");
+            foreach (var cell in MyGrid.Cells)
+            {
+                var go = new GameObject(cell.Key.ToString());
+                var tmp = go.AddComponent<TextMeshPro>();
+                tmp.enableWordWrapping = false;
+                go.transform.position = GetPositionByCoord(MyGrid,cell.Key) + new Vector3(0.1f , 0.4f , 0.0f);
+                go.transform.localScale = Vector3.one * 0.07f;
+                go.transform.GetComponent<RectTransform>().sizeDelta = Vector2.one;
+                go.transform.SetParent(p.transform);
+                tmp.text = cell.Value.State.ToString() + cell.Key.ToString();
+                cell.Value.OnStateChanged += () => RefreshCellStateInfo(cell.Key);
+            }
+            
+        }
+
+        public void RefreshCellStateInfo(Vector2Int coord)
+        {
+            var target = GameObject.Find("DebugInfo").transform.FindTargetChild(coord.ToString());
+            target.GetComponent<TextMeshPro>().text = MyGrid.Cells[coord].State.ToString() + "--" + coord.ToString();
+        }
+
 #region 编辑器方法
     #if UNITY_EDITOR
         public void CreateEditorCells()
@@ -335,6 +450,42 @@ namespace AboloLib
             Vector3 startPos = transform.Find("start").position;
             var grid = CreateGrid(startPos , _gridSize , _cellSize);
             CreateGridObjects(grid , _cellScources , cellsRoot);
+        }
+
+        /// <summary>
+        /// 编辑器模式下绘制网格
+        /// </summary>
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.magenta;
+            Vector3 startPos = transform.Find("start").position;
+            Vector3 currentPos = startPos;
+            for (int y = 0; y < _gridSize.y; y++)
+            {
+                for (int x = 0; x < _gridSize.x; x++)
+                {
+                    currentPos = startPos + new Vector3(_cellSize.x * x , _cellSize.y * y , 0.0f);
+
+                    Gizmos.DrawLine(currentPos , currentPos + new Vector3(0.0f , _cellSize.y , 0.0f));
+                    Gizmos.DrawLine(currentPos, currentPos + new Vector3(_cellSize.x , 0.0f , 0.0f));
+
+                    float width = _gridSize.x* _cellSize.x ;
+                    float height = _gridSize.y* _cellSize.y ;
+
+                    if(y == _gridSize.y - 1 && x == 0)
+                    {                       
+                        Vector3 from = startPos + new Vector3(0.0f , height , 0.0f);
+                        Vector3 to = startPos + new Vector3(width , height  , 0.0f);
+                        Gizmos.DrawLine(from , to);
+                    }
+                    if(x == _gridSize.x - 1 && y == 0)
+                    {
+                        Vector3 from = startPos + new Vector3(width , 0.0f  , 0.0f);
+                        Vector3 to = startPos + new Vector3(width , height , 0.0f);
+                        Gizmos.DrawLine(from , to);                       
+                    }
+                }
+            }
         }
     #endif
 #endregion
