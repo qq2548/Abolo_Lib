@@ -1,3 +1,5 @@
+//#define SHOW_DEBUG_INFO
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,6 +7,8 @@ using TMPro;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using static UnityEngine.Mathf;
+
+
 
 namespace AboloLib
 {
@@ -51,6 +55,7 @@ namespace AboloLib
             }
 
             DrawCellStateInfo();
+
         }
 
         public static Grid CreateGrid(Vector3 startPos , Vector2Int gridSize , Vector2 cellSize)
@@ -148,7 +153,7 @@ namespace AboloLib
         public static Vector2Int GetSnapCoord(Grid grid, Vector2Int size, Vector3 mouseWorldPosition)
         {
             Vector3 offset = new Vector3(size.x * 0.5f * grid.CellSize.x, size.y * 0.5f * grid.CellSize.y , 0.0f);
-            Vector2Int coord = GetGridCoord(grid , mouseWorldPosition - offset);
+            Vector2Int coord = GetGridCoord(grid , mouseWorldPosition - offset * 0.5f);
             Vector2Int snap_coord = ConstraintCoordInGrid(grid , coord , size);
             return snap_coord;
         }
@@ -200,6 +205,12 @@ namespace AboloLib
             if(coord.y < downLeft.y) result.y = downLeft.y;
             if(coord.y >= grid.Size.y-upperRight.y) result.y = grid.Size.y -1-upperRight.y;
             return result;
+        }
+
+        public static Vector3 GetBgSnapPosition(Grid grid ,Vector2Int coord , Vector2Int size)
+        {
+            Vector3 offset = new Vector3(size.x * 0.5f * grid.CellSize.x, size.y * 0.5f * grid.CellSize.y , 0.0f);
+            return GetPositionByCoord(grid, coord) + offset;
         }
 
         public static Vector2Int ConstraintCoordInGrid(Grid grid , Vector2Int coord , Vector2Int size)
@@ -420,6 +431,11 @@ namespace AboloLib
         public void DrawCellStateInfo()
         {
             var p = new GameObject("DebugInfo");
+            p.SetActive(false);
+            FlowerGameManager._instance.DebugInfoRoot = p.transform;
+#if SHOW_DEBUG_INFO
+            p.SetActive(true); 
+#endif
             foreach (var cell in MyGrid.Cells)
             {
                 var go = new GameObject(cell.Key.ToString());
@@ -437,7 +453,7 @@ namespace AboloLib
 
         public void RefreshCellStateInfo(Vector2Int coord)
         {
-            var target = GameObject.Find("DebugInfo").transform.FindTargetChild(coord.ToString());
+            var target = FlowerGameManager._instance.DebugInfoRoot.FindTargetChild(coord.ToString());
             target.GetComponent<TextMeshPro>().text = MyGrid.Cells[coord].State.ToString() + "--" + coord.ToString();
         }
 
