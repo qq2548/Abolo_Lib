@@ -25,6 +25,8 @@ namespace AboloLib
         public static string PageCloseAnimName = "ani_page_close";
         public static string PopOpenAnimName = "ani_open";
         public static string PopCloseAnimName = "ani_close";
+        [UIBind("root")]
+        public Transform root = null;
         [UIBind("root/bg/CloseBtn")]
         protected Button CloseBtn = null;
         private UI_CustomFx customFx = null;
@@ -108,11 +110,11 @@ namespace AboloLib
             //播放动画时，屏蔽交互操作 
             if (transform.TryPlayAnimation(PageOpenAnimName))
             {
-                RayCastBlock._instance.SetRayCastBlock(true);
+                if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(true);
                 float delay = OpenAnimDuration;
                 animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay , () =>
                 {
-                    RayCastBlock._instance.SetRayCastBlock(false);
+                    if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(false);
                     OnOpenAniamtionDone?.Invoke();
                     OnOpenAniamtionDone = null;
                 }));
@@ -133,13 +135,13 @@ namespace AboloLib
             //播放动画时，屏蔽交互操作 
             if (transform.TryPlayAnimation(PageCloseAnimName))
             {
-                RayCastBlock._instance.SetRayCastBlock(true);
+                if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(true);
                 float delay = CloseAnimDuration;
                 animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, () =>
                 {
                     gameObject.transform.SetParent(UIManager.GetCanvas(0));
                     if (gameObject.activeSelf) gameObject.SetActive(false);
-                    RayCastBlock._instance.SetRayCastBlock(false);
+                    if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(false);
                     OnCloseAniamtionDone?.Invoke();
                     OnCloseAniamtionDone = null;
                 }));
