@@ -181,9 +181,9 @@
                 float2x2 rot = float2x2(cos(t) , -sin(t),
                                                     sin(t) , cos(t));
                     
-                    float2 scalor = float2(0.75 , 1.0 + IN.texcoord.y*2.0);
-                    OriUV = mul((OriUV  - float2(0.5 , 0.5 ))*scalor , rot) * 1.3f;
-                    OriUV +=  float2(0.5 , 0.5 );
+                    // float2 scalor = float2(0.75 , 1.0 + IN.texcoord.y*2.0);
+                    // OriUV = mul((OriUV  - float2(0.5 , 0.5 ))*scalor , rot) * 1.3f;
+                    // OriUV +=  float2(0.5 , 0.5 );
 
 
                 fixed4 color = tex2D(_MainTex , OriUV);
@@ -284,10 +284,10 @@
                     {
                         channel = tex2D(_MainTex , OriUV + Box9[num] * _OutlineThreshold * _MainTex_TexelSize.xy).a;
                         shadow = tex2D(_MainTex , OriUV+float2(_ShadowOffsetX , _ShadowOffsetY) + Box9[num] * _OutlineThreshold * _MainTex_TexelSize.xy).a;
-                        outline += channel ;
-                        outline += shadow ;
+                        outline += 1.0 - channel ;
+                        outline += 1.0 - shadow ;
                     }
-                    float fac = saturate(outline) - color.a;
+                    float fac = saturate(outline) * color.a;
                     color.rgb = lerp(color.rgb , _OutlineColor.rgb , fac);
                     color.a = lerp(color.a , saturate(outline)*_OutlineColor.a , fac);
                #endif

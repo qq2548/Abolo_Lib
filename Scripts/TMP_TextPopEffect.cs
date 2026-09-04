@@ -1,6 +1,7 @@
 ﻿
 using TMPro;
-
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -49,25 +50,189 @@ namespace AboloLib
         /// </summary>
         private TMP_Text m_TextComponent;
 
+        Vector3 originalPos = Vector3.zero;
+        Vector2 anchorMin = Vector2.zero;
+        Vector2 anchorMax = Vector2.zero;
+        float maxSchedual = -1f;
         private void Awake()
         {
             m_TextComponent = GetComponent<TMP_Text>();
-            Schedule = 0.0f;
+            anchorMin = m_TextComponent.GetComponent<RectTransform>().anchorMin;
+            anchorMax = m_TextComponent.GetComponent<RectTransform>().anchorMax;
+            originalPos = m_TextComponent.GetComponent<RectTransform>().anchoredPosition3D;
+        }
+
+        bool initialized = false;
+        public void Start()
+        {
+            StartCoroutine(Initialize());
         }
 
         private void OnEnable()
         {
-            Schedule = 0.0f;
-            TextAnima();
+            if (initialized)
+            {
+                Schedule = 0.0f;
+                TextAnima();
+            }
+            else
+            {
+                StartCoroutine(Initialize());
+            }
         }
 
         private void Update()
         {
-            if (Schedule< int.MaxValue)
+            if (initialized)
             {
-                TextAnima();
-                Schedule += Time.deltaTime * Speed;
+                if (Schedule < maxSchedual)
+                {
+                    TextAnima();
+                    Schedule += Time.deltaTime * Speed;
+                }
             }
+        }
+
+
+        //private void TextAnimDelta(float factor)
+        //{
+        //    if (m_TextComponent == null)
+        //    {
+        //        m_TextComponent = GetComponent<TMP_Text>();
+        //    }
+
+        //    //刷新
+        //    m_TextComponent.ForceMeshUpdate();
+        //    //文本组件的信息
+        //    TMP_TextInfo textInfo = m_TextComponent.textInfo;
+        //    if (textInfo == null)
+        //    {
+        //        return;
+        //    }
+        //    else
+        //    {
+        //        if (textInfo.meshInfo.Length == 0)
+        //        {
+        //            return;
+        //        }
+        //        else
+        //        {
+        //            if (textInfo.meshInfo[0].vertices == null)
+        //            {
+        //                return;
+        //            }
+        //        }
+        //    }
+        //    Debug.Log("))))))))))))))))))))))))))))))))))");
+        //    //用来做旋转和缩放的矩阵
+        //    Matrix4x4 matrix;
+        //    //复制一下顶点数据
+        //    TMP_MeshInfo[] cachedMeshInfo = textInfo.CopyMeshInfoVertexData();
+        //    //获取字符数量
+        //    int characterCount = textInfo.characterCount;
+        //    //文本组件没字符就不管
+        //    if (characterCount == 0)
+        //    {
+        //        return;
+        //    }
+
+        //    for (int i = 0; i < characterCount; i++)
+        //    {
+        //        //根据动画进度计每个字符的偏移量,为0则不进行动画
+        //        float offset = (i - factor + ShowCount);
+        //        offset = Mathf.Clamp(offset, 0, offset);
+
+        //        //不在屏幕内的文字不管
+        //        if (!textInfo.characterInfo[i].isVisible) continue;
+
+        //        //获取一下字符的材质下标和第一个顶点的下标------->这里为什么要取材质下标没看懂
+        //        int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
+        //        int vertexIndex = textInfo.characterInfo[i].vertexIndex;
+        //        //先获取一下顶点坐标
+        //        Vector3[] sourceVertices = cachedMeshInfo[materialIndex].vertices;
+        //        Vector3[] destinationVertices = textInfo.meshInfo[materialIndex].vertices;
+
+        //        //获取左下和右下顶点坐标,然后相加除2获得字符所在中心坐标,矩阵计算要用
+        //        Vector3 matrixOffset = (sourceVertices[vertexIndex] + sourceVertices[vertexIndex + 3]) / 2;
+
+        //        //获取颜色数组
+        //        Color32[] newVertexColors = null;
+        //        if (UseColor) newVertexColors = textInfo.meshInfo[materialIndex].colors32;
+
+        //        Vector3 jitterOffset = offset * OffsetMultiplier * Vector3.up;
+        //        //与位置偏移类似,不过是反着的,在显示范围内,offset越大rota越小,让字符看起来由小变大
+        //        var rota = (ShowCount - offset) / ShowCount;
+        //        rota = Mathf.Clamp(rota, 0, 1);
+        //        if (ArtAnimation.AnimCurveDic == null || ArtAnimation.AnimCurveDic.Count < 1)
+        //        {
+        //            return;
+        //        }
+        //        float t = ArtAnimation.AnimCurveDic[CurveFactory.CurveType.TextPopScale].Evaluate(rota);
+        //        //创建矩阵,传入位移旋转缩放
+        //        matrix = Matrix4x4.TRS(jitterOffset, Quaternion.Euler(0, 0, offset * AngleMultiplier), Vector3.one * t);
+        //        //每个字符由四个顶点组成,所以四个一批进行动画
+        //        for (int index = 0; index < 4; index++)
+        //        {
+        //            //超过最大显示数量的数字则不显示,将所有顶点置于原点,属实偷懒了,不过也懒得弄其他方法了,凑合用吧
+        //            if (i > factor + ShowCount)
+        //            {
+        //                destinationVertices[vertexIndex + index] = Vector3.zero;
+        //            }
+        //            else
+        //            {
+        //                //根据动画进度显示不同的颜色
+        //                if (UseColor) newVertexColors[vertexIndex + index] = gradient.Evaluate(rota);
+        //                //先减去中心点坐标,再进行旋转,差不多就是把一个矩形先移动到中心然后再旋转
+        //                destinationVertices[vertexIndex + index] = sourceVertices[vertexIndex + index] - matrixOffset;
+        //                destinationVertices[vertexIndex + index] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + index]);
+        //                //矩阵计算完了再把开始减的加回去
+        //                destinationVertices[vertexIndex + index] += matrixOffset;
+        //            }
+        //        }
+        //    }
+        //    //把计算完的坐标颜色啥的赋值应用一下就完事了
+        //    for (int i = 0; i < textInfo.meshInfo.Length; i++)
+        //    {
+        //        textInfo.meshInfo[i].mesh.vertices = textInfo.meshInfo[i].vertices;
+        //        m_TextComponent.UpdateGeometry(textInfo.meshInfo[i].mesh, i);
+        //    }
+        //    if (UseColor) m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+        //}
+
+
+        /// <summary>
+        /// 确保拿到数据之后再开始动画，期间把物体挪到屏幕外，修复激活时会闪现一帧全部文字的问题
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator Initialize()
+        {
+            m_TextComponent.transform.localPosition = Vector3.one * 5000f;
+            TMP_TextInfo textInfo = m_TextComponent.textInfo;
+            while (m_TextComponent.textInfo == null)
+            {
+                yield return null;
+                textInfo = m_TextComponent.textInfo;
+            }
+
+            while (textInfo.meshInfo.Length == 0)
+            {
+                yield return null;
+                textInfo = m_TextComponent.textInfo;
+            }
+
+            while (textInfo.meshInfo[0].vertices == null)
+            {
+                yield return null;
+                textInfo = m_TextComponent.textInfo;
+            }
+            m_TextComponent.GetComponent<RectTransform>().anchorMin = anchorMin;
+            m_TextComponent.GetComponent<RectTransform>().anchorMax = anchorMax;
+            m_TextComponent.GetComponent<RectTransform>().anchoredPosition3D = originalPos;
+            Schedule = 0.0f;
+            TextAnima();
+            initialized = true;
+            //超过最大值就不需要动画了
+            maxSchedual = textInfo.characterCount + ShowCount;
         }
 
         private void TextAnima()
