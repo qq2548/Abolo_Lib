@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: sample3d_CustomLightModel_ShadowCross
+  m_Shader: {fileID: 4800000, guid: 19fd23fbe7f2ac94996ed3de7844787c, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _HatchinTex01:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HatchinTex02:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HatchinTex03:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HatchinTex_1:
+        m_Texture: {fileID: 2800000, guid: da6f39fe368b9f043b5c71d0eeae8d68, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HatchinTex_2:
+        m_Texture: {fileID: 2800000, guid: 3aa4304afb54d5e4696a6c14269a0519, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _HatchinTex_3:
+        m_Texture: {fileID: 2800000, guid: 0177f7ae97220c640993484bb9b684d0, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 16, y: 16}
+        m_Offset: {x: 0, y: 0}
+    - _SubTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - SnowFx: 0
+    - WorldBending: 0
+    - _AmbientThreshold: 0.73
+    - _DisolveThreshold: 1
+    - _Exposure: 1
+    - _FlashFactor: 0
+    - _Gloss: 2
+    - _Intensity: 1
+    - _RampSmooth: 1
+    - _RampThreshold: 0.35
+    - _RimMax: 1.6
+    - _RimMin: 0.63
+    - _SideOffset: 0.389
+    - _SideRampSmooth: 1
+    - _SpecSmooth: 0.836
+    - _SpecularSize: 3.78
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - __dummy__: 0
+    m_Colors:
+    - _BrightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _DisolveColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FlashColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LightDir: {r: 1, g: 1.4, b: -1.78, a: 1}
+    - _RimColor: {r: 0, g: 1, b: 0.86792445, a: 1}
+    - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SideColor: {r: 1, g: 1, b: 1, a: 1}
+    - _SideLightColor: {r: 1, g: 0.7112604, b: 0, a: 1}
+    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

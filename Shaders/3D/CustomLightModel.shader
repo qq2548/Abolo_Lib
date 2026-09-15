@@ -315,8 +315,8 @@ Shader "sample3d/CustomLighting"
                 fixed3 lightColor = _BrightColor.rgb;
                //使用局部颜色替换
                     //用主贴图的 alpha 通道采样做剔除遮罩
-                    //half sideColorMask = color.a;
-                    //color.rgb =  (color.rgb * sideColorMask * UNITY_ACCESS_INSTANCED_PROP(Props, _SideColor)) + (color.rgb * (1.0f - sideColorMask));
+                    half sideColorMask = color.a;
+                    color.rgb =  (color.rgb * sideColorMask * UNITY_ACCESS_INSTANCED_PROP(Props, _SideColor)) + (color.rgb * (1.0f - sideColorMask));
 
                 
                 //归一化第一盏灯光的光照方向
@@ -367,9 +367,9 @@ Shader "sample3d/CustomLighting"
                
                 //侧光计算
 
-                //ligFac.y *= 1.0 - _SideOffset;
-                //fixed4 SCol = tex2D(_SubTex ,  ligFac );
-                //color.rgb += SCol.r * _SideLightColor;
+                ligFac.y *= 1.0 - _SideOffset;
+                fixed4 SCol = tex2D(_SubTex ,  ligFac );
+                color.rgb += SCol.r * _SideLightColor;
 
 
 

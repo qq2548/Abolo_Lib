@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 19fd23fbe7f2ac94996ed3de7844787c
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _MainTex: {instanceID: 0}
+  - _SubTex: {instanceID: 0}
+  - _HatchinTex_1: {instanceID: 0}
+  - _HatchinTex_2: {instanceID: 0}
+  - _HatchinTex_3: {instanceID: 0}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
