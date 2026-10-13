@@ -14,7 +14,8 @@ namespace AboloLib
     public class UI_CustomFx : MonoBehaviour
     {
         //全局UI mask动画的最大alpha值，以后只能改这里
-        public static float  MaxMaskAlpha = 0.77f;
+        public static float  MaxMaskAlpha = 0.85f;
+        public static float  MaskAnimDuration = 0.2f;
         [SerializeField] List<Animation> _subAnimations;
         [Header("如果不需要背景模糊效果则勾选此项")]
         [SerializeField] bool _disableBlurBg = false;
@@ -77,7 +78,7 @@ namespace AboloLib
         }
         public void Setup()
         {
-
+            //GetSubAnimations();
         }
 
                 /// <summary>
@@ -156,7 +157,7 @@ namespace AboloLib
         {
             if(mask == null) return;
             var curve = isOpen ? ArtUtility.IncreaseLinearCurve : ArtUtility.DecreaseLinearCurve;
-            StartCoroutine(ArtAnimation.DoAnimation(0.33f , (value) =>
+            StartCoroutine(ArtAnimation.DoAnimation(MaskAnimDuration , (value) =>
             {
                 mask.alpha =  Mathf.Lerp(0.01f , MaxMaskAlpha , curve.Evaluate(value));
                 //Mathf.Lerp(0.01f , MaxMaskAlpha , Mathf.Pow(curve.Evaluate(value), 2.2f));

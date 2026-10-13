@@ -7,12 +7,19 @@ using UnityEngine.EventSystems;
 namespace AboloLib
 {
     public class UI_Selectable : MonoBehaviour, 
-        IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler,IPointerClickHandler
+        IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler,IPointerClickHandler, IPointerUpHandler , IBeginDragHandler
     {
         public Action PointerDown;
         public Action PointerEnter;
         public Action PointerExit;
         public Action PointerClick;
+        public Action PointerUp;
+        public Action BeginDrag;
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            BeginDrag?.Invoke();
+        }
 
         public void OnPointerClick(PointerEventData eventData)
         {
@@ -32,6 +39,11 @@ namespace AboloLib
         public void OnPointerExit(PointerEventData eventData)
         {
             PointerExit?.Invoke();
+        }
+
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            PointerUp?.Invoke();
         }
     }
 }
