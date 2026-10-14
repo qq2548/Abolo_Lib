@@ -224,7 +224,7 @@ namespace AboloLib
                         _rawImage = blurGo.AddComponent<RawImage>();
                         _rawImage.color = new Color(1 , 1, 1 , 0);
                     }
-                    BgFromCamera.instance.PlayFullOpen(_rawImage);
+                    if(BgFromCamera.instance != null) BgFromCamera.instance.PlayFullOpen(_rawImage);
                 }
             }
             catch (Exception e)
@@ -243,7 +243,7 @@ namespace AboloLib
         {
             if (!DisableBlurBg && _rawImage != null)
             {
-                BgFromCamera.instance.PlayFullClose(_rawImage);
+                if(BgFromCamera.instance != null) BgFromCamera.instance.PlayFullClose(_rawImage);
             }
         }
 
