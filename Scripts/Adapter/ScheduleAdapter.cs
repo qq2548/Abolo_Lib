@@ -22,7 +22,10 @@ namespace AboloLib
         {
             return Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, task));
         }
-
+        public static Coroutine DoAnimation(float duration , Action<float> delta , Action callback = null)
+        {
+            return Schedual.StartCoroutine(ArtAnimation.DoAnimation(duration, delta, callback));
+        }
         public static void DoSequenceScheduals(List<IEnumerator> enums, Action callback)
         {
             Schedual.StartCoroutine(ArtAnimation.DoSequenceActions(enums, callback));

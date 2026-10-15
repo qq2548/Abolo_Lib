@@ -41,7 +41,8 @@ namespace AboloLib
                         if(item.prefab != null)
                         {
                             UI_Base ui_base = InstantiateUI(item.prefab);
-                            GameUIDic.Add(ui_base.GetType(), ui_base);                           
+                            GameUIDic.Add(ui_base.GetType(), ui_base);   
+                            ui_base.name = item.prefab.name;
                         }
                         else
                         {
@@ -127,7 +128,7 @@ namespace AboloLib
             if (Initialized)
             {
                 T ui = GameObject.Instantiate(GameUIDic[typeof(T)] , parent) as T;
-
+                ui.name = GameUIDic[typeof(T)].name;
                 if (ui != null)
                 {
                     return ui;

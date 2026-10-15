@@ -51,6 +51,8 @@ namespace AboloLib
         /// </summary>
         public Action _onAnimationDone;
 
+        public Coroutine QueuedActive = null;
+
         private void Awake()
         {
             ResetSpineAnimation();
@@ -308,6 +310,11 @@ namespace AboloLib
 #endif
             }
         }
+
+        public void StopQueuedActive()
+        {
+            if(QueuedActive != null) StopCoroutine(QueuedActive);
+        }
         /// <summary>
         /// 依次间隔激活效果，目前通过动画事件帧驱动
         /// </summary>
@@ -315,10 +322,11 @@ namespace AboloLib
         {
             if (_subAnimations.Count > 0)
             {
-                StartCoroutine(QueuedPlayAnimation(_subAnimations , interval , _onAnimationDone));
+                StopQueuedActive();
+                QueuedActive = StartCoroutine(QueuedPlayAnimation(_subAnimations , interval , _onAnimationDone));
             }
         }
-
+        
         public void PlayQueuedActiveWithLayout()
         {
             if (_subAnimations.Count > 0)
@@ -413,7 +421,7 @@ namespace AboloLib
 
         void EnableConflictAnimators()
         {
-            if (_animators.Count > 0)
+            if (_animators != null && _animators.Count > 0)
             {
                 foreach (var item in _animators)
                 {
@@ -424,7 +432,7 @@ namespace AboloLib
 
         void DisableConflictAnimators()
         {
-            _animators.Clear();
+            if(_animators != null) _animators.Clear();
             foreach (var item in _subAnimations)
             {
                 if (item.TryGetComponent(out Animator _animator))

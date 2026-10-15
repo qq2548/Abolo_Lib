@@ -12,9 +12,9 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _TURN_OFF_HSB_ON
-  m_InvalidKeywords:
   - WORLDBENDING_ON
+  - _TURN_OFF_HSB_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -64,6 +64,9 @@ Material:
     m_Ints: []
     m_Floats:
     - WorldBending: 1
+    - _BlendDst: 10
+    - _BlendMode: 0
+    - _BlendSrc: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1

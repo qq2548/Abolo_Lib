@@ -11,7 +11,16 @@ namespace AboloLib
         public List<SpritePreset> spritePresets;
         public Sprite GetSprite(string name)
         {
-            return spritePresets.FirstOrDefault(x => x.name == name).sprite;
+            var result = spritePresets.FirstOrDefault(x => x.name == name);
+            if(result != null)
+            {
+                return result.sprite;
+            }
+            else
+            {
+                return null;
+            }
+            //return spritePresets.FirstOrDefault(x => x.name == name).sprite;
         }
     }
     [System.Serializable]

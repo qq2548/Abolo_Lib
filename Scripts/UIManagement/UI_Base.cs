@@ -25,6 +25,8 @@ namespace AboloLib
         public static string PageCloseAnimName = "ani_page_close";
         public static string PopOpenAnimName = "ani_open";
         public static string PopCloseAnimName = "ani_close";
+        public static string GlobalPageOpenSound = "UI_PageOpen_Common";
+        public static string GlobalPageCloseSound = "UI_PageClose_Common";
         [UIBind("root")]
         public Transform root = null;
         [UIBind("root/bg/CloseBtn")]
@@ -121,7 +123,7 @@ namespace AboloLib
             }
             RefreshUI();
 
-            if (!mute) AudioPlayerAdapter.PlayAudio("UI_PageOpen_Common");
+            if (!mute) AudioPlayerAdapter.PlayAudio(GlobalPageOpenSound);
 
             Debug.Log($"Show Window {this.name}");
         }
@@ -151,7 +153,7 @@ namespace AboloLib
                 if (gameObject.activeSelf) gameObject.SetActive(false);
             }
 
-            //AudioPlayerAdapter.PlayAudio("Merge_Close");
+            AudioPlayerAdapter.PlayAudio(GlobalPageCloseSound);
         }
 
         public virtual void Setup()
