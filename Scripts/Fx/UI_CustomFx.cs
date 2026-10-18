@@ -17,6 +17,7 @@ namespace AboloLib
         public static float  MaxMaskAlpha = 0.85f;
         public static float  MaskAnimDuration = 0.2f;
         [SerializeField] List<Animation> _subAnimations;
+        [SerializeField] string _filter = "pop";
         [Header("如果不需要背景模糊效果则勾选此项")]
         [SerializeField] bool _disableBlurBg = false;
         public bool DisableBlurBg
@@ -46,6 +47,16 @@ namespace AboloLib
         /// </summary>
         List<Animator> _animators;
 
+        float speed = 1.0f;
+        /// <summary>
+        /// 激活流程速度控制
+        /// </summary>
+        public float Speed
+        {
+            get => speed;
+            set => speed = value;
+        }
+      public Action[] QueuedCallbacks;
         /// <summary>
         /// 整个脚本动画播放完毕时的回调
         /// </summary>
@@ -73,6 +84,12 @@ namespace AboloLib
             {   
                 mask.alpha = 0.01f;
             }
+
+            var list = new List<Animation>();
+            GetAnimationsInChildren(transform , out list );
+            QueuedCallbacks = new Action[list.Count];
+            list.Clear();
+            list = null;
         }
         void OnEnable()
         {
@@ -80,7 +97,9 @@ namespace AboloLib
         }
         public void Setup()
         {
-            //GetSubAnimations();
+            if(_subAnimations == null) _subAnimations = new List<Animation>();
+            _subAnimations.Clear();
+            GetSubAnimations();
         }
 
                 /// <summary>
@@ -243,7 +262,7 @@ namespace AboloLib
         /// </summary>
         public void SetDisable()
         {
-            if (!DisableBlurBg && _rawImage != null)
+            if (!DisableBlurBg && _rawImage != null) 
             {
                 if(BgFromCamera.instance != null) BgFromCamera.instance.PlayFullClose(_rawImage);
             }
@@ -411,7 +430,7 @@ namespace AboloLib
             {
                 if (anis[i].clip != null)
                 {
-                    if (anis[i].clip.name.Contains("pop"))
+                    if (anis[i].clip.name.Contains(_filter))
                     {
                         animations.Add(anis[i]);
                     }
@@ -479,13 +498,14 @@ namespace AboloLib
                 callback?.Invoke();
                 yield break;
             }
+            int index = 0;
             foreach (var item in animations)
             {
                 float itv = timeOffset;
-                //速度暂时还没有同步
+                
                 foreach (AnimationState state in item)
                 {
-                    //state.speed = Speed;
+                    state.speed = Speed;
                 }
 
                 if(item.TryGetComponent(out CustomAnimationData data)) itv = data.interval;
@@ -496,13 +516,24 @@ namespace AboloLib
                     if(canPlay)
                     {
                         item.Play();
-                        yield return new WaitForSeconds(itv);
+                        float duration = itv;
+                        while(duration > 0f)
+                        {
+                            duration -= Time.deltaTime * Speed;
+                            yield return null;
+                        }
+                        //yield return new WaitForSeconds(itv/Speed);
                     }
                     else
                     {
                         //SetSubAnimationObjects(animations, true);
                         item.transform.localScale = Vector3.one;
                     }
+
+                    int localIndex = index;
+                    if(QueuedCallbacks != null && QueuedCallbacks.Length > localIndex) 
+                        QueuedCallbacks[localIndex]?.Invoke();
+                    index ++;
                 }
             }
 #if _ARTEST_PRESENTATION

@@ -233,6 +233,7 @@ namespace AboloLib
             //     transformNodes[i].customFx.ResetSubAnimations();
             //     transformNodes[i].customFx.ResetLayout();
             // }
+            //Debug.Log();
             SetDestineyToStartCondition(transformNodes[toIndex] , fromIndex);
             List<RectTransform> rects = transformNodes[toIndex].MyRects;
             ScheduleAdapter.DoAnimation(0.5f , (value) =>
