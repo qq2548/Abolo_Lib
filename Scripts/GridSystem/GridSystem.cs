@@ -236,6 +236,24 @@ namespace AboloLib
             return result;
         }
 
+        public static List<Vector2Int> GetNeighborCoords(Grid grid, Vector2Int downLeftCoord , Vector2Int size)
+        {
+            List<Vector2Int> result = new List<Vector2Int>();
+            Vector2Int startCoord = downLeftCoord + new Vector2Int(-1, -1);
+            if(grid.Cells.ContainsKey(startCoord) && !result.Contains(startCoord)) result.Add(startCoord);
+            for (int i = 0; i < SquareDirections.Length; i++)
+            {
+                int count = i%2 == 0? size.y + 1: size.x + 1;
+                for (int c = 1; c <= count; c++)
+                {
+                    startCoord += SquareDirections[i];
+                    if(grid.Cells.ContainsKey(startCoord) && !result.Contains(startCoord)) 
+                        result.Add(startCoord);
+                }
+            }
+            return result;
+        }
+
         public static bool CheckAllClear(Grid grid , List<Vector2Int> coords)
         {
             bool result = true;

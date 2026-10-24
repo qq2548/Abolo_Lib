@@ -44,7 +44,7 @@ Shader "sample3d/CustomLighting"
 		_RimMax ("Rim Max", Range(0,2)) = 1.0
 
         [Header(SideLight)]
-         _SideLightColor ("SideLightColor", Color) = (1.0,1.0,1.0,1.0)
+         _SideLightColor ("SideLightColor", Color) = (0.0,0.0,0.0,0.0)
         _SideRampSmooth("SideRampSmooth", Range(0.001,1.0)) = 0.001
         _SideOffset("SideOffset", Range(0.0,1.0)) = 0.0
 
@@ -348,7 +348,7 @@ Shader "sample3d/CustomLighting"
                  fixed am1 = CalcAmbientColor(unity_AmbientSky.xyz, worldNormal, albedo,fixed3(0.0 , 1.0 , 0.0));
                  fixed am2 = CalcAmbientColor(unity_AmbientGround.xyz, worldNormal, albedo,fixed3(0.0 , -1.0 , 0.0));
                  fixed am3 = CalcAmbientColor(unity_AmbientEquator.xyz, worldNormal, albedo,ViewDir);
-                 fixed3 upMask = max(worldNormal.y , 0.0);
+                 fixed3 upMask = max(worldNormal.y , 0.0);  
                  fixed3 downMask = max(-worldNormal.y , 0.0);
                  fixed3 midMask = 1.0 - upMask - downMask;
                  fixed3 EnvLightCol = upMask * unity_AmbientSky.xyz + downMask * unity_AmbientGround.xyz + midMask * unity_AmbientEquator.xyz;
