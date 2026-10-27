@@ -20,6 +20,8 @@ namespace AboloLib
             RectTransform bg_sub;
             [UIBind("root/bg/titleBg")]
             RectTransform title_bg;
+            [UIBind("root/bg/title")]
+            RectTransform title;
             [UIBind("root/bg/OkBtn")]
             RectTransform okBtn;
             [UIBind("root/bg/CloseBtn")]
@@ -31,7 +33,7 @@ namespace AboloLib
                 {
                     if(rects == null||rects.Count == 0)
                     {
-                        rects = new (){bg , bg_sub , title_bg , okBtn, closeBtn};
+                        rects = new (){bg , bg_sub , title_bg, title , okBtn, closeBtn};
                     }
                     return rects;
                 }
@@ -40,7 +42,7 @@ namespace AboloLib
             {
                 if(rects == null||rects.Count == 0)
                 {
-                    rects = new (){bg , bg_sub , title_bg , okBtn, closeBtn};
+                    rects = new (){bg , bg_sub , title_bg, title , okBtn, closeBtn};
                 }
             }
             public RectTransform GetRT(string name)
@@ -56,7 +58,7 @@ namespace AboloLib
             public Color color;
             public RectData(RectTransform rectTransform)
             {
-                this.position = rectTransform != null ? rectTransform.position : Vector3.zero;
+                this.position = rectTransform != null ? rectTransform.localPosition : Vector3.zero;
                 this.sizeDelta = rectTransform != null ? rectTransform.sizeDelta : Vector2.zero;
                 Color color = rectTransform != null&&rectTransform.TryGetComponent(out Image img_f)? 
                     img_f.color : Color.white;
@@ -218,10 +220,24 @@ namespace AboloLib
             }
         }
 
+
+        public void RefreshRectData(int index)
+        {
+            var node = transformNodes[index];
+            RectData[] datas = new RectData[node.MyRects.Count];
+            for (int b = 0; b < node.MyRects.Count; b++)
+            {
+                datas[b] = new RectData(node.MyRects[b]);
+            }
+            rectDatas[index] = datas;
+        }
+
         public void TransformUI(string fromName , string toName)
         {
             int fromIndex = subUINames.IndexOf(fromName);
             int toIndex = subUINames.IndexOf(toName);
+            RefreshRectData(fromIndex);
+            RefreshRectData(toIndex);
             TransformUI(fromIndex , toIndex);
         }
 
@@ -243,7 +259,7 @@ namespace AboloLib
                         if(rects[i] != null)
                         {
                             float fac = CustomAssetManager.AnimCurveDic[CurveFactory.CurveType.SlowSteady].Evaluate(value);
-                            rects[i].position = Vector3.Lerp(rectDatas[fromIndex][i].position , rectDatas[toIndex][i].position , fac);
+                            rects[i].localPosition = Vector3.Lerp(rectDatas[fromIndex][i].position , rectDatas[toIndex][i].position , fac);
                             rects[i].sizeDelta = Vector2.Lerp(rectDatas[fromIndex][i].sizeDelta , rectDatas[toIndex][i].sizeDelta , fac);
                             if(rects[i].TryGetComponent(out Image image))
                             {

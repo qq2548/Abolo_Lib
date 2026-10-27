@@ -94,6 +94,8 @@ namespace AboloLib
             Color[] colors_1 = texture2D.GetPixels();
 
             Camera ui_grab = UICanvasAdapter.CurrentCanvas.worldCamera;
+            //需要关闭UICamera的HDR。否则无法正常显示GameCamera的渲染内容
+            if(ui_grab.allowHDR) ui_grab.allowHDR = false;
             ui_grab.targetTexture = renderTexture_ui;
             ui_grab.Render();
 

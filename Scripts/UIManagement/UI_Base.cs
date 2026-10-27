@@ -53,7 +53,12 @@ namespace AboloLib
             get => isReuse;
             set => isReuse = value;
         }
-
+        private bool alreadyOpen = false;
+        public  bool AlreadyOpen
+        {
+            get => alreadyOpen;
+            set => alreadyOpen = value;
+        }
         public float OpenAnimDuration
         {
             get
@@ -110,19 +115,22 @@ namespace AboloLib
                 //OnOpenAniamtionDone?.Invoke();
             }
             //播放动画时，屏蔽交互操作 
+            float delay  = 0.1f;
             if (transform.TryPlayAnimation(PageOpenAnimName))
             {
                 if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(true);
-                float delay = OpenAnimDuration;
-                animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay , () =>
-                {
-                    if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(false);
-                    OnOpenAniamtionDone?.Invoke();
-                    OnOpenAniamtionDone = null;
-                }));
+                delay = OpenAnimDuration;
             }
-            RefreshUI();
 
+            animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay , () =>
+            {
+                if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(false);
+                OnOpenAniamtionDone?.Invoke();
+                OnOpenAniamtionDone = null;
+                AlreadyOpen = true;
+            }));
+            RefreshUI();
+            
             if (!mute) AudioPlayerAdapter.PlayAudio(GlobalPageOpenSound);
 
             Debug.Log($"Show Window {this.name}");
@@ -135,24 +143,27 @@ namespace AboloLib
                 ScheduleAdapter.Schedual.StopCoroutine(animCoroutine);
             }
             //播放动画时，屏蔽交互操作 
+            float delay  = 0.1f;
             if (transform.TryPlayAnimation(PageCloseAnimName))
             {
                 if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(true);
-                float delay = CloseAnimDuration;
-                animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, () =>
-                {
-                    gameObject.transform.SetParent(UIManager.GetCanvas(0));
-                    if (gameObject.activeSelf) gameObject.SetActive(false);
-                    if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(false);
-                    OnCloseAniamtionDone?.Invoke();
-                    OnCloseAniamtionDone = null;
-                }));
+                delay = CloseAnimDuration;
             }
             else
             {
                 if (gameObject.activeSelf) gameObject.SetActive(false);
             }
 
+            animCoroutine = ScheduleAdapter.Schedual.StartCoroutine(ArtAnimation.ArtAnimDelayCoroutine(delay, () =>
+            {
+                gameObject.transform.SetParent(UIManager.GetCanvas(0));
+                if (gameObject.activeSelf) gameObject.SetActive(false);
+                if(RayCastBlock._instance != null) RayCastBlock._instance.SetRayCastBlock(false);
+                OnCloseAniamtionDone?.Invoke();
+                OnCloseAniamtionDone = null;
+                AlreadyOpen = false;
+            }));
+            
             AudioPlayerAdapter.PlayAudio(GlobalPageCloseSound);
         }
 

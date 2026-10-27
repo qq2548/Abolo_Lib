@@ -80,11 +80,11 @@ namespace AboloLib
         public static FlyItem FlyItem(Vector3 from , Vector3 to , string name , int id  = -1, Action callback = null)
         {
             FlyItem item = null;
-            if(FlyItemDic.ContainsKey("name"))
+            if(FlyItemDic.ContainsKey(name))
             {
                 item = Instantiate(FlyItemDic[name]) as FlyItem;
             }
-            
+            Debug.Log($"=={item == null}==");
             if(item != null)
             {
                 if(id >= 0)

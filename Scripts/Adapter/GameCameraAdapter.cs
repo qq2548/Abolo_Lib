@@ -45,6 +45,7 @@ public static class GameCameraAdapter
         ScheduleAdapter.DoAnimation(duration , (value) =>
         {
             float t = curve != null?curve.Evaluate(value) : value;
+            FlowerGameManager._instance.Current.RefreshUI();
             CurrentCamera.orthographicSize = Mathf.Lerp(startSize , cameraSize , value);
         });
     }
@@ -59,6 +60,7 @@ public static class GameCameraAdapter
         ScheduleAdapter.DoAnimation(duration , (value) =>
         {
             float t = curve != null?curve.Evaluate(value) : value;
+            FlowerGameManager._instance.Current.RefreshUI();
             CurrentCamera.orthographicSize = Mathf.Lerp(startSize , 5f , value);
         });
     }
