@@ -165,5 +165,54 @@ namespace AboloLib
             }
             return items;
         }
+
+        public static List<FlyItem> FlyMultipleItems(int count , Vector3 from , Vector3 to , int id,Action callback = null)
+        {
+            int key = 3;
+            switch (id)
+            {
+                case 999:
+                    key = 0;
+                break;
+                case 648:
+                    key = 1;
+                break;
+                case 998:
+                    key = 2;
+                break;
+            }
+            List<FlyItem> items = new List<FlyItem>();
+            items.Clear();
+            List<Action> actions = new List<Action>();
+            actions.Clear();
+
+            for(int i = 0; i < count; i++) 
+            {
+                var item = _instance.FlyItemFactory.Get(key) as FlyItem;
+                if(key == 3)
+                {
+                    var img = item.transform.Find("root/Art").GetComponent<Image>();
+                    img.sprite = ArtUtility.InstantiateSpriteFromResource(GlobalText.ItemSpritePath(id));
+                }
+                item.transform.SetParent(UICanvasAdapter.CurrentCanvas.transform.GetChild(4), true);
+                item.transform.localScale = Vector3.one;
+                item.OnItemFlyDone = () =>
+                {
+                    item.transform.SetParent(null);
+                    _instance.FlyItemFactory.Reclaim(item);
+                } ;
+                actions.Add(() =>
+                {
+                    
+                });
+                // callback += () =>
+                // {
+      
+                // };   
+                items.Add(item);
+            }
+            FlyItemUtility.MultipleFlyProccedual(items , from , to , actions , callback);
+            return items;
+        }
     }
 }

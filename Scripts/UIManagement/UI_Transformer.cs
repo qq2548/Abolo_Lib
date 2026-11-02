@@ -82,7 +82,7 @@ namespace AboloLib
 
         [UIBind("root/testBtn")]
         Button testBtn;
-        public Dictionary<string, TransfromPair> TransfromPairs;
+        public Dictionary<string, TransfromPair> TransfromPairs;  
         List<TransformNode> transformNodes = new List<TransformNode>();
 
         List<RectData[]> rectDatas= new List<RectData[]>();
@@ -133,11 +133,11 @@ namespace AboloLib
 
                 custom_ui.Interval = 0.05f;
                 node.customFx = custom_ui;
-                Debug.Log($"{node.transform.name}---------------------{node.MyRects.Count}");
+                //Debug.Log($"{node.transform.name}---------------------{node.MyRects.Count}");
                 RectData[] datas = new RectData[node.MyRects.Count];
                 for (int b = 0; b < node.MyRects.Count; b++)
                 {
-                    Debug.Log($"{b}++++++++++++++{node.transform.name}");
+                    //Debug.Log($"{b}++++++++++++++{node.transform.name}");
                     datas[b] = new RectData(node.MyRects[b]);
                 }
                 rectDatas.Add(datas);
@@ -199,18 +199,19 @@ namespace AboloLib
                 //UI的默认Canvas层级一定要改，这里写死非常不合理
                 to.transform.SetParent(UIManager.GetCanvas(3));
                 if(!to.transform.gameObject.activeSelf) to.transform.gameObject.SetActive(true);
-                 to.customFx.StopQueuedActive();
+                to.customFx.StopQueuedActive();
                 to.customFx.ResetSubAnimations();
                 for (int i = 0; i < to.MyRects.Count; i++)
                 {
                     if(to.MyRects[i] != null)
                     {
-                        to.MyRects[i].position = from[i].position;
+                        to.MyRects[i].localPosition = from[i].position;
                         to.MyRects[i].sizeDelta = from[i].sizeDelta;
                         if(to.MyRects[i].TryGetComponent(out Image img))
                         {
                             img.color = from[i].color;
                         }
+                        Debug.Log($"!!!!!!!!!!{to.MyRects[i].name}!!!!!!!!!!!!{from[i].position}");
                     }
                 }
             }
@@ -249,7 +250,7 @@ namespace AboloLib
             //     transformNodes[i].customFx.ResetSubAnimations();
             //     transformNodes[i].customFx.ResetLayout();
             // }
-            //Debug.Log();
+            Debug.Log("");
             SetDestineyToStartCondition(transformNodes[toIndex] , fromIndex);
             List<RectTransform> rects = transformNodes[toIndex].MyRects;
             ScheduleAdapter.DoAnimation(0.5f , (value) =>

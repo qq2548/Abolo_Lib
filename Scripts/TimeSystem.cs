@@ -7,6 +7,7 @@ namespace AboloLib
     public class TimeSystem : AboloSingleton<TimeSystem>
     {
         public delegate void MyDele();
+        public MyDele PerHour;
         public MyDele PerDay;
         public MyDele PerMonth;
         public MyDele PerYear;
@@ -70,7 +71,7 @@ namespace AboloLib
         /// <summary>
         /// 游戏世界时间流逝速度
         /// </summary>
-        public static int TimeScale = 10;
+        public static int TimeScale = 1;
 
         private float _time = 0f;
         private float _timeUnit;
@@ -147,6 +148,8 @@ namespace AboloLib
                         }
                         PerDay?.Invoke();
                     }
+
+                    PerHour?.Invoke();
                 }
             }
         }
