@@ -180,6 +180,9 @@ namespace AboloLib
                 case 998:
                     key = 2;
                 break;
+                case 997:
+                    key = 4;
+                break;
             }
             List<FlyItem> items = new List<FlyItem>();
             items.Clear();
@@ -189,7 +192,7 @@ namespace AboloLib
             for(int i = 0; i < count; i++) 
             {
                 var item = _instance.FlyItemFactory.Get(key) as FlyItem;
-                if(key == 3)
+                if(key == 3 || key == 4)
                 {
                     var img = item.transform.Find("root/Art").GetComponent<Image>();
                     img.sprite = ArtUtility.InstantiateSpriteFromResource(GlobalText.ItemSpritePath(id));
